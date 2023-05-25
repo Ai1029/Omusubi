@@ -1,0 +1,123 @@
+version: "3"
+services:
+  db:
+    container_name: "mysql"
+    platform: linux/x86_64
+    # 起動するイメージを指定
+    image: mysql:8.0.23
+
+    # 環境変数を設定
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - TZ=${TZ}
+
+    # ホスト側のポート:コンテナのポート
+    ports:
+      - "3306:3306"
+
+    # ボリュームバインド
+    volumes:
+      - mysqldata:/var/lib/mysql
+
+    #使用するネットワーク
+    networks:
+      - backend
+
+  api:
+    container_name: go
+    image: golang:latest
+    environment:
+      - MYSQL_SERVER=db
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - TZ=${TZ}
+      - CHOKIDAR_USEPOLLING=true
+
+    #コンテナを起動させ続けるよう設定
+    tty: true
+
+    ports:
+      - "8080:8080"
+
+    # ソースコードを格納するフォルダをマウント
+    #（ホスト側の./apiをコンテナの/appにマウント）
+    volumes:
+      - ./api:/usr/src/api
+    working_dir: /usr/src/api
+
+    # 起動後に実行するコマンドを指定
+    command: /bin/sh -c "go run main.go"
+    networks:
+      - backend
+
+    #依存関係（apiコンテナより先にdbコンテナが起動するように設定）
+    depends_on:
+      - db
+
+  llm:
+    container_name: "express"
+    image: node:latest
+    environment:
+      - MYSQL_SERVER=db
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - TZ=${TZ}
+      - CHOKIDAR_USEPOLLING=true
+
+    #コンテナを起動させ続けるよう設定
+    tty: true
+
+    ports:
+      - "4000:4000"
+
+    # ソースコードを格納するフォルダをマウント
+    #（ホスト側の./apiをコンテナの/appにマウント）
+    volumes:
+      - ./llm:/usr/src/app
+
+    # 起動時のカレントフォルダを指定
+    working_dir: /usr/src/app
+
+    # 起動後に実行するコマンドを指定
+    command: npm run start
+    networks:
+      - backend
+
+    #依存関係（apiコンテナより先にdbコンテナが起動するように設定）
+    depends_on:
+      - db
+
+  front:
+    container_name: "next"
+    image: node:latest
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front:/usr/src/front
+    working_dir: /usr/src/front
+    command: npm run dev
+    networks:
+      - backend
+    depends_on:
+      - api
+
+  cache:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mysqldata:
