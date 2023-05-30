@@ -12,6 +12,9 @@ module.exports = {
         "body-yellow": "#FFF7E3",
         "selected-text": "#FFC82E",
       },
+      fontFamily: {
+        zen: ["Zen Maru Gothic"],
+      },
 
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
