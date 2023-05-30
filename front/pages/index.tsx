@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { GetServerSideProps, NextPage } from "next";
-import Layout from "@/component/layout";
 import axios from "axios";
-import Topimage from "../components/Topimage";
-import Shop from "../components/Shop";
+import Layout from "@/components/Layout";
+import Topimage from "@/components/Topimage";
+import Shop from "@/components/Shop";
 type TypeItem = {
 	id: number;
 	name: string;
@@ -22,21 +22,9 @@ const HOME: NextPage<Props> = (props) => {
 	return (
 		<Layout>
 			<main>
-				<h2>TOPページ</h2>
-				<ul>
-					{items.map((item) => (
-						<li key={item.id}>
-							<div>
-								<h3>{item.name}</h3>
-								<p>{item.detail}</p>
-								<p>{item.quantity}個</p>
-							</div>
-						</li>
-					))}
-				</ul>
-      <Topimage />
-      <Shop />
-      {/* <p>次回のお届け</p>
+				<Topimage />
+				<Shop />
+				{/* <p>次回のお届け</p>
       <p>同時配送</p>
       <p>もっと見る</p>
       <button>商品を追加・変更する</button>
