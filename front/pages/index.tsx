@@ -2,7 +2,8 @@ import Image from "next/image";
 import { GetServerSideProps, NextPage } from "next";
 import Layout from "@/component/layout";
 import axios from "axios";
-
+import Topimage from "../components/Topimage";
+import Shop from "../components/Shop";
 type TypeItem = {
 	id: number;
 	name: string;
@@ -33,6 +34,15 @@ const HOME: NextPage<Props> = (props) => {
 						</li>
 					))}
 				</ul>
+      <Topimage />
+      <Shop />
+      {/* <p>次回のお届け</p>
+      <p>同時配送</p>
+      <p>もっと見る</p>
+      <button>商品を追加・変更する</button>
+      <h3>SHOP</h3>
+      <p>定期便</p>
+      <p>おかず</p> */}
 			</main>
 		</Layout>
 	);
