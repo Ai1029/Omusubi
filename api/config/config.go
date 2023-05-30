@@ -1,12 +1,17 @@
 package config
 
 import (
+	"log"
+
 	"github.com/go-ini/ini"
 )
 
 const (
 	ConfigFile = "config.ini"
 )
+
+// 外のファイルからも呼べるように宣言
+var Config MySQLConfig
 
 type MySQLConfig struct {
 	Host     string
@@ -16,28 +21,22 @@ type MySQLConfig struct {
 	DBName   string
 }
 
-func LoadMySQLConfig() (*MySQLConfig, error) {
+// main関数の前に実行させる
+func init() {
+	LoadMySQLConfig()
+}
+
+func LoadMySQLConfig() {
 	cfg, err := ini.Load("config.ini")
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
 	}
+	Config = MySQLConfig{
 
-	section, err := cfg.GetSection("mysql")
-	if err != nil {
-		return nil, err
+		Host:     cfg.Section("mysql").Key("host").String(),
+		Port:     cfg.Section("mysql").Key("port").String(),
+		User:     cfg.Section("mysql").Key("user").String(),
+		Password: cfg.Section("mysql").Key("password").String(),
+		DBName:   cfg.Section("mysql").Key("dbname").String(),
 	}
-
-	host := section.Key("host").String()
-	port := section.Key("port").String()
-	user := section.Key("user").String()
-	password := section.Key("password").String()
-	dbname := section.Key("dbname").String()
-
-	return &MySQLConfig{
-		Host:     host,
-		Port:     port,
-		User:     user,
-		Password: password,
-		DBName:   dbname,
-	}, nil
 }
