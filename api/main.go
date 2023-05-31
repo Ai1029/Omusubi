@@ -46,7 +46,6 @@ func main() {
 		})
 	}
 
-
 	r.HandleFunc("/buy", handlers.CreateCheckoutSesstion(db)).Methods("POST")
 	r.HandleFunc("/allitem", handlers.GetAllItem(db)).Methods("GET")
 	// r.HandleFunc("/sidedishes", handlers.GetSidedishes(db)).Methods("GET")
