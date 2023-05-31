@@ -46,7 +46,7 @@ func main() {
 		})
 	}
 
-	r.HandleFunc("/allitem", handlers.GetAllItem(db)).Methods("GET")
+	r.HandleFunc("/buy", handlers.CreateCheckoutSesstion(db)).Methods("POST")
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
