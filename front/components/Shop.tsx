@@ -60,6 +60,7 @@ const Shop: FC<PlanProps> = ({ data }) => {
           ) : (
             <p>準備中...</p>
           )}
+
         </div>
       </section>
     </div>

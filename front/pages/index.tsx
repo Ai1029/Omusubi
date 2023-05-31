@@ -4,6 +4,7 @@ import axios from "axios";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Shop from "@/components/Shop";
+
 // type TypeItem = {
 //   id: number;
 //   name: string;
@@ -22,6 +23,7 @@ type Plan = {
   explanation: string;
   price: string;
   image: string;
+
 };
 
 type PlanProps = {
@@ -37,6 +39,7 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
         <Topimage />
         <Shop data={data} />
         {/* <p>次回のお届け</p>
+
       <p>同時配送</p>
       <p>もっと見る</p>
       <button>商品を追加・変更する</button>
@@ -46,6 +49,7 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
       </main>
     </Layout>
   );
+
 };
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   let posts = [];
