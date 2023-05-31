@@ -3,10 +3,12 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
 )
 
 type User struct {
@@ -128,6 +130,12 @@ func CreateUsers(db *sql.DB) http.HandlerFunc {
 		err = db.QueryRow("SELECT * FROM users WHERE id = ?", lastID).Scan(&resUser.ID, &resUser.Name, &resUser.Email, &resUser.UID, &resUser.FamilyID, &resUser.Phonetic, &resUser.Zipcode, &resUser.Prefecture, &resUser.City, &resUser.Town, &resUser.Apartment, &resUser.PhoneNumber, &resUser.IsOwner, &resUser.IsVirtualUser)
 		if err != nil {
 			// エラー処理
+			log.Fatal(err)
+		}
+
+		fmt.Println(err)
+		jsonData, err := json.Marshal(resUser)
+		if err != nil {
 			log.Fatal(err)
 		}
 
