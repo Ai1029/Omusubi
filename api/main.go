@@ -8,6 +8,7 @@ import (
 
 	"api/config"
 	"api/handlers"
+	"api/stripeHandler"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -46,9 +47,7 @@ func main() {
 		})
 	}
 
-
-	r.HandleFunc("/buy", handlers.CreateCheckoutSesstion(db)).Methods("POST")
-	r.HandleFunc("/allitem", handlers.GetAllItem(db)).Methods("GET")
+	r.HandleFunc("/buy", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
 	// r.HandleFunc("/sidedishes", handlers.GetSidedishes(db)).Methods("GET")
 	// r.HandleFunc("/sidedishes", handlers.CreateSidedish(db)).Methods("POST")
 	// r.HandleFunc("/sidedish/{id}", handlers.GetSidedish(db)).Methods("GET")
