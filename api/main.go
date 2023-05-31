@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 
 	"api/config"
 	"api/handlers"
@@ -13,11 +14,18 @@ import (
 )
 
 func main() {
+	cfg, err := config.LoadMySQLConfig()
+	if os.Getenv("DB_ENV") == "production" {
+		cfg.Host = os.Getenv("MYSQL_SERVER")
+		cfg.User = os.Getenv("MYSQL_USER")
+		cfg.Password = os.Getenv("MYSQL_PASSWORD")
+	}
 
-	fmt.Println(handlers.Db)
-
+	if err != nil {
+		panic(err)
+	}
 	// MySQLに接続します
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.Config.User, config.Config.Password, config.Config.Host, config.Config.Port, config.Config.DBName))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName))
 	if err != nil {
 		panic(err)
 	}
