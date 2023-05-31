@@ -47,6 +47,9 @@ func main() {
 	}
 
 	r.HandleFunc("/allitem", handlers.GetAllItem(db)).Methods("GET")
+	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
+	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
+	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
