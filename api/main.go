@@ -47,19 +47,11 @@ func main() {
 		})
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	r.HandleFunc("/buy", handlers.CreateCheckoutSesstion(db)).Methods("POST")
-	r.HandleFunc("/allitem", handlers.GetAllItem(db)).Methods("GET")
-=======
-=======
-  
+
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
->>>>>>> 5ef00d56a0139b89d8b2bd100debe04387d61e12
 	r.HandleFunc("/buy", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
->>>>>>> 13b4e50029501f9b533b4dd9450181dd2e59ecd7
 	// r.HandleFunc("/sidedishes", handlers.GetSidedishes(db)).Methods("GET")
 	// r.HandleFunc("/sidedishes", handlers.CreateSidedish(db)).Methods("POST")
 	// r.HandleFunc("/sidedish/{id}", handlers.GetSidedish(db)).Methods("GET")
