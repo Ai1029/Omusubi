@@ -47,6 +47,10 @@ func main() {
 		})
 	}
 
+  
+	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
+	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
+	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
 	r.HandleFunc("/buy", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
 	// r.HandleFunc("/sidedishes", handlers.GetSidedishes(db)).Methods("GET")
 	// r.HandleFunc("/sidedishes", handlers.CreateSidedish(db)).Methods("POST")
