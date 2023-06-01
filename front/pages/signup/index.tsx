@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import Logo from '@/components/Logo';
 
 const SignUp = () => {
 const handleClick = () => {
@@ -9,7 +10,7 @@ const handleClick = () => {
 
  return (
  <div className='text-center items-center'>
-    <img src="/images/logo.png" className='w-100 h-32 m-auto pt-10' alt='ロゴ'></img>
+    <Logo />
     <p className='pt-10'>認証に成功しました</p>
     <p className='pb-10'>以下からプロフィール登録をして下さい</p>
     <p className='pb-10'>プロフィール登録</p>
