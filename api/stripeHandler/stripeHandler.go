@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
@@ -20,8 +21,14 @@ type CreateOrder struct {
 }
 
 func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		var data CreateOrder
+		SITE_URL := "http://localhost:3000"
+		if os.Getenv("DB_ENV") == "production" {
+			SITE_URL = os.Getenv("SITE_URL")
+		}
+
 		// リクエストボディの読み取り
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
@@ -31,8 +38,6 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 
 		priceID := data.PriceID
 		fmt.Println(priceID)
-
-		// SUCCESS_URL := "http://localhost:3000/buy/success/?session_id="
 
 		if PRODUCTION_MODE {
 			stripe.Key = SECRET_KEY_PRODUCTION
@@ -50,8 +55,8 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 				},
 			},
 			Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-			SuccessURL: stripe.String("http://localhost:3000/buy/success?session_id={CHECKOUT_SESSION_ID}"),
-			CancelURL:  stripe.String("http://localhost:3000/"),
+			SuccessURL: stripe.String(SITE_URL + "/buy/success?session_id={CHECKOUT_SESSION_ID}"),
+			CancelURL:  stripe.String(SITE_URL),
 		}
 
 		s, err := session.New(params)
