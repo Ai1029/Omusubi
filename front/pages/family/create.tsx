@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import Logo2 from '@/components/Logo2';
+import Layout from '@/components/Layout';
 import Dropdown from '@/components/Dropdown';
 
 
@@ -14,7 +14,10 @@ const Create = () => {
 
  return (
  <div className='text-center items-center'>
-    <Logo2 />
+    <Layout>
+        
+    </Layout>
+    
     <div className=' font-medium'>
     <p className='pt-10 pb-10 text-lg'>家族を登録</p>
     <Input 
