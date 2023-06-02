@@ -5,7 +5,7 @@ import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
-import Layout from "@/component/layout";
+import Navbar from "../../components/Layout";
 
 type Inputs = {
     email: string;
@@ -61,7 +61,7 @@ const LoginPage: NextPage = () => {
          });
     };
     return (
-        <Layout>
+        <Navbar>
     <h2>ログインページ</h2>
     {authError && <p>メールアドレスとパスワードを確認してください</p>}
     {dbError && <p>登録されていないユーザーです</p>}
@@ -90,7 +90,7 @@ const LoginPage: NextPage = () => {
          />
         <input type="submit" value="ログイン"　/>
     </form>
-</Layout>
+</Navbar>
     );
 };
 
