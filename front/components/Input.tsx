@@ -18,7 +18,7 @@ function Input({ label }: InputProps) {
  type="text"
  value={value}
  onChange={handleChange}
- className='bg-slate-200 w-80 h-7'
+ className='bg-slate-200 w-80 h-7 rounded-lg'
  />
  </div>
  );
