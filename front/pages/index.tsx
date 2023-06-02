@@ -4,26 +4,39 @@ import axios from "axios";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Shop from "@/components/Shop";
-type TypeItem = {
+
+// type TypeItem = {
+//   id: number;
+//   name: string;
+//   detail: string;
+//   quantity: number;
+// };
+
+// type Props = {
+//   posts: TypeItem[];
+//   user_id: number;
+// };
+
+type Plan = {
 	id: number;
 	name: string;
-	detail: string;
-	quantity: number;
+	explanation: string;
+	price: string;
+	image: string;
 };
 
-type Props = {
-	posts: TypeItem[];
-	user_id: number;
+type PlanProps = {
+	data: Plan[];
 };
 
-const HOME: NextPage<Props> = (props) => {
+const HOME: NextPage<PlanProps> = ({ data }) => {
 	// console.log(props.posts);
-	const items = props.posts;
+	// const items = props.posts;
 	return (
 		<Layout>
 			<main>
 				<Topimage />
-				<Shop />
+				<Shop data={data} />
 				{/* <p>次回のお届け</p>
       <p>同時配送</p>
       <p>もっと見る</p>
@@ -35,20 +48,26 @@ const HOME: NextPage<Props> = (props) => {
 		</Layout>
 	);
 };
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	let posts = [];
 
-	// console.log(process.env.API_URL_SSR);
-	// console.log(process.env.NEXT_PUBLIC_API_URL);
-
+// プラン一覧をgetする
+export const getServerSideProps: GetServerSideProps = async () => {
+	console.log(process.env.API_URL_SSR);
 	try {
-		const res = await axios.get(`${process.env.API_URL_SSR}/allitem`);
-		posts = await res.data;
+		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
+		console.log("res", res);
+		return {
+			props: {
+				data: res.data,
+			},
+		};
 	} catch (error) {
-		console.log(error);
+		console.error("データが取得できません", error);
+		return {
+			props: {
+				data: null,
+			},
+		};
 	}
-
-	return { props: { posts } };
 };
 
 export default HOME;
