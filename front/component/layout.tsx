@@ -19,6 +19,9 @@ const Layout = ({ children }: Props) => {
 							<div>
 								<Link href="/">HOME</Link>
 							</div>
+							<div>
+								<Link href="/login">ログイン</Link>
+							</div>
 						</li>
 					</ul>
 				</nav>

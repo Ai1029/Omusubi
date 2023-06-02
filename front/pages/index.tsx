@@ -4,6 +4,8 @@ import Layout from "@/component/layout";
 import axios from "axios";
 import Topimage from "../components/Topimage";
 import Shop from "../components/Shop";
+
+
 type TypeItem = {
 	id: number;
 	name: string;
