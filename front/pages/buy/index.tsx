@@ -1,9 +1,12 @@
 import { GetServerSideProps, NextPage } from "next";
-import { useState, useContext } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import React from "react";
 import axios from "axios";
 import Layout from "@/components/Layout";
 import Link from "next/link";
 import { MyContext } from "../_app";
+import CheckoutForm from "@/components/CheckoutForm";
 
 type TypePlan = {
 	id: number;
@@ -35,8 +38,29 @@ type BuyProps = {
 	receivedUser: TypeUser;
 	plan: TypePlan;
 };
+const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 const Buy: NextPage<BuyProps> = ({ apiURL }) => {
-	const contextValue = useContext(MyContext);
+	// body: JSON.stringify({ items: [{ id: "price_1NDZZSI8t6lPUIZhQOPQFe8D" }] }),
+	const [clientSecret, setClientSecret] = React.useState("");
+
+	React.useEffect(() => {
+		// Create PaymentIntent as soon as the page loads
+		fetch(`${apiURL}buy`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
+		})
+			.then((res) => res.json())
+			.then((data) => setClientSecret(data.clientSecret));
+	}, []);
+	const appearance = {
+		theme: "stripe",
+	};
+	const options: any = {
+		clientSecret,
+		appearance,
+	};
+	const contextValue = React.useContext(MyContext);
 	const plan = contextValue.plan;
 	const paidUser = contextValue.paidUser;
 	const receivedUser = contextValue.receivedUser;
@@ -99,6 +123,11 @@ const Buy: NextPage<BuyProps> = ({ apiURL }) => {
 				</div>
 			</section>
 
+			{clientSecret && (
+				<Elements options={options} stripe={stripePromis}>
+					<CheckoutForm />
+				</Elements>
+			)}
 			<button onClick={onCreateCheckoutSesstion}>お支払情報を入力して購入手続きをする</button>
 			<p>まだ購入は確定されません</p>
 		</Layout>
