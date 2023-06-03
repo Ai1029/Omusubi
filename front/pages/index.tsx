@@ -51,10 +51,8 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async () => {
-	console.log(process.env.API_URL_SSR);
 	try {
 		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
-		console.log("res", res);
 		return {
 			props: {
 				data: res.data,
