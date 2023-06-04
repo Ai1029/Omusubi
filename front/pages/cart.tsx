@@ -17,6 +17,17 @@ const CartPage: React.FC = () => {
     console.log(
       `ユーザー${userId}の商品ID ${itemId} の小計が変更されました: ${newSubtotal}`
     );
+    // // 各ユーザーの合計を計算して更新する
+    // const userCart = cart.filter((item) => item.userId === userId); // ユーザーごとのカートアイテムを取得
+    // const userTotal = userCart.reduce(
+    //   (total, item) => total + item.subtotal,
+    //   0
+    // ); // ユーザーごとの小計を合計
+    // console.log(`ユーザー${userId}の合計: ${userTotal}`);
+
+    // // 全てのユーザーの合計を計算して更新する
+    // const total = cart.reduce((total, item) => total + item.subtotal, 0); // 全ユーザーの小計を合計
+    // console.log(`全ユーザーの合計: ${total}`);
   };
 
   return (
