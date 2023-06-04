@@ -54,7 +54,7 @@ func main() {
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
-	r.HandleFunc("/buy", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
+	r.HandleFunc("/createsubscription", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
 	r.HandleFunc("/plans", handlers.GetPlans(db)).Methods("GET")
 	r.HandleFunc("/plans", handlers.CreatePlan(db)).Methods("POST")
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")

@@ -1,36 +1,55 @@
 package stripeHandler
 
 import (
-	"bytes"
+	// "bytes"
 	"database/sql"
 	"encoding/json"
+
+	// "errors"
 	"fmt"
-	"io"
+	//"io"
+
 	"log"
 	"net/http"
 
+	"github.com/stripe/stripe-go/v74/subscription"
+	//"github.com/stripe/stripe-go/sub"
 	"github.com/stripe/stripe-go/v74"
+	"github.com/stripe/stripe-go/v74/customer"
+
+	// stripe "github.com/stripe/stripe-go/v74/"
+
+	// "github.com/stripe/stripe-go/v74/sub"
+
+	// "github.com/stripe/stripe-go/v72/sub"
+
 	// "github.com/stripe/stripe-go/v74/checkout/session"
-	"github.com/stripe/stripe-go/v74/paymentintent"
+	// "github.com/stripe/stripe-go/v74/paymentintent"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type CreateOrder struct {
-	PaidUserID         int    `json:"paiduser_id"`
-	ReceiveduserUserID int    `json:"receiveduser_id"`
-	PlanID             int    `json:"plan_id"`
-	PriceID            string `json:"stripe_id"`
+	PlanID  int    `json:"plan_id"`
+	PriceID string `json:"stripe_price_id"`
 }
-type item struct {
-	id string
+type User struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	PostalCode  string `json:"postal_code"`
+	State       string `json:"state"`
+	City        string `json:"city"`
+	Line1       string `json:"line1"`
+	Line2       string `json:"line2"`
+	PhoneNumber string `json:"phone_number"`
 }
-
-func calculateOrderAmount(items []item) int64 {
-	// Replace this constant with a calculation of the order's amount
-	// Calculate the order total on the server to prevent
-	// people from directly manipulating the amount on the client
-	return 1400
+type Data struct {
+	PaidUser      User   `json:"paiduser"`
+	PlanID        int    `json:"plan_id"`
+	Price         int     `json:"price"`
+	ReceivedUser  User   `json:"receiveduser"`
+	StripePriceID string `json:"stripe_price_id"`
 }
 
 func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
@@ -41,22 +60,106 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 			stripe.Key = SECRET_KEY_STAGING
 		}
 
-		// var data CreateOrder
 		// SITE_URL := "http://localhost:3000"
 		// if os.Getenv("DB_ENV") == "production" {
 		// SITE_URL = os.Getenv("SITE_URL")
 		// }
 		// fmt.Println(SITE_URL)
 
-		// // リクエストボディの読み取り
-		// err := json.NewDecoder(r.Body).Decode(&data)
-		// if err != nil {
-		// http.Error(w, err.Error(), http.StatusBadRequest)
-		// return
-		// }
+		var data Data
 
-		// priceID := data.PriceID
-		// fmt.Println(priceID)
+		// リクエストボディの読み取り
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		Price := data.Price
+		PriceID := data.StripePriceID
+		paidUserID := data.PaidUser.ID
+		receivedUserID := data.ReceivedUser.ID
+		fmt.Println(Price)
+		fmt.Println(PriceID)
+		fmt.Println(paidUserID)
+		fmt.Println(receivedUserID)
+
+		// 顧客が登録済みか確認する
+		// 顧客が複数の配送先を設定できれば一つの顧客で管理したい
+		// 請求先＋配送先が完全に一致したら同一顧客として、新規登録はせずに契約商品を追加するフローにしたい
+		searchUserParams := &stripe.CustomerSearchParams{}
+		searchUserParams.Query = *stripe.String(fmt.Sprintf("email:'%s'", data.PaidUser.Email))
+		iter := customer.Search(searchUserParams)
+		for iter.Next() {
+			searchUserResult := iter.Current()
+			jsonData, err := json.Marshal(searchUserResult)
+			if err != nil {
+				fmt.Println("JSON encoding error:", err)
+				return
+			}
+			fmt.Println(string(jsonData))
+		}
+
+		// 顧客がいなかったら新規作成する(未実装：今は決済ごとに顧客を新規作成している)
+		// 新規顧客作成したら、stripe側の顧客ID（stripe_customer_id (ex:cus_O0zQCb4L8dAVtF)）とomusubi側のuser_idが紐づくDBに追加
+		createUserParams := &stripe.CustomerParams{
+			Email: stripe.String(data.PaidUser.Email),
+			Name:  stripe.String(data.PaidUser.Name),
+			Address: &stripe.AddressParams{
+				Country:    stripe.String("JP"),
+				State:      stripe.String(data.PaidUser.State),
+				City:       stripe.String(data.PaidUser.City),
+				Line1:      stripe.String(data.PaidUser.Line1),
+				Line2:      stripe.String(data.PaidUser.Line2),
+				PostalCode: stripe.String(data.PaidUser.PostalCode),
+			},
+			Shipping: &stripe.CustomerShippingParams{
+				Name: stripe.String(data.ReceivedUser.Name),
+				Address: &stripe.AddressParams{
+					Country:    stripe.String("JP"),
+					State:      stripe.String(data.ReceivedUser.State),
+					City:       stripe.String(data.ReceivedUser.City),
+					Line1:      stripe.String(data.ReceivedUser.Line1),
+					Line2:      stripe.String(data.ReceivedUser.Line2),
+					PostalCode: stripe.String(data.ReceivedUser.PostalCode),
+				},
+			},
+			Phone: stripe.String(data.PaidUser.PhoneNumber),
+		}
+		c, _ := customer.New(createUserParams)
+		customerID := c.ID
+
+		paymentSettings := &stripe.SubscriptionPaymentSettingsParams{
+			SaveDefaultPaymentMethod: stripe.String("on_subscription"),
+		}
+		// Create subscription
+		subscriptionParams := &stripe.SubscriptionParams{
+			Customer: stripe.String(customerID),
+			Items: []*stripe.SubscriptionItemsParams{
+				{
+					Price: stripe.String(PriceID),
+				},
+			},
+			PaymentSettings: paymentSettings,
+			PaymentBehavior: stripe.String("default_incomplete"),
+		}
+		subscriptionParams.AddExpand("latest_invoice.payment_intent")
+		s, err := subscription.New(subscriptionParams)
+		if err != nil {
+			log.Printf("sub.New: %v", err)
+			return
+		}
+
+		response := struct {
+			SubscriptionID string `json:"subscriptionId"`
+			ClientSecret   string `json:"clientSecret"`
+		}{
+			SubscriptionID: s.ID,
+			ClientSecret:   s.LatestInvoice.PaymentIntent.ClientSecret,
+		}
+		// レスポンスをJSON形式で返す
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 
 		// params := &stripe.CheckoutSessionParams{
 		// PaymentMethodTypes: stripe.StringSlice([]string{
@@ -93,61 +196,5 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(response)
 
-		if r.Method != "POST" {
-			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-			return
-		}
-
-		var req struct {
-			Items []item `json:"items"`
-		}
-		fmt.Println(req)
-
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("json.NewDecoder.Decode: %v", err)
-			return
-		}
-		fmt.Println(req)
-
-		// Create a PaymentIntent with amount and currency
-		params := &stripe.PaymentIntentParams{
-			Amount:   stripe.Int64(calculateOrderAmount(req.Items)),
-			Currency: stripe.String(string(stripe.CurrencyJPY)),
-			AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
-				Enabled: stripe.Bool(true),
-			},
-		}
-		fmt.Println(params)
-		fmt.Println(params.Amount)
-
-		pi, err := paymentintent.New(params)
-		log.Printf("pi.New: %v", pi.ClientSecret)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			log.Printf("pi.New: %v", err)
-			return
-		}
-
-		writeJSON(w, struct {
-			ClientSecret string `json:"clientSecret"`
-		}{
-			ClientSecret: pi.ClientSecret,
-		})
-
-	}
-}
-func writeJSON(w http.ResponseWriter, v interface{}) {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("json.NewEncoder.Encode: %v", err)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	if _, err := io.Copy(w, &buf); err != nil {
-		log.Printf("io.Copy: %v", err)
-		return
 	}
 }

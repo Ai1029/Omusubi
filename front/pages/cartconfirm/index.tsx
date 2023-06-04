@@ -1,12 +1,13 @@
 import { GetServerSideProps, NextPage } from "next";
+import React, { useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import React from "react";
 import axios from "axios";
-import Layout from "@/components/Layout";
-import Link from "next/link";
 import { MyContext } from "../_app";
+import Layout from "@/components/Layout";
+import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
+import AddressFormShipping from "@/components/AddressFormShipping";
 
 type TypePlan = {
 	id: number;
@@ -23,10 +24,11 @@ type TypeUser = {
 	email: string;
 	family_id: number;
 	phonetic: string;
-	zipcode: string;
-	prefecture: string;
+	state: string;
 	city: string;
-	town: string;
+	postal_code: string;
+	line1: string;
+	line2: string;
 	apartment: string;
 	phone_number: string;
 	is_owner: boolean;
@@ -34,49 +36,44 @@ type TypeUser = {
 
 type BuyProps = {
 	apiURL: string;
-	paidUser: TypeUser;
-	receivedUser: TypeUser;
-	plan: TypePlan;
 };
-const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
-const Buy: NextPage<BuyProps> = ({ apiURL }) => {
-	// body: JSON.stringify({ items: [{ id: "price_1NDZZSI8t6lPUIZhQOPQFe8D" }] }),
-	const [clientSecret, setClientSecret] = React.useState("");
 
-	React.useEffect(() => {
-		// Create PaymentIntent as soon as the page loads
-		fetch(`${apiURL}buy`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ items: [{ id: "price_1NDZZSI8t6lPUIZhQOPQFe8D" }] }),
-		})
-			.then((res) => res.json())
-			.then((data) => setClientSecret(data.clientSecret));
-	}, []);
-	const appearance = {
-		theme: "stripe",
-	};
-	const options: any = {
-		clientSecret,
-		appearance,
-	};
+const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
+
+const CartConfirm: NextPage<BuyProps> = ({ apiURL }) => {
 	const contextValue = React.useContext(MyContext);
 	const plan = contextValue.plan;
 	const paidUser = contextValue.paidUser;
 	const receivedUser = contextValue.receivedUser;
 	const quantity = contextValue.orderQuantity;
+	const totalPrice = contextValue.orderTotalPrice;
 	const order = {
-		paiduser_id: paidUser.id,
-		receiveduser_id: receivedUser.id,
+		paiduser: paidUser,
+		receiveduser: receivedUser,
 		plan_id: plan.id,
-		stripe_id: plan.stripe_price_id,
+		stripe_price_id: plan.stripe_price_id,
+    price: totalPrice
+	};
+	const [clientSecret, setClientSecret] = React.useState("");
+	const [subscriptionId, setSubscriptionId] = React.useState("");
+
+	const appearance = {
+		theme: "stripe",
+	};
+	const options: any = {
+		clientSecret: clientSecret,
+		automatic_payment_methods: {
+			enabled: true,
+		},
+		appearance,
 	};
 
 	const onCreateCheckoutSesstion = async (e: React.FormEvent) => {
-		await axios.post(`${apiURL}buy`, order).then((res) => {
-			console.log(res.data.sessionURL);
-			const sessionURL = res.data.sessionURL;
-			window.location.href = sessionURL;
+		e.preventDefault();
+		axios.post(`${apiURL}createsubscription`, order).then((res) => {
+			setSubscriptionId(res.data.subscriptionId);
+			setClientSecret(res.data.clientSecret);
+			console.log(res.data);
 		});
 	};
 
@@ -122,19 +119,23 @@ const Buy: NextPage<BuyProps> = ({ apiURL }) => {
 					</div>
 				</div>
 			</section>
-
-			{clientSecret && (
-				<Elements options={options} stripe={stripePromis}>
-					<CheckoutForm />
-				</Elements>
-			)}
 			<button onClick={onCreateCheckoutSesstion}>お支払情報を入力して購入手続きをする</button>
 			<p>まだ購入は確定されません</p>
+
+			{clientSecret && (
+				<>
+					{console.log(clientSecret)}
+					{console.log(subscriptionId)}
+					<Elements options={options} stripe={stripePromis}>
+						<CheckoutForm order={order} apiURL={apiURL} />
+					</Elements>
+				</>
+			)}
 		</Layout>
 	);
 };
 
-export default Buy;
+export default CartConfirm;
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const apiURL = process.env.API_URL;
