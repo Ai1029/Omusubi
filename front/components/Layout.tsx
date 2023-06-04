@@ -113,6 +113,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="/"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       TOP
@@ -121,6 +122,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       MyPage
@@ -129,6 +131,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       おすすめ登録
@@ -137,6 +140,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="/cart"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       カートを見る
@@ -148,6 +152,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       お問い合わせ
