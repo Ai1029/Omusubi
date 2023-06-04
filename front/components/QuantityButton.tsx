@@ -1,9 +1,11 @@
-import React, { useContext, useState } from "react";
-import { CartContext } from "@/pages/_app";
+import React, { useState } from "react";
 
 // カートを見るページ
-const QuentityButton: React.FC = () => {
-  const { cart } = useContext(CartContext);
+const QuantityButton: React.FC<{
+  userId: number;
+  price: string;
+  onSubtotalChange: (userId: number, newSubtotal: number) => void;
+}> = ({ userId, price, onSubtotalChange }) => {
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => {
@@ -15,6 +17,9 @@ const QuentityButton: React.FC = () => {
       setQuantity((prevQuantity) => prevQuantity - 1);
     }
   };
+
+  const subtotal = Number(price) * quantity;
+  onSubtotalChange(userId, subtotal); // 小計を計算
 
   return (
     <>
@@ -42,8 +47,13 @@ const QuentityButton: React.FC = () => {
           </div>
         </div>
       </div>
+      <div className="ml-4 pt-3 md:ml-8 md:pt-2 lg:ml-16">
+        <span className="block font-bold text-gray-800 md:text-lg">
+          {subtotal}円
+        </span>
+      </div>
     </>
   );
 };
 
-export default QuentityButton;
+export default QuantityButton;

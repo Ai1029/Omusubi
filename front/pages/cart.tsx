@@ -1,25 +1,22 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { CartContext } from "@/pages/_app";
-import QuentityButton from "../components/QuentityButton";
+import QuantityButton from "../components/QuantityButton";
 
 // カートを見るページ
 const CartPage: React.FC = () => {
   const { cart } = useContext(CartContext);
   console.log("cart", cart);
 
-  const handleQuantityChange = (newQuantity: number, itemId: number) => {
-    const updatedCart = cart.map((item) => {
-      if (item.id === itemId) {
-        return {
-          ...item,
-          quantity: newQuantity,
-        };
-      }
-      return item;
-    });
-    // カートの更新処理
-    // ...
+  const handleSubtotalChange = (
+    userId: number,
+    newSubtotal: number,
+    itemId: number
+  ) => {
+    // 小計が変更された場合の処理を実装
+    console.log(
+      `ユーザー${userId}の商品ID ${itemId} の小計が変更されました: ${newSubtotal}`
+    );
   };
 
   return (
@@ -76,19 +73,18 @@ const CartPage: React.FC = () => {
                       {cart.map((user) => (
                         <>
                           <p>{user.name}(ユーザー別にボタンをmap)宛の数量</p>
-                          <QuentityButton
-                            onQuantityChange={(newQuantity: number) =>
-                              handleQuantityChange(newQuantity, item.id)
+                          <QuantityButton
+                            userId={user.id}
+                            price={item.price}
+                            onSubtotalChange={(
+                              userId: number,
+                              newSubtotal: number
+                            ) =>
+                              handleSubtotalChange(userId, newSubtotal, item.id)
                             }
                           />
                         </>
                       ))}
-                    </div>
-
-                    <div className="ml-4 pt-3 md:ml-8 md:pt-2 lg:ml-16">
-                      <span className="block font-bold text-gray-800 md:text-lg">
-                        {item.price}円
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -103,7 +99,7 @@ const CartPage: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex justify-between gap-4 text-gray-500">
                   <span>小計</span>
-                  <span>(商品の合計金額)円</span>
+                  <span>小計円</span>
                 </div>
                 <div className="flex justify-between gap-4 text-gray-500">
                   <span>配送料</span>
