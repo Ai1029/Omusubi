@@ -89,7 +89,7 @@ export const ProductItem: React.FC<{
           <div className="rounded-lg">
             {cart.find((item) => item.id === product.id) ? (
               <div>
-                <p>カートに商品が入っています</p>
+                <p className="text-xs mb-3">カートに商品が入っています</p>
                 <button
                   onClick={handleRemoveFromCart}
                   className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-blue-500 rounded-md"

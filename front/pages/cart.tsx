@@ -8,6 +8,10 @@ const CartPage: React.FC = () => {
   const { cart } = useContext(CartContext);
   console.log("cart", cart);
 
+  const [newSubtotals, setNewSubtotals] = useState<{
+    [itemId: number]: number;
+  }>({});
+
   const handleSubtotalChange = (
     userId: number,
     newSubtotal: number,
@@ -17,7 +21,12 @@ const CartPage: React.FC = () => {
     console.log(
       `ユーザー${userId}の商品ID ${itemId} の小計が変更されました: ${newSubtotal}`
     );
-    // // 各ユーザーの合計を計算して更新する
+    setNewSubtotals((prevSubtotals) => ({
+      ...prevSubtotals,
+      [itemId]: newSubtotal,
+    }));
+
+    // // 各ユーザーの合計を計算して更新する（cartContextにuserIdを紐付けないとダメだな〜〜）
     // const userCart = cart.filter((item) => item.userId === userId); // ユーザーごとのカートアイテムを取得
     // const userTotal = userCart.reduce(
     //   (total, item) => total + item.subtotal,
@@ -25,9 +34,17 @@ const CartPage: React.FC = () => {
     // ); // ユーザーごとの小計を合計
     // console.log(`ユーザー${userId}の合計: ${userTotal}`);
 
-    // // 全てのユーザーの合計を計算して更新する
+    // // 全てのユーザーの合計を計算して更新する（これはいらないかも）
     // const total = cart.reduce((total, item) => total + item.subtotal, 0); // 全ユーザーの小計を合計
     // console.log(`全ユーザーの合計: ${total}`);
+  };
+
+  const calculateTaxAmount = (subtotal: number, taxRate: number) => {
+    return Math.round(subtotal * taxRate);
+  };
+
+  const calculateTotalAmount = (subtotal: number, taxAmount: number) => {
+    return subtotal + taxAmount;
   };
 
   return (
@@ -108,33 +125,47 @@ const CartPage: React.FC = () => {
           <div className="flex flex-col items-end gap-4">
             <div className="w-full rounded-lg bg-body-yellow p-4 sm:max-w-xs">
               <div className="space-y-1">
-                <div className="flex justify-between gap-4 text-gray-500">
-                  <span>小計</span>
-                  <span>小計円</span>
-                </div>
-                <div className="flex justify-between gap-4 text-gray-500">
-                  <span>配送料</span>
-                  <span>無料</span>
-                </div>
-
-                <div className="flex justify-between gap-4 text-gray-500">
-                  <span>消費税</span>
-                  <span>（小計の消費税を計算）円</span>
-                </div>
+                {cart.map((item) => (
+                  <>
+                    <div className="flex justify-between gap-4 text-gray-500">
+                      <span>小計</span>
+                      <span>{newSubtotals[item.id] || 0}円</span>
+                    </div>
+                    <div className="flex justify-between gap-4 text-gray-500">
+                      <span>配送料</span>
+                      <span>無料</span>
+                    </div>
+                    <div className="flex justify-between gap-4 text-gray-500">
+                      <span>消費税</span>
+                      <span>
+                        {calculateTaxAmount(newSubtotals[item.id] || 0, 0.1)}円
+                      </span>
+                    </div>
+                  </>
+                ))}
               </div>
 
               <div className="mt-4 border-t pt-4">
                 <div className="flex items-start justify-between gap-4 text-gray-800">
-                  <span className="text-lg font-bold">合計</span>
+                  {cart.map((item) => (
+                    <>
+                      <span className="text-lg font-bold">合計</span>
 
-                  <span className="flex flex-col items-end">
-                    <span className="text-lg font-bold">
-                      (小計と消費税を足した金額)円
-                    </span>
-                  </span>
+                      <span className="flex flex-col items-end">
+                        <span className="text-lg font-bold">
+                          {calculateTotalAmount(
+                            newSubtotals[item.id] || 0,
+                            calculateTaxAmount(newSubtotals[item.id] || 0, 0.1)
+                          )}
+                          円
+                        </span>
+                      </span>
+                    </>
+                  ))}
                 </div>
+
                 <span>
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-gray-500 text-xs">
                     ※お支払いは配送場所ごととなります
                   </span>
                 </span>
