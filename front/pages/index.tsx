@@ -1,4 +1,5 @@
 import Image from "next/image";
+import React, { createContext, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
 import Layout from "@/components/Layout";
@@ -23,7 +24,6 @@ type Plan = {
   explanation: string;
   price: string;
   image: string;
-
 };
 
 type PlanProps = {
@@ -49,7 +49,6 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
       </main>
     </Layout>
   );
-
 };
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   let posts = [];

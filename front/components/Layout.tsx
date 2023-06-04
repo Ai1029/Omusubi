@@ -10,7 +10,7 @@ export const Navbar = () => {
   return (
     <div className="text-sm space-x-5 hidden md:flex items-center">
       <Link
-        href="#"
+        href="/"
         className="hover:text-selected-text transition-all duration-300"
       >
         TOP
@@ -28,7 +28,7 @@ export const Navbar = () => {
         おすすめ登録
       </Link>
       <Link
-        href="#"
+        href="/cart"
         className="hover:text-selected-text transition-all duration-300"
       >
         カートを見る
@@ -101,7 +101,7 @@ const Layout = ({ children }: Props) => {
                 <ul className="fixed left-0 px-8 mt-7 bg-body-yellow w-full text-center">
                   <li className="py-3 border-b">
                     <Link
-                      href="#"
+                      href="/"
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       TOP
@@ -125,7 +125,7 @@ const Layout = ({ children }: Props) => {
                   </li>
                   <li className="py-3 border-b">
                     <Link
-                      href="#"
+                      href="/cart"
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       カートを見る
