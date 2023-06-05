@@ -26,10 +26,12 @@ const Shop: React.FC<PlanProps> = ({ data }) => {
   return (
     <div className="container mt-10 flex justify-between items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
       <section>
-        <p className="second-title">SHOP</p>
-        <p>定期便</p>
-        <p>※写真はイメージです</p>
-        <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  mb-10">
+        <div className="flex items-center space-x-2 mb-5">
+          <p className="second-title">SHOP</p>
+          <p className="text-xs bg-red text-white px-2 py-1">定期便</p>
+          <p className="text-xs  text-gray-500">※写真はイメージです</p>
+        </div>
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3  mb-10">
           {data ? (
             data.map((product) => (
               <>
@@ -79,7 +81,7 @@ export const ProductItem: React.FC<{
           alt={product.name}
         />
         <div className="flex flex-col justify-between h-full p-6">
-          <h1 className="text-2xl font-medium text-gray-700 pb-2">
+          <h1 className="text-xl font-semibold leading-none tracking-tighter text-neutral-600 mb-4">
             {product.name}
           </h1>
           <p className="text text-gray-500 leading-6">{product.explanation}</p>

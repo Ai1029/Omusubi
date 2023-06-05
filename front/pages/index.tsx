@@ -5,6 +5,8 @@ import axios from "axios";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Shop from "@/components/Shop";
+import Delivery from "@/components/Delivery";
+import Orderhistory from "@/components/Orderhistory";
 
 // type TypeItem = {
 //   id: number;
@@ -37,7 +39,10 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
     <Layout>
       <main>
         <Topimage />
+        <Delivery />
         <Shop data={data} />
+        <Orderhistory />
+
         {/* <p>次回のお届け</p>
 
       <p>同時配送</p>
