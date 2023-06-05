@@ -55,6 +55,8 @@ func main() {
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
 	r.HandleFunc("/createsubscription", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
+	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("POST")
+	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("GET")
 	r.HandleFunc("/plans", handlers.GetPlans(db)).Methods("GET")
 	r.HandleFunc("/plans", handlers.CreatePlan(db)).Methods("POST")
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")
@@ -63,6 +65,7 @@ func main() {
 	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
 	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
+	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }

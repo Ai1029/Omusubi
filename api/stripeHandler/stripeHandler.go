@@ -1,30 +1,16 @@
 package stripeHandler
 
 import (
-	// "bytes"
 	"database/sql"
 	"encoding/json"
 
-	// "errors"
 	"fmt"
-	//"io"
-
 	"log"
 	"net/http"
 
-	"github.com/stripe/stripe-go/v74/subscription"
-	//"github.com/stripe/stripe-go/sub"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/customer"
-
-	// stripe "github.com/stripe/stripe-go/v74/"
-
-	// "github.com/stripe/stripe-go/v74/sub"
-
-	// "github.com/stripe/stripe-go/v72/sub"
-
-	// "github.com/stripe/stripe-go/v74/checkout/session"
-	// "github.com/stripe/stripe-go/v74/paymentintent"
+	"github.com/stripe/stripe-go/v74/subscription"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -44,12 +30,15 @@ type User struct {
 	Line2       string `json:"line2"`
 	PhoneNumber string `json:"phone_number"`
 }
-type Data struct {
+type OrderData struct {
 	PaidUser      User   `json:"paiduser"`
 	PlanID        int    `json:"plan_id"`
-	Price         int     `json:"price"`
+	Price         int    `json:"price"`
 	ReceivedUser  User   `json:"receiveduser"`
 	StripePriceID string `json:"stripe_price_id"`
+}
+type TypeStripePaymentIntent struct {
+	PaymentIntentID string `json:"paymentIntent"`
 }
 
 func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
@@ -66,7 +55,7 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		// }
 		// fmt.Println(SITE_URL)
 
-		var data Data
+		var data OrderData
 
 		// リクエストボディの読み取り
 		err := json.NewDecoder(r.Body).Decode(&data)
@@ -196,5 +185,26 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(response)
 
+	}
+}
+
+func SetStripePaymentId(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if PRODUCTION_MODE {
+			stripe.Key = SECRET_KEY_PRODUCTION
+		} else {
+			stripe.Key = SECRET_KEY_STAGING
+		}
+		var data TypeStripePaymentIntent 
+		// リクエストボディの読み取り
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		// dataをJSONとしてレスポンスする
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(data)
 	}
 }

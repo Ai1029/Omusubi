@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { MyContext } from "../_app";
+import { MyContext } from "@/pages/_app";
 import Layout from "@/components/Layout";
 import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
@@ -36,11 +36,16 @@ type TypeUser = {
 
 type BuyProps = {
 	apiURL: string;
+	siteURL: string;
 };
 
 const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
-const CartConfirm: NextPage<BuyProps> = ({ apiURL }) => {
+const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
+	const data = {
+		name: "",
+		email: "",
+	};
 	const contextValue = React.useContext(MyContext);
 	const plan = contextValue.plan;
 	const paidUser = contextValue.paidUser;
@@ -52,7 +57,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL }) => {
 		receiveduser: receivedUser,
 		plan_id: plan.id,
 		stripe_price_id: plan.stripe_price_id,
-    price: totalPrice
+		price: totalPrice,
 	};
 	const [clientSecret, setClientSecret] = React.useState("");
 	const [subscriptionId, setSubscriptionId] = React.useState("");
@@ -84,6 +89,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL }) => {
 				いつでも定期便の停止や解約が可能です。
 				<br />
 				また配送間隔やおかずセットの変更も可能です。
+				{data.name}
 			</p>
 			<section>
 				<div>
@@ -127,7 +133,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL }) => {
 					{console.log(clientSecret)}
 					{console.log(subscriptionId)}
 					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm order={order} apiURL={apiURL} />
+						<CheckoutForm order={order} apiURL={apiURL} siteURL={siteURL} />
 					</Elements>
 				</>
 			)}
@@ -139,9 +145,11 @@ export default CartConfirm;
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const apiURL = process.env.API_URL;
+	const siteURL = process.env.SITE_URL;
 	return {
 		props: {
 			apiURL: apiURL,
+			siteURL: siteURL,
 		},
 	};
 };

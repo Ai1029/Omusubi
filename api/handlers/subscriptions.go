@@ -12,20 +12,22 @@ import (
 )
 
 type Subscription struct {
-	ID             int    `json:"id"`
-	PlanID         int    `json:"plan_id"`
-	PaiduserID     int    `json:"paiduser_id"`
-	ReceiveduserID int    `json:"receiveduser_id"`
-	IsActive       string `json:"is_active"`
-	StripePriceID  string `json:"stripe_price_id"`
+	ID                   int    `json:"id"`
+	PlanID               int    `json:"plan_id"`
+	PaiduserID           int    `json:"paiduser_id"`
+	ReceiveduserID       int    `json:"receiveduser_id"`
+	IsActive             string `json:"is_active"`
+	StripeCustomerID     string `json:"stripe_customer_id"`
+	StripeSubscriptionID string `json:"stripe_subscription_id"`
 }
 
-type CreateSubscriptionType struct {
-	PlanID         int    `json:"plan_id"`
-	PaiduserID     int    `json:"paiduser_id"`
-	ReceiveduserID int    `json:"receiveduser_id"`
-	IsActive       bool   `json:"is_active"`
-	StripePriceID  string `json:"stripe_price_id"`
+type TypeCreateSubscription struct {
+	PlanID               int    `json:"plan_id"`
+	PaiduserID           int    `json:"paiduser_id"`
+	ReceiveduserID       int    `json:"receiveduser_id"`
+	IsActive             bool   `json:"is_active"`
+	StripeCustomerID     string `json:"stripe_customer_id"`
+	StripeSubscriptionID string `json:"stripe_subscription_id"`
 }
 
 func GetSubscriptions(db *sql.DB) http.HandlerFunc {
@@ -39,7 +41,7 @@ func GetSubscriptions(db *sql.DB) http.HandlerFunc {
 		var subscriptions []Subscription
 		for rows.Next() {
 			var subscription Subscription
-			if err := rows.Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripePriceID); err != nil {
+			if err := rows.Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID); err != nil {
 				log.Fatal(err)
 			}
 			subscriptions = append(subscriptions, subscription)
@@ -64,7 +66,7 @@ func GetSubscription(db *sql.DB) http.HandlerFunc {
 
 		// アイテムIDに紐づくデータ取得
 		var subscription Subscription
-		err := db.QueryRow("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_price_id FROM subscriptions WHERE id = ?", id).Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripePriceID)
+		err := db.QueryRow("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE id = ?", id).Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID)
 		if err != nil {
 			// エラーが発生した場合はエラーレスポンスを返す
 			w.WriteHeader(http.StatusInternalServerError)
@@ -87,8 +89,7 @@ func GetSubscription(db *sql.DB) http.HandlerFunc {
 func CreateSubscription(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("くりえいと")
-		var data CreateSubscriptionType
+		var data TypeCreateSubscription
 
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
@@ -96,13 +97,13 @@ func CreateSubscription(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("INSERT INTO subscriptions(plan_id, paiduser_id, receiveduser_id, is_active, stripe_price_id ) VALUES(?, ?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO subscriptions(plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id ) VALUES(?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
 		}
 
-		res, err := stmt.Exec(data.PlanID, data.PaiduserID, data.ReceiveduserID, data.IsActive, data.StripePriceID)
+		res, err := stmt.Exec(data.PlanID, data.PaiduserID, data.ReceiveduserID, data.IsActive, data.StripeCustomerID, data.StripeSubscriptionID)
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
@@ -116,7 +117,7 @@ func CreateSubscription(db *sql.DB) http.HandlerFunc {
 
 		var subscription Subscription
 
-		err = db.QueryRow("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_price_id FROM subscriptions WHERE id = ?", lastID).Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripePriceID)
+		err = db.QueryRow("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE id = ?", lastID).Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID)
 		if err != nil {
 			log.Fatal(err)
 		}
