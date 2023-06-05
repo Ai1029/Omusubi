@@ -29,7 +29,7 @@ type Plan = {
 };
 
 type PlanProps = {
-  data: Plan[];
+	data: Plan[];
 };
 
 const HOME: NextPage<PlanProps> = ({ data }) => {
@@ -54,41 +54,28 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
       </main>
     </Layout>
   );
+
 };
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   let posts = [];
-
-//   // console.log(process.env.API_URL_SSR);
-//   // console.log(process.env.NEXT_PUBLIC_API_URL);
-
-//   try {
-//     const res = await axios.get(`${process.env.API_URL_SSR}/allitem`);
-//     posts = await res.data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-
-//   return { props: { posts } };
-// };
-
-export default HOME;
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async () => {
-  try {
-    const res = await axios.get("http://api:8080/plans");
-    console.log("res", res);
-    return {
-      props: {
-        data: res.data,
-      },
-    };
-  } catch (error) {
-    console.error("データが取得できません", error);
-    return {
-      props: {
-        data: null,
-      },
-    };
-  }
+	console.log(process.env.API_URL_SSR);
+	try {
+		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
+		console.log("res", res);
+		return {
+			props: {
+				data: res.data,
+			},
+		};
+	} catch (error) {
+		console.error("データが取得できません", error);
+		return {
+			props: {
+				data: null,
+			},
+		};
+	}
 };
+
+export default HOME;

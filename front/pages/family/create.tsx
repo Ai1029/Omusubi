@@ -2,23 +2,24 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import Logo from '@/components/Logo';
+import Layout from '@/components/Layout';
 import Dropdown from '@/components/Dropdown';
 
 
-const SignUp = () => {
+const Create = () => {
     const router = useRouter();
     const handleClick = () => {
-        router.push("http://localhost:3000/signup/complete");
+        console.log("ここにPost？");
  };
 
  return (
  <div className='text-center items-center'>
-    <Logo />
+    <Layout>
+        
+    </Layout>
+    
     <div className=' font-medium'>
-    <p className='pt-10'>認証に成功しました</p>
-    <p className='pb-10'>以下からプロフィール登録をして下さい</p>
-    <p className='pb-10'>プロフィール登録</p>
+    <p className='pt-10 pb-10 text-lg'>家族を登録</p>
     <Input 
      label="名前"/>
     <Input 
@@ -37,10 +38,10 @@ const SignUp = () => {
     label="電話番号"/>
     </div>
     <div className='pt-10 pb-10 flex justify-center'>
-    <Button onClick={handleClick} text="登録する" />
+    <Button onClick={handleClick} text="家族を登録する" />
     </div>
     </div>
     );
 };
 
-export default SignUp;
+export default Create;

@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
 import Layout from "@/components/Layout";
 import Link from "next/link";
@@ -10,16 +10,23 @@ const order = {
 	stripe_id: "price_1NDZZSI8t6lPUIZhQOPQFe8D",
 };
 
-const onCreateCheckoutSesstion = async (e: React.FormEvent) => {
-	e.preventDefault();
-	await axios.post(`${process.env.NEXT_PUBLIC_API_URL}buy`, order).then((res) => {
-		console.log(res.data.sessionURL);
-		const sessionURL = res.data.sessionURL;
-		window.location.href = sessionURL;
-	});
+type BuyProps = {
+	apiURL: string;
 };
 
-const Buy = () => {
+const Buy: NextPage<BuyProps> = ({ apiURL }) => {
+	const onCreateCheckoutSesstion = async (e: React.FormEvent) => {
+		e.preventDefault();
+		console.log(apiURL)
+		console.log(process.env.NEXT_PUBLIC_API_URL);
+		await axios.post(`${apiURL}buy`, order).then((res) => {
+			console.log(res.data.sessionURL);
+			const sessionURL = res.data.sessionURL;
+			window.location.href = sessionURL;
+		});
+	};
+
+	console.log(apiURL)
 	return (
 		<Layout>
 			<h2>購入確認画面</h2>
@@ -44,3 +51,12 @@ const Buy = () => {
 };
 
 export default Buy;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+	const apiURL = process.env.API_URL;
+	return {
+		props: {
+			apiURL: apiURL,
+		},
+	};
+};

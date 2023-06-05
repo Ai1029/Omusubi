@@ -7,7 +7,7 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = ({ onClick, text }) => {
  return (
- <div className='bg-sky-400 text-white w-32 rounded-2xl '>
+ <div className='bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center'>
  <button onClick={onClick}>{text}</button>
  </div>
  );
