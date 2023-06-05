@@ -9,17 +9,27 @@ const QuantityButton: React.FC<{
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
+    setQuantity((prevQuantity) => {
+      const newQuantity = prevQuantity + 1;
+      const newSubtotal = Number(price) * newQuantity;
+      onSubtotalChange(userId, newSubtotal);
+      return newQuantity;
+    });
   };
 
   const handleDecrease = () => {
     if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
+      setQuantity((prevQuantity) => {
+        const newQuantity = prevQuantity - 1;
+        const newSubtotal = Number(price) * newQuantity;
+        onSubtotalChange(userId, newSubtotal);
+        return newQuantity;
+      });
     }
   };
 
-  const subtotal = Number(price) * quantity;
-  onSubtotalChange(userId, subtotal); // 小計を計算
+  const newSubtotal = Number(price) * quantity;
+  onSubtotalChange(userId, newSubtotal); // 小計を計算
 
   return (
     <>
@@ -49,7 +59,7 @@ const QuantityButton: React.FC<{
       </div>
       <div className="ml-4 pt-3 md:ml-8 md:pt-2 lg:ml-16">
         <span className="block font-bold text-gray-800 md:text-lg">
-          {subtotal}円
+          {newSubtotal}円
         </span>
       </div>
     </>

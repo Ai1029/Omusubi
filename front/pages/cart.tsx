@@ -7,10 +7,7 @@ import QuantityButton from "../components/QuantityButton";
 const CartPage: React.FC = () => {
   const { cart } = useContext(CartContext);
   console.log("cart", cart);
-
-  const [newSubtotals, setNewSubtotals] = useState<{
-    [itemId: number]: number;
-  }>({});
+  const [subtotals, setSubtotals] = useState(0);
 
   const handleSubtotalChange = (
     userId: number,
@@ -21,30 +18,15 @@ const CartPage: React.FC = () => {
     console.log(
       `ユーザー${userId}の商品ID ${itemId} の小計が変更されました: ${newSubtotal}`
     );
-    setNewSubtotals((prevSubtotals) => ({
-      ...prevSubtotals,
-      [itemId]: newSubtotal,
-    }));
-
-    // // 各ユーザーの合計を計算して更新する（cartContextにuserIdを紐付けないとダメだな〜〜）
-    // const userCart = cart.filter((item) => item.userId === userId); // ユーザーごとのカートアイテムを取得
-    // const userTotal = userCart.reduce(
-    //   (total, item) => total + item.subtotal,
-    //   0
-    // ); // ユーザーごとの小計を合計
-    // console.log(`ユーザー${userId}の合計: ${userTotal}`);
-
-    // // 全てのユーザーの合計を計算して更新する（これはいらないかも）
-    // const total = cart.reduce((total, item) => total + item.subtotal, 0); // 全ユーザーの小計を合計
-    // console.log(`全ユーザーの合計: ${total}`);
+    setSubtotals(newSubtotal);
   };
 
-  const calculateTaxAmount = (subtotal: number, taxRate: number) => {
-    return Math.round(subtotal * taxRate);
+  const calculateTaxAmount = (subtotals: number, taxRate: number) => {
+    return Math.round(subtotals * taxRate);
   };
 
-  const calculateTotalAmount = (subtotal: number, taxAmount: number) => {
-    return subtotal + taxAmount;
+  const calculateTotalAmount = (subtotals: number, taxAmount: number) => {
+    return subtotals + taxAmount;
   };
 
   return (
@@ -129,17 +111,15 @@ const CartPage: React.FC = () => {
                   <>
                     <div className="flex justify-between gap-4 text-gray-500">
                       <span>小計</span>
-                      <span>{newSubtotals[item.id] || 0}円</span>
+                      <span>{subtotals}円</span>
                     </div>
                     <div className="flex justify-between gap-4 text-gray-500">
                       <span>配送料</span>
                       <span>無料</span>
                     </div>
                     <div className="flex justify-between gap-4 text-gray-500">
-                      <span>消費税</span>
-                      <span>
-                        {calculateTaxAmount(newSubtotals[item.id] || 0, 0.1)}円
-                      </span>
+                      <span>消費税（10%）</span>
+                      <span>{calculateTaxAmount(subtotals || 0, 0.1)}円</span>
                     </div>
                   </>
                 ))}
@@ -154,8 +134,8 @@ const CartPage: React.FC = () => {
                       <span className="flex flex-col items-end">
                         <span className="text-lg font-bold">
                           {calculateTotalAmount(
-                            newSubtotals[item.id] || 0,
-                            calculateTaxAmount(newSubtotals[item.id] || 0, 0.1)
+                            subtotals || 0,
+                            calculateTaxAmount(subtotals || 0, 0.1)
                           )}
                           円
                         </span>

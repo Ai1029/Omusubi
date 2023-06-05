@@ -53,7 +53,7 @@ export const Navbar = () => {
 
 const Layout = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("isOpen", isOpen);
+  // console.log("isOpen", isOpen);
   const { cart } = useContext(CartContext);
   const cartItemCount = cart.length; // カートに入っている商品の数
 
