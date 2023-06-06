@@ -11,6 +11,7 @@ module.exports = {
         "font-yellow": "#FFC82E",
         "body-yellow": "#FFF7E3",
         "selected-text": "#FFC82E",
+        red: "#D74D32",
       },
       fontFamily: {
         zen: ["Zen Maru Gothic"],
