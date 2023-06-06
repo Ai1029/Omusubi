@@ -51,7 +51,7 @@ func main() {
 		})
 	}
 
-  
+
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
