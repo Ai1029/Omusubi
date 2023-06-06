@@ -1,9 +1,12 @@
 import Image from "next/image";
+import React, { createContext, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Shop from "@/components/Shop";
+import Delivery from "@/components/Delivery";
+import Orderhistory from "@/components/Orderhistory";
 
 // type TypeItem = {
 //   id: number;
@@ -18,11 +21,11 @@ import Shop from "@/components/Shop";
 // };
 
 type Plan = {
-	id: number;
-	name: string;
-	explanation: string;
-	price: string;
-	image: string;
+  id: number;
+  name: string;
+  explanation: string;
+  price: string;
+  image: string;
 };
 
 type PlanProps = {
@@ -30,23 +33,28 @@ type PlanProps = {
 };
 
 const HOME: NextPage<PlanProps> = ({ data }) => {
-	// console.log(props.posts);
-	// const items = props.posts;
-	return (
-		<Layout>
-			<main>
-				<Topimage />
-				<Shop data={data} />
-				{/* <p>次回のお届け</p>
+  // console.log(props.posts);
+  // const items = props.posts;
+  return (
+    <Layout>
+      <main>
+        <Topimage />
+        <Delivery />
+        <Shop data={data} />
+        <Orderhistory />
+
+        {/* <p>次回のお届け</p>
+
       <p>同時配送</p>
       <p>もっと見る</p>
       <button>商品を追加・変更する</button>
       <h3>SHOP</h3>
       <p>定期便</p>
       <p>おかず</p> */}
-			</main>
-		</Layout>
-	);
+      </main>
+    </Layout>
+  );
+
 };
 
 // プラン一覧をgetする
