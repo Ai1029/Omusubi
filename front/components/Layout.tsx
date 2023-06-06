@@ -1,16 +1,21 @@
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
+import React, { useContext } from "react";
+import { CartContext } from "@/pages/_app";
 
 interface Props {
   children: ReactNode;
 }
 
 export const Navbar = () => {
+  const { cart } = useContext(CartContext);
+  const cartItemCount = cart.length; // カートに入っている商品の数
+
   return (
     <div className="text-sm space-x-5 hidden md:flex items-center">
       <Link
-        href="#"
+        href="/"
         className="hover:text-selected-text transition-all duration-300"
       >
         TOP
@@ -28,10 +33,13 @@ export const Navbar = () => {
         おすすめ登録
       </Link>
       <Link
-        href="#"
+        href="/cart"
         className="hover:text-selected-text transition-all duration-300"
       >
         カートを見る
+        <span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">
+          {cartItemCount}
+        </span>
       </Link>
       <Link
         href="#"
@@ -45,7 +53,10 @@ export const Navbar = () => {
 
 const Layout = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("isOpen", isOpen);
+  // console.log("isOpen", isOpen);
+  const { cart } = useContext(CartContext);
+  const cartItemCount = cart.length; // カートに入っている商品の数
+
   return (
     <>
       <Head>
@@ -61,7 +72,7 @@ const Layout = ({ children }: Props) => {
       </Head>
       <header className="py-6 bg-body-yellow">
         <div className="container mx-auto flex justify-between items-center px-8 md:px-14 lg:px-24 w-full">
-          <Link href="#" className="hover:opacity-50">
+          <Link href="/" className="hover:opacity-50">
             <img
               src="/images/logo.png"
               className="w-[150px] h-auto"
@@ -101,7 +112,8 @@ const Layout = ({ children }: Props) => {
                 <ul className="fixed left-0 px-8 mt-7 bg-body-yellow w-full text-center">
                   <li className="py-3 border-b">
                     <Link
-                      href="#"
+                      href="/"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       TOP
@@ -110,6 +122,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       MyPage
@@ -118,6 +131,7 @@ const Layout = ({ children }: Props) => {
                   <li className="py-3 border-b">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       おすすめ登録
@@ -125,15 +139,20 @@ const Layout = ({ children }: Props) => {
                   </li>
                   <li className="py-3 border-b">
                     <Link
-                      href="#"
+                      href="/cart"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       カートを見る
+                      <span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">
+                        {cartItemCount}
+                      </span>
                     </Link>
                   </li>
                   <li className="py-3">
                     <Link
                       href="#"
+                      onClick={() => setIsOpen(false)} // リンクがクリックされたときにハンバーガーメニューを閉じる
                       className="hover:text-selected-text transition-all duration-300"
                     >
                       お問い合わせ
