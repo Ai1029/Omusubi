@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const Dropdown: React.FC = () => {
   const prefectures = [
-    '海外',
+    '北海道',
     '青森県','岩手県','宮城県','秋田県','山形県',
     '福島県','茨城県','栃木県','群馬県','埼玉県',
     "千葉県","東京都","神奈川県","新潟県","富山県",
@@ -23,9 +23,8 @@ const Dropdown: React.FC = () => {
 
   return (
     <div className="dropdown pb-5">
-      <select value={selectedOption} onChange={handleOptionSelect}
-      className=" bg-slate-200 w-80 h-7">
-        <option value="">北海道</option>
+      <select value={selectedOption} onChange={handleOptionSelect} className="bg-slate-200 w-80 h-7 rounded-lg font-normal">
+        <option value=""></option>
         {prefectures.map((prefecture) => (
           <option key={prefecture} value={prefecture}>
             {prefecture}
