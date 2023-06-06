@@ -12,25 +12,26 @@ import (
 )
 
 type Plans struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Explanation string `json:"explanation"`
-	Price       string `json:"price"`
-	Image       string `json:"image"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Explanation   string `json:"explanation"`
+	Price         string `json:"price"`
+	Image         string `json:"image"`
+	StripePriceID string `json:"stripe_price_id"`
 }
 
 type CreatePlansData struct {
-	Name        string `json:"name"`
-	Explanation string `json:"explanation"`
-	Price       string `json:"price"`
-	Quantity    int    `json:"quantity"`
-	Image       string `json:"image"`
+	Name          string `json:"name"`
+	Explanation   string `json:"explanation"`
+	Price         string `json:"price"`
+	Image         string `json:"image"`
+	StripePriceID string `json:"stripe_price_id"`
 }
 
 func GetPlans(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT id, name, explanation, price, image FROM plans")
+		rows, err := db.Query("SELECT id, name, explanation, price, image, stripe_price_id FROM plans")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -38,7 +39,7 @@ func GetPlans(db *sql.DB) http.HandlerFunc {
 		var plans []Plans
 		for rows.Next() {
 			var plan Plans
-			if err := rows.Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image); err != nil {
+			if err := rows.Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID); err != nil {
 				log.Fatal(err)
 			}
 			plans = append(plans, plan)
@@ -63,7 +64,7 @@ func GetPlan(db *sql.DB) http.HandlerFunc {
 
 		// アイテムIDに紐づくデータ取得
 		var plan Plans
-		err := db.QueryRow("SELECT id, name, explanation, price, image FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image)
+		err := db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
 		if err != nil {
 			// エラーが発生した場合はエラーレスポンスを返す
 			w.WriteHeader(http.StatusInternalServerError)
@@ -85,7 +86,7 @@ func GetPlan(db *sql.DB) http.HandlerFunc {
 
 func CreatePlan(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var data CreateSidedishesData
+		var data CreatePlansData
 
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
@@ -93,13 +94,13 @@ func CreatePlan(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image) VALUES(?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image, stripe_price_id) VALUES(?, ?, ?, ?, ?)")
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
 		}
 
-		res, err := stmt.Exec(data.Name, data.Explanation, data.Price, data.Image)
+		res, err := stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID)
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
@@ -113,7 +114,7 @@ func CreatePlan(db *sql.DB) http.HandlerFunc {
 
 		var plan Plans
 
-		err = db.QueryRow("SELECT id, name, explanation, price, image FROM plans WHERE id = ?", lastID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image)
+		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", lastID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -140,18 +141,18 @@ func PatchPlan(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("UPDATE plans SET name=?, explanation=?, price=?, image=? WHERE id=?")
+		stmt, err := db.Prepare("UPDATE plans SET name=?, explanation=?, price=?, image=?, stripe_price_id=? WHERE id=?")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		_, err = stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, id)
+		_, err = stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID, id)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		var plan Plans
-		err = db.QueryRow("SELECT id, name, explanation, price, image FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image)
+		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
 		if err != nil {
 			log.Fatal(err)
 		}

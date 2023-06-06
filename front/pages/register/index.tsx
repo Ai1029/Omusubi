@@ -1,12 +1,14 @@
 import { GetServerSideProps, NextPage } from "next";
+import { useRouter } from "next/router";
+import React, { useEffect, useContext } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import React from "react";
 import axios from "axios";
+import { CartContext } from "@/pages/_app";
 import Layout from "@/components/Layout";
-import Link from "next/link";
-import { MyContext } from "../_app";
+import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
+import AddressFormShipping from "@/components/AddressFormShipping";
 
 type TypePlan = {
 	id: number;
@@ -23,62 +25,54 @@ type TypeUser = {
 	email: string;
 	family_id: number;
 	phonetic: string;
-	zipcode: string;
-	prefecture: string;
+	state: string;
 	city: string;
-	town: string;
+	postal_code: string;
+	line1: string;
+	line2: string;
 	apartment: string;
 	phone_number: string;
 	is_owner: boolean;
 };
 
+type CartState = {
+	id: number;
+	name: string;
+	explanation: string;
+	price: string;
+	image: string;
+};
 type BuyProps = {
 	apiURL: string;
-	paidUser: TypeUser;
-	receivedUser: TypeUser;
-	plan: TypePlan;
+	siteURL: string;
 };
-const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
-const Buy: NextPage<BuyProps> = ({ apiURL }) => {
-	// body: JSON.stringify({ items: [{ id: "price_1NDZZSI8t6lPUIZhQOPQFe8D" }] }),
-	const [clientSecret, setClientSecret] = React.useState("");
 
-	React.useEffect(() => {
-		// Create PaymentIntent as soon as the page loads
-		fetch(`${apiURL}buy`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ items: [{ id: "price_1NDZZSI8t6lPUIZhQOPQFe8D" }] }),
-		})
-			.then((res) => res.json())
-			.then((data) => setClientSecret(data.clientSecret));
-	}, []);
+const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
+
+const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
+	const { order, clientSecret, subscriptionId } = useContext(CartContext);
+	console.log(clientSecret);
+	console.log(subscriptionId);
+
 	const appearance = {
 		theme: "stripe",
 	};
 	const options: any = {
-		clientSecret,
+		clientSecret: clientSecret,
+		automatic_payment_methods: {
+			enabled: true,
+		},
 		appearance,
 	};
-	const contextValue = React.useContext(MyContext);
-	const plan = contextValue.plan;
-	const paidUser = contextValue.paidUser;
-	const receivedUser = contextValue.receivedUser;
-	const quantity = contextValue.orderQuantity;
-	const order = {
-		paiduser_id: paidUser.id,
-		receiveduser_id: receivedUser.id,
-		plan_id: plan.id,
-		stripe_id: plan.stripe_price_id,
-	};
+	if (!order) {
+		return (
+			<Layout>
+				<p>Loading...</p>
+			</Layout>
+		);
+	}
 
-	const onCreateCheckoutSesstion = async (e: React.FormEvent) => {
-		await axios.post(`${apiURL}buy`, order).then((res) => {
-			console.log(res.data.sessionURL);
-			const sessionURL = res.data.sessionURL;
-			window.location.href = sessionURL;
-		});
-	};
+	const { paidUser, receivedUser, plan } = order;
 
 	return (
 		<Layout>
@@ -92,16 +86,35 @@ const Buy: NextPage<BuyProps> = ({ apiURL }) => {
 				<div>
 					<h3>自宅にお届け</h3>
 					<div>
+						<h4>請求先詳細</h4>
+						<dl>
+							<dt>名前</dt>
+							<dd>{paidUser.name}</dd>
+							<dt>住所</dt>
+							<dd>
+								<span>〒{paidUser.postal_code}</span>
+								{paidUser.state}
+								{paidUser.city}
+								{paidUser.line1}
+								{paidUser.line2}
+								{paidUser.apartment}
+							</dd>
+							<dt>電話番号</dt>
+							<dd>{paidUser.phone_number}</dd>
+						</dl>
+					</div>
+					<div>
 						<h4>お届け先住所</h4>
 						<dl>
 							<dt>名前</dt>
 							<dd>{receivedUser.name}</dd>
 							<dt>住所</dt>
 							<dd>
-								<span>〒{receivedUser.zipcode}</span>
-								{receivedUser.prefecture}
+								<span>〒{receivedUser.postal_code}</span>
+								{receivedUser.state}
 								{receivedUser.city}
-								{receivedUser.town}
+								{receivedUser.line1}
+								{receivedUser.line2}
 								{receivedUser.apartment}
 							</dd>
 							<dt>電話番号</dt>
@@ -118,29 +131,33 @@ const Buy: NextPage<BuyProps> = ({ apiURL }) => {
 							<p>{plan.explanation}</p>
 						</h4>
 						<p></p>
-						<p>数量：{quantity}</p>
+						<p>数量：1</p>
 					</div>
 				</div>
 			</section>
 
 			{clientSecret && (
-				<Elements options={options} stripe={stripePromis}>
-					<CheckoutForm />
-				</Elements>
+				<>
+					{console.log(clientSecret)}
+					{console.log(subscriptionId)}
+					<Elements options={options} stripe={stripePromis}>
+						<CheckoutForm apiURL={apiURL} siteURL={siteURL} />
+					</Elements>
+				</>
 			)}
-			<button onClick={onCreateCheckoutSesstion}>お支払情報を入力して購入手続きをする</button>
-			<p>まだ購入は確定されません</p>
 		</Layout>
 	);
 };
 
-export default Buy;
+export default CartConfirm;
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const apiURL = process.env.API_URL;
+	const siteURL = process.env.SITE_URL;
 	return {
 		props: {
 			apiURL: apiURL,
+			siteURL: siteURL,
 		},
 	};
 };
