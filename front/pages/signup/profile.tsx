@@ -29,7 +29,7 @@ const handleClick = () => {
     label="アパート・マンション名"/>
     <Input 
     label="電話番号"/>
-    <Button onClick={handleClick} text="登録" />
+    <Button onClick={handleClick} text="登録する" />
     </div>
     );
 };
