@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
 import Navbar from "../../components/Layout";
+import Link from "next/link";
+
 
 type Inputs = {
     name: string;
@@ -110,7 +112,7 @@ return (
                     }))
                 }
             />
-            <input type="submit" value="ログイン"　/>
+            <Link href="/complete"><input type="submit" value="ユーザー登録をする"　/></Link>
         </form>
         
 
