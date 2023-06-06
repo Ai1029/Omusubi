@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { auth } from "@/firebase/firebase";
 import { signOut } from "firebase/auth";
 import nookies from "nookies";
+import Layout from "@/components/Layout";
 
 
 const Logout: NextPage = () => {

@@ -16,12 +16,12 @@ import (
 )
 
 type Plan struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Explanation string `json:"explanation"`
-	Price       string `json:"price"`
-	Image       string `json:"image"`
-	StripePriceID       string `json:"stripe_price_id"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Explanation   string `json:"explanation"`
+	Price         string `json:"price"`
+	Image         string `json:"image"`
+	StripePriceID string `json:"stripe_price_id"`
 }
 
 type CreateOrder struct {
@@ -71,6 +71,7 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
+		fmt.Println(data)
 		Price := data.Plan.Price
 		PriceID := data.Plan.StripePriceID
 		paidUserID := data.PaidUser.ID

@@ -53,6 +53,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 	const { order, clientSecret, subscriptionId } = useContext(CartContext);
 	console.log(clientSecret);
 	console.log(subscriptionId);
+	console.log(order);
 
 	const appearance = {
 		theme: "stripe",

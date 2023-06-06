@@ -9,8 +9,6 @@ import (
 	"api/config"
 	"api/handlers"
 	"api/stripeHandler"
-	
-
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -67,6 +65,7 @@ func main() {
 	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
 	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
+	r.HandleFunc("/cartusers/{id}", handlers.GetCartUsers(db)).Methods("GET")
 	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
