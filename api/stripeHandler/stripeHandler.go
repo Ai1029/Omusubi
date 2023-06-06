@@ -15,6 +15,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type Plan struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Explanation string `json:"explanation"`
+	Price       string `json:"price"`
+	Image       string `json:"image"`
+	StripePriceID       string `json:"stripe_price_id"`
+}
+
 type CreateOrder struct {
 	PlanID  int    `json:"plan_id"`
 	PriceID string `json:"stripe_price_id"`
@@ -31,11 +40,9 @@ type User struct {
 	PhoneNumber string `json:"phone_number"`
 }
 type OrderData struct {
-	PaidUser      User   `json:"paiduser"`
-	PlanID        int    `json:"plan_id"`
-	Price         int    `json:"price"`
-	ReceivedUser  User   `json:"receiveduser"`
-	StripePriceID string `json:"stripe_price_id"`
+	Plan         Plan `json:"plan"`
+	PaidUser     User `json:"paiduser"`
+	ReceivedUser User `json:"receiveduser"`
 }
 type TypeStripePaymentIntent struct {
 	PaymentIntentID string `json:"paymentIntent"`
@@ -64,8 +71,8 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		Price := data.Price
-		PriceID := data.StripePriceID
+		Price := data.Plan.Price
+		PriceID := data.Plan.StripePriceID
 		paidUserID := data.PaidUser.ID
 		receivedUserID := data.ReceivedUser.ID
 		fmt.Println(Price)
@@ -195,7 +202,7 @@ func SetStripePaymentId(db *sql.DB) http.HandlerFunc {
 		} else {
 			stripe.Key = SECRET_KEY_STAGING
 		}
-		var data TypeStripePaymentIntent 
+		var data TypeStripePaymentIntent
 		// リクエストボディの読み取り
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {

@@ -26,6 +26,7 @@ type Plan = {
   explanation: string;
   price: string;
   image: string;
+	stripe_price_id: string;
 };
 
 type PlanProps = {
@@ -61,6 +62,7 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
 export const getServerSideProps: GetServerSideProps = async () => {
 	try {
 		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
+    console.log(res.data)
 		return {
 			props: {
 				data: res.data,

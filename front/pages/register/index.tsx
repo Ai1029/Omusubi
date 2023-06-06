@@ -1,9 +1,10 @@
 import { GetServerSideProps, NextPage } from "next";
-import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useContext } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { MyContext } from "@/pages/_app";
+import { CartContext } from "@/pages/_app";
 import Layout from "@/components/Layout";
 import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
@@ -34,6 +35,13 @@ type TypeUser = {
 	is_owner: boolean;
 };
 
+type CartState = {
+	id: number;
+	name: string;
+	explanation: string;
+	price: string;
+	image: string;
+};
 type BuyProps = {
 	apiURL: string;
 	siteURL: string;
@@ -42,25 +50,9 @@ type BuyProps = {
 const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
 const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
-	const data = {
-		name: "",
-		email: "",
-	};
-	const contextValue = React.useContext(MyContext);
-	const plan = contextValue.plan;
-	const paidUser = contextValue.paidUser;
-	const receivedUser = contextValue.receivedUser;
-	const quantity = contextValue.orderQuantity;
-	const totalPrice = contextValue.orderTotalPrice;
-	const order = {
-		paiduser: paidUser,
-		receiveduser: receivedUser,
-		plan_id: plan.id,
-		stripe_price_id: plan.stripe_price_id,
-		price: totalPrice,
-	};
-	const [clientSecret, setClientSecret] = React.useState("");
-	const [subscriptionId, setSubscriptionId] = React.useState("");
+	const { order, clientSecret, subscriptionId } = useContext(CartContext);
+	console.log(clientSecret);
+	console.log(subscriptionId);
 
 	const appearance = {
 		theme: "stripe",
@@ -72,15 +64,15 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 		},
 		appearance,
 	};
+	if (!order) {
+		return (
+			<Layout>
+				<p>Loading...</p>
+			</Layout>
+		);
+	}
 
-	const onCreateCheckoutSesstion = async (e: React.FormEvent) => {
-		e.preventDefault();
-		axios.post(`${apiURL}createsubscription`, order).then((res) => {
-			setSubscriptionId(res.data.subscriptionId);
-			setClientSecret(res.data.clientSecret);
-			console.log(res.data);
-		});
-	};
+	const { paidUser, receivedUser, plan } = order;
 
 	return (
 		<Layout>
@@ -89,11 +81,28 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 				いつでも定期便の停止や解約が可能です。
 				<br />
 				また配送間隔やおかずセットの変更も可能です。
-				{data.name}
 			</p>
 			<section>
 				<div>
 					<h3>自宅にお届け</h3>
+					<div>
+						<h4>請求先詳細</h4>
+						<dl>
+							<dt>名前</dt>
+							<dd>{paidUser.name}</dd>
+							<dt>住所</dt>
+							<dd>
+								<span>〒{paidUser.postal_code}</span>
+								{paidUser.state}
+								{paidUser.city}
+								{paidUser.line1}
+								{paidUser.line2}
+								{paidUser.apartment}
+							</dd>
+							<dt>電話番号</dt>
+							<dd>{paidUser.phone_number}</dd>
+						</dl>
+					</div>
 					<div>
 						<h4>お届け先住所</h4>
 						<dl>
@@ -101,10 +110,11 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 							<dd>{receivedUser.name}</dd>
 							<dt>住所</dt>
 							<dd>
-								<span>〒{receivedUser.zipcode}</span>
-								{receivedUser.prefecture}
+								<span>〒{receivedUser.postal_code}</span>
+								{receivedUser.state}
 								{receivedUser.city}
-								{receivedUser.town}
+								{receivedUser.line1}
+								{receivedUser.line2}
 								{receivedUser.apartment}
 							</dd>
 							<dt>電話番号</dt>
@@ -121,19 +131,17 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 							<p>{plan.explanation}</p>
 						</h4>
 						<p></p>
-						<p>数量：{quantity}</p>
+						<p>数量：1</p>
 					</div>
 				</div>
 			</section>
-			<button onClick={onCreateCheckoutSesstion}>お支払情報を入力して購入手続きをする</button>
-			<p>まだ購入は確定されません</p>
 
 			{clientSecret && (
 				<>
 					{console.log(clientSecret)}
 					{console.log(subscriptionId)}
 					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm order={order} apiURL={apiURL} siteURL={siteURL} />
+						<CheckoutForm apiURL={apiURL} siteURL={siteURL} />
 					</Elements>
 				</>
 			)}
