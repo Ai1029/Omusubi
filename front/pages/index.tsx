@@ -26,6 +26,7 @@ type Plan = {
   explanation: string;
   price: string;
   image: string;
+	stripe_price_id: string;
 };
 
 type PlanProps = {
@@ -59,10 +60,9 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async () => {
-	console.log(process.env.API_URL_SSR);
 	try {
 		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
-		console.log("res", res);
+    console.log(res.data)
 		return {
 			props: {
 				data: res.data,
