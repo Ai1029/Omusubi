@@ -90,6 +90,7 @@ const LoginPage: NextPage = () => {
          />
         <input type="submit" value="ログイン"　/>
     </form>
+    <h2></h2>
 </Navbar>
     );
 };

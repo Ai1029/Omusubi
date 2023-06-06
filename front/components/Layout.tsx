@@ -16,7 +16,7 @@ export const Navbar = () => {
         TOP
       </Link>
       <Link
-        href="#"
+        href="/login"
         className="hover:text-selected-text transition-all duration-300"
       >
         MyPage
