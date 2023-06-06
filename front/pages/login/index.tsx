@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
 import Navbar from "../../components/Layout";
+import Link from "next/link";
 
 type Inputs = {
     email: string;
@@ -90,7 +91,8 @@ const LoginPage: NextPage = () => {
          />
         <input type="submit" value="ログイン"　/>
     </form>
-    <h2></h2>
+    <h2>アカウント作成はこちら</h2>
+    <Link href="/signup">ユーザー登録</Link>
 </Navbar>
     );
 };
