@@ -13,13 +13,15 @@ function Input({ label }: InputProps) {
 
  return (
  <div className='pb-5'>
- <label>{label}</label><br></br>
- <input
- type="text"
- value={value}
- onChange={handleChange}
- className='bg-slate-200 w-80 h-7 rounded-lg'
- />
+    <form>
+        <label>{label}</label><br></br>
+        <input
+        type="text"
+        value=""
+        onChange={handleChange}
+        className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
+        />
+    </form>
  </div>
  );
 }

@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 const Complete = () => {
     const router = useRouter();
     const ClickTop = () => {
-        console.log('TopページのURL');
+        router.push('http://localhost:3000/');
         };
     const ClickFamily = () => {
             router.push('http://localhost:3000/family/create');
