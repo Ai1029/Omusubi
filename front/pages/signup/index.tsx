@@ -112,7 +112,7 @@ return (
                     }))
                 }
             />
-            <Link href="/complete"><input type="submit" value="ユーザー登録をする"　/></Link>
+            <input type="submit" value="ユーザー登録をする"　/>
         </form>
         
 

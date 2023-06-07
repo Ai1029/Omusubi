@@ -1,6 +1,9 @@
 import React from 'react';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import Link from "next/link";
+
+const ENDPOINT_URL = "http://localhost:8080/users";
 
 const Profile = () => {
 const handleClick = () => {
@@ -29,7 +32,7 @@ const handleClick = () => {
     label="アパート・マンション名"/>
     <Input 
     label="電話番号"/>
-    <Button onClick={handleClick} text="登録する" />
+    <Link href="/complete_profile"><Button onClick={handleClick} text="登録する" /></Link>
     </div>
     );
 };

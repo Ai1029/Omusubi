@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Button from '@/components/Button';
 import Layout from '@/components/Layout';
+import Link from "next/link";
 
 
 const Family = () => {
@@ -19,7 +20,7 @@ const Family = () => {
                 <p className='pt-10'>家族一覧</p>
             </div>
             <div className='pt-10 flex justify-center'>
-                <Button onClick={handleClick} text="家族を登録する" />
+                <Link href="/create"><Button onClick={handleClick} text="家族を登録する" /></Link>
             </div>
         </div>
     )
