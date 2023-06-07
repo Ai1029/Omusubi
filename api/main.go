@@ -43,6 +43,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", SITE_URL)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Credentials", "true") // cookie用に追加
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return
@@ -67,6 +68,8 @@ func main() {
 	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
 	r.HandleFunc("/cartusers/{id}", handlers.GetCartUsers(db)).Methods("GET")
 	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
+	r.HandleFunc("/session", handlers.SetSessionID)
+	r.HandleFunc("/cookie", handlers.ShowCookie)
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
