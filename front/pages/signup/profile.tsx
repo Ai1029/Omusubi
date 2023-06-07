@@ -8,7 +8,7 @@ const handleClick = () => {
  };
 
  return (
- <div className='text-center items-center'>
+ <div className=' text-center items-center'>
     <img src="/images/logo.png" className='w-100 h-32 m-auto pt-10' alt='ロゴ'></img>
     <p className='pt-10'>認証に成功しました</p>
     <p className='pb-10'>以下からプロフィール登録をして下さい</p>
@@ -29,8 +29,10 @@ const handleClick = () => {
     label="アパート・マンション名"/>
     <Input 
     label="電話番号"/>
-    <Button onClick={handleClick} text="登録する" />
+    <div className='flex justify-center py-10'>
+        <Button onClick={handleClick} text="登録する" />
     </div>
+</div>
     );
 };
 
