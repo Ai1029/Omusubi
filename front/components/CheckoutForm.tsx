@@ -4,17 +4,15 @@ import { CardElement, PaymentElement, LinkAuthenticationElement, useStripe, useE
 import { CartContext } from "@/pages/_app";
 
 type Props = {
-	apiURL: string;
 	siteURL: string;
 };
 
-const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL }) => {
+const CheckoutForm: React.FC<Props> = ({ siteURL }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [message, setMessage] = React.useState<string | null>(null);
 	const returnUrl = siteURL + "/register/complete";
-	const redirectUrl = new URL(returnUrl);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
@@ -27,7 +25,7 @@ const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL }) => {
 		const result = await stripe.confirmPayment({
 			elements,
 			confirmParams: {
-				return_url: redirectUrl.toString(),
+				return_url: returnUrl,
 			},
 		});
 		// ここでresultの処理を行う;

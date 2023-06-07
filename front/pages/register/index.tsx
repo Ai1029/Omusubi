@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
@@ -10,38 +10,6 @@ import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
 import AddressFormShipping from "@/components/AddressFormShipping";
 
-type TypePlan = {
-	id: number;
-	name: string;
-	explanation: string;
-	price: number;
-	image: string;
-	stripe_price_id: string;
-};
-
-type TypeUser = {
-	id: number;
-	name: string;
-	email: string;
-	family_id: number;
-	phonetic: string;
-	state: string;
-	city: string;
-	postal_code: string;
-	line1: string;
-	line2: string;
-	apartment: string;
-	phone_number: string;
-	is_owner: boolean;
-};
-
-type CartState = {
-	id: number;
-	name: string;
-	explanation: string;
-	price: string;
-	image: string;
-};
 type BuyProps = {
 	apiURL: string;
 	siteURL: string;
@@ -50,10 +18,23 @@ type BuyProps = {
 const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
 const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
-	const { order, clientSecret, subscriptionId } = useContext(CartContext);
-	console.log(clientSecret);
-	console.log(subscriptionId);
+	const { order } = useContext(CartContext);
+	const [clientSecret, setClientSecret] = useState();
+	const [subscriptionId, setSubscriptionId] = useState();
 	console.log(order);
+	const handlePurchase = async () => {
+		try {
+			// POSTリクエストを作成
+			const response = await axios.post(`${apiURL}createsubscription`, order);
+			// レスポンスを処理
+			console.log(response.data); // レスポンスデータを表示
+			setClientSecret(response.data.clientSecret);
+			setSubscriptionId(response.data.subscriptionId);
+		} catch (error) {
+			// エラーハンドリング
+			console.error(error);
+		}
+	};
 
 	const appearance = {
 		theme: "stripe",
@@ -135,6 +116,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 						<p>数量：1</p>
 					</div>
 				</div>
+				<button onClick={handlePurchase}>決済する</button>
 			</section>
 
 			{clientSecret && (
@@ -142,7 +124,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 					{console.log(clientSecret)}
 					{console.log(subscriptionId)}
 					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm apiURL={apiURL} siteURL={siteURL} />
+						<CheckoutForm siteURL={siteURL} />
 					</Elements>
 				</>
 			)}
