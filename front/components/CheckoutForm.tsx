@@ -5,9 +5,11 @@ import { CartContext } from "@/pages/_app";
 
 type Props = {
 	siteURL: string;
+	paidUserID: number;
+	receivedUserID: number;
 };
 
-const CheckoutForm: React.FC<Props> = ({ siteURL }) => {
+const CheckoutForm: React.FC<Props> = ({ siteURL, paidUserID, receivedUserID }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [isLoading, setIsLoading] = React.useState(false);

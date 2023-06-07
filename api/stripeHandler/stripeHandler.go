@@ -3,6 +3,7 @@ package stripeHandler
 import (
 	"database/sql"
 	"encoding/json"
+	"strconv"
 
 	"fmt"
 	"log"
@@ -72,33 +73,25 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		}
 
 		fmt.Println(data)
-		Price := data.Plan.Price
 		PriceID := data.Plan.StripePriceID
-		paidUserID := data.PaidUser.ID
-		receivedUserID := data.ReceivedUser.ID
-		fmt.Println(Price)
-		fmt.Println(PriceID)
-		fmt.Println(paidUserID)
-		fmt.Println(receivedUserID)
 
 		// 顧客が登録済みか確認する
 		// 顧客が複数の配送先を設定できれば一つの顧客で管理したい
 		// 請求先＋配送先が完全に一致したら同一顧客として、新規登録はせずに契約商品を追加するフローにしたい
-		searchUserParams := &stripe.CustomerSearchParams{}
-		searchUserParams.Query = *stripe.String(fmt.Sprintf("email:'%s'", data.PaidUser.Email))
-		iter := customer.Search(searchUserParams)
-		for iter.Next() {
-			searchUserResult := iter.Current()
-			jsonData, err := json.Marshal(searchUserResult)
-			if err != nil {
-				fmt.Println("JSON encoding error:", err)
-				return
-			}
-			fmt.Println(string(jsonData))
-		}
+		// searchUserParams := &stripe.CustomerSearchParams{}
+		// searchUserParams.Query = *stripe.String(fmt.Sprintf("email:'%s'", data.PaidUser.Email))
+		// iter := customer.Search(searchUserParams)
+		// for iter.Next() {
+			// searchUserResult := iter.Current()
+			// jsonData, err := json.Marshal(searchUserResult)
+			// if err != nil {
+				// fmt.Println("JSON encoding error:", err)
+				// return
+			// }
+			// fmt.Println(string(jsonData))
+		// }
 
 		// 顧客がいなかったら新規作成する(未実装：今は決済ごとに顧客を新規作成している)
-		// 新規顧客作成したら、stripe側の顧客ID（stripe_customer_id (ex:cus_O0zQCb4L8dAVtF)）とomusubi側のuser_idが紐づくDBに追加
 		createUserParams := &stripe.CustomerParams{
 			Email: stripe.String(data.PaidUser.Email),
 			Name:  stripe.String(data.PaidUser.Name),
@@ -123,6 +116,8 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 			},
 			Phone: stripe.String(data.PaidUser.PhoneNumber),
 		}
+		createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
+		createUserParams.AddMetadata("ReceivedUser", strconv.Itoa(data.ReceivedUser.ID))
 		c, _ := customer.New(createUserParams)
 		customerID := c.ID
 
@@ -135,6 +130,10 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 			Items: []*stripe.SubscriptionItemsParams{
 				{
 					Price: stripe.String(PriceID),
+					Metadata: map[string]string{
+						"paid_user": strconv.Itoa(data.PaidUser.ID),
+						"received_user": strconv.Itoa(data.ReceivedUser.ID),
+					},
 				},
 			},
 			PaymentSettings: paymentSettings,

@@ -124,7 +124,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 					{console.log(clientSecret)}
 					{console.log(subscriptionId)}
 					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm siteURL={siteURL} />
+						<CheckoutForm siteURL={siteURL} paidUserID={paidUser.id} receivedUserID={receivedUser.id} />
 					</Elements>
 				</>
 			)}
