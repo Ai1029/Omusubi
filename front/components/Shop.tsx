@@ -9,6 +9,7 @@ type Plan = {
 	image: string;
 	stripe_price_id: string;
 };
+
 type User = {
 	id: number;
 	name: string;
@@ -24,10 +25,11 @@ type User = {
 	phone_number: string;
 	is_owner: boolean;
 };
+
 type CartItem = {
-	plan: Plan | null;
-	paidUser: User | null;
-	receivedUser: User | null;
+	plan: Plan;
+	paidUser: User;
+	receivedUser: User;
 };
 
 type PlanProps = {
@@ -37,31 +39,23 @@ type PlanProps = {
 // 商品一覧ページ
 const Shop: React.FC<PlanProps> = ({ data }) => {
 	const { cartState, addToCart, removeFromCart } = useContext(CartContext);
+
 	return (
 		<section>
 			<h1>SHOP</h1>
-			<div>
-				{data ? (
-					data.map((product) => (
-						<>
-							<ProductItem key={product.id} product={product} cart={cartState} addToCart={addToCart} removeFromCart={removeFromCart} />
-						</>
-					))
-				) : (
-					<p>準備中...</p>
-				)}
-			</div>
+			<div>{data ? data.map((product) => <ProductItem key={product.id} product={product} cart={cartState} addToCart={addToCart} removeFromCart={removeFromCart} />) : <p>準備中...</p>}</div>
 		</section>
 	);
 };
+
 export default Shop;
 
 // プラン一覧の各プランを表示するコンポーネント
 export const ProductItem: React.FC<{
 	product: Plan;
-	cart: CartItem[];
-	addToCart: (item: CartItem) => void;
-	removeFromCart: (item: CartItem) => void;
+	cart: Plan[];
+	addToCart: (item: Plan) => void;
+	removeFromCart: (item: Plan) => void;
 }> = ({ product, cart, addToCart, removeFromCart }) => {
 	const paidUser: User = {
 		id: 1,
@@ -94,18 +88,13 @@ export const ProductItem: React.FC<{
 		phone_number: "987-654-3210",
 		is_owner: false,
 	};
-	const item = {
-		plan: product,
-		paidUser: paidUser,
-		receivedUser: receivedUser,
-	};
 
 	const handleAddToCart = () => {
-		addToCart(item);
+		addToCart(product);
 	};
 
 	const handleRemoveFromCart = () => {
-		removeFromCart(item);
+		removeFromCart(product);
 	};
 
 	return (
@@ -115,8 +104,7 @@ export const ProductItem: React.FC<{
 			<p>{product.explanation}</p>
 			<p>{product.price}円</p>
 			<div>
-				{/*
-				{cart.plan?.id === product.id ? (
+				{cart.some((item) => item?.id === product.id) ? (
 					<div>
 						<p className="text-xs mb-3">カートに商品が入っています</p>
 						<button onClick={handleRemoveFromCart}>取り消し</button>
@@ -124,8 +112,6 @@ export const ProductItem: React.FC<{
 				) : (
 					<button onClick={handleAddToCart}>＋カートに入れる</button>
 				)}
-         */}
-				<button onClick={handleAddToCart}>＋カートに入れる</button>
 			</div>
 		</div>
 	);

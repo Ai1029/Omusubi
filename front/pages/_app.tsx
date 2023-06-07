@@ -27,7 +27,7 @@ type User = {
 	is_owner: boolean;
 };
 
-type CartItem = {
+type OrderItem = {
 	plan: Plan;
 	paidUser: User;
 	receivedUser: User;
@@ -39,15 +39,15 @@ type CartAction = {
 };
 
 // カートの初期状態
-const initialCart: CartItem[] = [];
+const initialCart: Plan[] = [];
 
 // カートのリデューサー関数
-const cartReducer = (state: CartItem[], action: CartAction): CartItem[] => {
+const cartReducer = (state: Plan[], action: CartAction): Plan[] => {
 	switch (action.type) {
 		case "ADD_TO_CART":
 			return [...state, action.payload];
 		case "REMOVE_FROM_CART":
-			return state.filter((item) => item.plan?.id !== action.payload);
+			return state.filter((item) => item.id !== action.payload.id);
 		case "CLEAR_CART":
 			return [];
 		default:
@@ -57,10 +57,10 @@ const cartReducer = (state: CartItem[], action: CartAction): CartItem[] => {
 
 // カートコンテキストの作成
 export const CartContext = createContext<{
-	cartState: CartItem[];
-	order: CartItem;
-	addToCart: (item: CartItem) => void;
-	removeFromCart: (item: CartItem) => void;
+	cartState: Plan[];
+	order: OrderItem;
+	addToCart: (item: Plan) => void;
+	removeFromCart: (item: Plan) => void;
 	clearCart: () => void;
 	clientSecret: string;
 	subscriptionId: string;
@@ -158,11 +158,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 		},
 	});
 
-	const addToCart = (item: CartItem) => {
+	const addToCart = (item: Plan) => {
 		dispatch({ type: "ADD_TO_CART", payload: item });
 	};
 
-	const removeFromCart = (item: CartItem) => {
+	const removeFromCart = (item: Plan) => {
 		dispatch({ type: "REMOVE_FROM_CART", payload: item });
 	};
 
