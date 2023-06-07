@@ -71,6 +71,7 @@ func main() {
 	r.HandleFunc("/orderdetails", handlers.GetOrderdetails(db)).Methods("GET")
 	r.HandleFunc("/orderdetail/{id}", handlers.GetOrderdetail(db)).Methods("GET")
 	r.HandleFunc("/orderdetails", handlers.CreateOrderdetail(db)).Methods("POST")
+	r.HandleFunc("/login", handlers.Login(db)).Methods("POST")
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
