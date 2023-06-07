@@ -15,6 +15,23 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+type TypeCreateSubscription struct {
+	PlanID               int    `json:"plan_id"`
+	PaiduserID           int    `json:"paiduser_id"`
+	ReceiveduserID       int    `json:"receiveduser_id"`
+	IsActive             bool   `json:"is_active"`
+	StripeCustomerID     string `json:"stripe_customer_id"`
+	StripeSubscriptionID string `json:"stripe_subscription_id"`
+}
+type TypePlan struct {
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Explanation   string `json:"explanation"`
+	Price         string `json:"price"`
+	Image         string `json:"image"`
+	StripePriceID string `json:"stripe_price_id"`
+}
+
 func StripeWebhook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if PRODUCTION_MODE {
@@ -68,35 +85,66 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 			// 指定のキーの値にアクセス
 			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
 			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
+			paidUserID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["metadata"].(map[string]interface{})["paid_user"].(string)
+			receivedUserID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["metadata"].(map[string]interface{})["received_user"].(string)
+			planID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["metadata"].(map[string]interface{})["plan_id"].(string)
 			stripeCustomerID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["customer"].(string)
-			// stripeCreateAt := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["created"].(string)
 
 			fmt.Println("Subscription ID:", stripeSubscriptionID)
 			fmt.Println("Stripe Price ID:", stripePriceID)
+			fmt.Println("Stripe PaidUser ID:", paidUserID)
+			fmt.Println("Stripe ReceivedUser ID:", receivedUserID)
+			fmt.Println("Stripe Plan ID:", planID)
 			fmt.Println("Stripe Customer ID:", stripeCustomerID)
-			// fmt.Println("Stripe Create At:", stripeCreateAt)
+			stmt, err := db.Prepare("INSERT INTO subscriptions(plan_id, paiduser_id, receiveduser_id, stripe_customer_id, stripe_subscription_id ) VALUES(?, ?, ?, ?, ?)")
+			if err != nil {
+				// エラー処理
+				log.Fatal(err)
+			}
 
-			// params := &stripe.CustomerSearchParams{
-			// SearchParams: stripe.SearchParams{Query: fmt.Sprintf("id:\"%s\"", stripeCustomerID)},
-			// }
-			// result := customer.Search(params)
-			// fmt.Println(result)
+			_, err = stmt.Exec(planID, paidUserID, receivedUserID, stripeCustomerID, stripeSubscriptionID)
+			if err != nil {
+				// エラー処理
+				log.Fatal(err)
+			}
 
-			// stmt, err := db.Prepare("INSERT INTO sidedishes(name, explanation, price, quantity, image) VALUES(?, ?, ?, ?, ?)")
-			//if err != nil {
-			//// エラー処理
-			//log.Fatal(err)
-			//}
-			//fmt.Println((stmt))
-
-		case "payment_intent.succeeded":
-			// 支払いインテントが完了した
-			fmt.Println("==================payment_intent.succeeded==================")
+		case "invoice.payment_succeeded":
+			// 支払いが正常に完了した
+			fmt.Println("==================invoice.payment_succeeded==================")
 			fmt.Println(string(eventJSON))
-		//case "charge.succeeded":
-		//// 支払いが正常に完了した
-		//fmt.Println("charge.succeeded")
-		//fmt.Println(string(eventJSON))
+
+			var data map[string]interface{}
+			err := json.Unmarshal([]byte(eventJSON), &data)
+			if err != nil {
+				fmt.Println("Error decoding JSON:", err)
+				return
+			}
+
+			// 指定のキーの値にアクセス
+			stripeInvoiceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
+			// paymentCreted := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(string)
+			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
+			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["subscription"].(string)
+			fmt.Println("Stripe Invoice ID:", stripeInvoiceID)
+			// fmt.Println("Payment Created:", paymentCreted)
+			fmt.Println("Stripe Price ID:", stripePriceID)
+			fmt.Println("Stripe Subscription ID:", stripeSubscriptionID)
+
+			// アイテムIDに紐づくデータ取得
+			var plan TypePlan
+			planData := db.QueryRow("SELECT id, name, explanation, price  FROM plans WHERE stripe_price_id = ?", stripePriceID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price)
+			if planData != nil {
+				// エラーが発生した場合はエラーレスポンスを返す
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "Error: %v", err)
+				return
+			}
+			_, err = db.Exec("INSERT INTO orders (plan_id, plan_name, plan_explanation, price, stripe_invoice_id, stripe_subscription_id ) VALUES (?, ?, ?, ?, ?, ?)", plan.ID, plan.Name, plan.Explanation, plan.Price, stripeInvoiceID, stripeSubscriptionID)
+			if err != nil {
+				fmt.Println("Error inserting data into orders table:", err)
+				return
+			}
+
 		// ... handle other event types
 		default:
 			fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)

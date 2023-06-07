@@ -106,7 +106,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 			</section>
 
 			<Elements options={options} stripe={stripePromis}>
-				<CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} paidUserID={paidUser.id} receivedUserID={receivedUser.id} />
+				<CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} />
 			</Elements>
 		</Layout>
 	);

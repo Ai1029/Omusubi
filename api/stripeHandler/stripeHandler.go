@@ -78,20 +78,39 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		// 顧客が登録済みか確認する
 		// 顧客が複数の配送先を設定できれば一つの顧客で管理したい
 		// 請求先＋配送先が完全に一致したら同一顧客として、新規登録はせずに契約商品を追加するフローにしたい
-		// searchUserParams := &stripe.CustomerSearchParams{}
-		// searchUserParams.Query = *stripe.String(fmt.Sprintf("email:'%s'", data.PaidUser.Email))
-		// iter := customer.Search(searchUserParams)
-		// for iter.Next() {
-			// searchUserResult := iter.Current()
-			// jsonData, err := json.Marshal(searchUserResult)
-			// if err != nil {
-				// fmt.Println("JSON encoding error:", err)
-				// return
-			// }
-			// fmt.Println(string(jsonData))
-		// }
+		searchUserParams := &stripe.CustomerSearchParams{}
+		searchUserParams.Query = *stripe.String(fmt.Sprintf("email:'%s'", data.PaidUser.Email))
+		iter := customer.Search(searchUserParams)
+		foundUser := false // ユーザーが見つかったかどうかを示すフラグ
+		customerID := ""
+		for iter.Next() {
+			searchUserResult := iter.Current()
+			// searchUserResultをJSON形式のバイト配列に変換
+			jsonData, err := json.Marshal(searchUserResult)
+			if err != nil {
+				fmt.Println("JSON encoding error:", err)
+				return
+			}
+
+			// JSONデータを解析し、customerIDを取得
+			var data map[string]interface{}
+			err = json.Unmarshal(jsonData, &data)
+			if err != nil {
+				fmt.Println("JSON decoding error:", err)
+				return
+			}
+
+			_customerID, ok := data["id"].(string)
+			if !ok {
+				fmt.Println("Invalid customer ID format")
+				return
+			}
+			customerID = _customerID
+			foundUser = true // ユーザーが見つかったことを示すフラグを立てる
+		}
 
 		// 顧客がいなかったら新規作成する(未実装：今は決済ごとに顧客を新規作成している)
+		if !foundUser {
 		createUserParams := &stripe.CustomerParams{
 			Email: stripe.String(data.PaidUser.Email),
 			Name:  stripe.String(data.PaidUser.Name),
@@ -103,23 +122,24 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 				Line2:      stripe.String(data.PaidUser.Line2),
 				PostalCode: stripe.String(data.PaidUser.PostalCode),
 			},
-			Shipping: &stripe.CustomerShippingParams{
-				Name: stripe.String(data.ReceivedUser.Name),
-				Address: &stripe.AddressParams{
-					Country:    stripe.String("JP"),
-					State:      stripe.String(data.ReceivedUser.State),
-					City:       stripe.String(data.ReceivedUser.City),
-					Line1:      stripe.String(data.ReceivedUser.Line1),
-					Line2:      stripe.String(data.ReceivedUser.Line2),
-					PostalCode: stripe.String(data.ReceivedUser.PostalCode),
-				},
-			},
+			// Shipping: &stripe.CustomerShippingParams{
+			// Name: stripe.String(data.ReceivedUser.Name),
+			// Address: &stripe.AddressParams{
+			// Country:    stripe.String("JP"),
+			// State:      stripe.String(data.ReceivedUser.State),
+			// City:       stripe.String(data.ReceivedUser.City),
+			// Line1:      stripe.String(data.ReceivedUser.Line1),
+			// Line2:      stripe.String(data.ReceivedUser.Line2),
+			// PostalCode: stripe.String(data.ReceivedUser.PostalCode),
+			// },
+			// },
 			Phone: stripe.String(data.PaidUser.PhoneNumber),
 		}
-		createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
-		createUserParams.AddMetadata("ReceivedUser", strconv.Itoa(data.ReceivedUser.ID))
+		// createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
+		// createUserParams.AddMetadata("ReceivedUser", strconv.Itoa(data.ReceivedUser.ID))
 		c, _ := customer.New(createUserParams)
-		customerID := c.ID
+		customerID = c.ID
+		}
 
 		paymentSettings := &stripe.SubscriptionPaymentSettingsParams{
 			SaveDefaultPaymentMethod: stripe.String("on_subscription"),
@@ -131,8 +151,9 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 				{
 					Price: stripe.String(PriceID),
 					Metadata: map[string]string{
-						"paid_user": strconv.Itoa(data.PaidUser.ID),
+						"paid_user":     strconv.Itoa(data.PaidUser.ID),
 						"received_user": strconv.Itoa(data.ReceivedUser.ID),
+						"plan_id":       strconv.Itoa(data.Plan.ID),
 					},
 				},
 			},
@@ -147,11 +168,9 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		}
 
 		response := struct {
-			SubscriptionID string `json:"subscriptionId"`
-			ClientSecret   string `json:"clientSecret"`
+			ClientSecret string `json:"clientSecret"`
 		}{
-			SubscriptionID: s.ID,
-			ClientSecret:   s.LatestInvoice.PaymentIntent.ClientSecret,
+			ClientSecret: s.LatestInvoice.PaymentIntent.ClientSecret,
 		}
 		// レスポンスをJSON形式で返す
 		w.Header().Set("Content-Type", "application/json")

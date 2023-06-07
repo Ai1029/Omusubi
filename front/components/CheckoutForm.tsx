@@ -7,14 +7,12 @@ import { CartContext } from "@/pages/_app";
 type Props = {
 	apiURL: string;
 	siteURL: string;
-	paidUserID: number;
-	receivedUserID: number;
 	order: any;
 };
 
 const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
-const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order, paidUserID, receivedUserID }) => {
+const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [isLoading, setIsLoading] = React.useState(false);
@@ -40,6 +38,12 @@ const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order, paidUserID, rec
 				elements,
 				clientSecret,
 				confirmParams: {
+					payment_method_data: {
+						billing_details: {
+							email: order.paidUser.email,
+							name: order.paidUser.name,
+						},
+					},
 					return_url: returnUrl,
 				},
 			});
