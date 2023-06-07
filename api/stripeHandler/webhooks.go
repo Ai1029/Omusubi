@@ -91,7 +91,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 
 		case "payment_intent.succeeded":
 			// 支払いインテントが完了した
-			fmt.Println("payment_intent.succeeded")
+			fmt.Println("==================payment_intent.succeeded==================")
 			fmt.Println(string(eventJSON))
 		//case "charge.succeeded":
 		//// 支払いが正常に完了した
