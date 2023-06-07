@@ -41,9 +41,6 @@ const CartPage: NextPage<Props> = ({ apiURL, siteURL, familyUserList, updateClie
 			receivedUser: familyUserList[user_index],
 		};
 		updateOrder(order);
-		console.log(order);
-		console.log(apiURL);
-		console.log(siteURL);
 		try {
 			// POSTリクエストを作成
 			router.push("/register");

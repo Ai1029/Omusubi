@@ -22,28 +22,15 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 	const [clientSecret, setClientSecret] = useState();
 	const [subscriptionId, setSubscriptionId] = useState();
 	console.log(order);
-	const handlePurchase = async () => {
-		try {
-			// POSTリクエストを作成
-			const response = await axios.post(`${apiURL}createsubscription`, order);
-			// レスポンスを処理
-			console.log(response.data); // レスポンスデータを表示
-			setClientSecret(response.data.clientSecret);
-			setSubscriptionId(response.data.subscriptionId);
-		} catch (error) {
-			// エラーハンドリング
-			console.error(error);
-		}
-	};
 
 	const appearance = {
 		theme: "stripe",
 	};
 	const options: any = {
-		clientSecret: clientSecret,
-		automatic_payment_methods: {
-			enabled: true,
-		},
+		// clientSecret: clientSecret,
+		mode: "subscription",
+		amount: Number(order.plan.price),
+		currency: "jpy",
 		appearance,
 	};
 	if (!order) {
@@ -116,18 +103,11 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 						<p>数量：1</p>
 					</div>
 				</div>
-				<button onClick={handlePurchase}>決済する</button>
 			</section>
 
-			{clientSecret && (
-				<>
-					{console.log(clientSecret)}
-					{console.log(subscriptionId)}
-					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm siteURL={siteURL} />
-					</Elements>
-				</>
-			)}
+			<Elements options={options} stripe={stripePromis}>
+				<CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} />
+			</Elements>
 		</Layout>
 	);
 };
