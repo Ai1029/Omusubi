@@ -1,14 +1,13 @@
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useContext, useState } from "react";
+import React from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { CartContext } from "@/pages/_app";
 import Layout from "@/components/Layout";
-import AddressFormBilling from "@/components/AddressFormBilling";
 import CheckoutForm from "@/components/CheckoutForm";
-import AddressFormShipping from "@/components/AddressFormShipping";
+import { useRecoilValue } from "recoil";
+import { orderState } from "@/state/atom";
 
 type BuyProps = {
 	apiURL: string;
@@ -18,32 +17,17 @@ type BuyProps = {
 const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
 const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
-	const { order } = useContext(CartContext);
-	const [clientSecret, setClientSecret] = useState();
-	const [subscriptionId, setSubscriptionId] = useState();
+	const order = useRecoilValue(orderState);
 	console.log(order);
-	const handlePurchase = async () => {
-		try {
-			// POSTリクエストを作成
-			const response = await axios.post(`${apiURL}createsubscription`, order);
-			// レスポンスを処理
-			console.log(response.data); // レスポンスデータを表示
-			setClientSecret(response.data.clientSecret);
-			setSubscriptionId(response.data.subscriptionId);
-		} catch (error) {
-			// エラーハンドリング
-			console.error(error);
-		}
-	};
 
 	const appearance = {
 		theme: "stripe",
 	};
 	const options: any = {
-		clientSecret: clientSecret,
-		automatic_payment_methods: {
-			enabled: true,
-		},
+		// clientSecret: clientSecret,
+		mode: "subscription",
+		amount: Number(order.plan.price),
+		currency: "jpy",
 		appearance,
 	};
 	if (!order) {
@@ -79,7 +63,6 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 								{paidUser.city}
 								{paidUser.line1}
 								{paidUser.line2}
-								{paidUser.apartment}
 							</dd>
 							<dt>電話番号</dt>
 							<dd>{paidUser.phone_number}</dd>
@@ -97,7 +80,6 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 								{receivedUser.city}
 								{receivedUser.line1}
 								{receivedUser.line2}
-								{receivedUser.apartment}
 							</dd>
 							<dt>電話番号</dt>
 							<dd>{receivedUser.phone_number}</dd>
@@ -116,18 +98,11 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 						<p>数量：1</p>
 					</div>
 				</div>
-				<button onClick={handlePurchase}>決済する</button>
 			</section>
 
-			{clientSecret && (
-				<>
-					{console.log(clientSecret)}
-					{console.log(subscriptionId)}
-					<Elements options={options} stripe={stripePromis}>
-						<CheckoutForm siteURL={siteURL} />
-					</Elements>
-				</>
-			)}
+			<Elements options={options} stripe={stripePromis}>
+				<CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} />
+			</Elements>
 		</Layout>
 	);
 };
