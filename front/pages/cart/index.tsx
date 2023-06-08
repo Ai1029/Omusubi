@@ -21,15 +21,11 @@ type User = {
 };
 
 type Props = {
-	apiURL: string;
-	siteURL: string;
 	familyUserList: User[];
-	updateClientSecret: (newClientSecret: string) => void;
-	updateSubscriptionId: (newSubscriptionId: string) => void;
 	updateOrder: (newOrder: any) => void;
 };
 // カートを見るページ
-const CartPage: NextPage<Props> = ({ apiURL, siteURL, familyUserList, updateClientSecret, updateSubscriptionId, updateOrder }) => {
+const CartPage: NextPage<Props> = ({ familyUserList, updateOrder }) => {
 	const { cartState } = useContext(CartContext);
 	const router = useRouter();
 	const paidUser = familyUserList.filter((item) => item.is_owner)[0];

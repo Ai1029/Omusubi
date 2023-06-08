@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import React, { ReactNode, createContext, useReducer, useState } from "react";
+import { RecoilRoot } from "recoil";
 export const MyContext = React.createContext<any>(null);
 
 type Plan = {
@@ -40,6 +41,46 @@ type CartAction = {
 
 // カートの初期状態
 const initialCart: Plan[] = [];
+const initialOrder: OrderItem = {
+	plan: {
+		id: 0,
+		name: "",
+		explanation: "",
+		price: "",
+		image: "",
+		stripe_price_id: "",
+	},
+	paidUser: {
+		id: 0,
+		name: "",
+		email: "",
+		family_id: 0,
+		phonetic: "",
+		postal_code: "",
+		state: "",
+		city: "",
+		line1: "",
+		line2: "",
+		apartment: "",
+		phone_number: "",
+		is_owner: true,
+	},
+	receivedUser: {
+		id: 0,
+		name: "",
+		email: "",
+		family_id: 0,
+		phonetic: "",
+		postal_code: "",
+		state: "",
+		city: "",
+		line1: "",
+		line2: "",
+		apartment: "",
+		phone_number: "",
+		is_owner: false,
+	},
+};
 
 // カートのリデューサー関数
 const cartReducer = (state: Plan[], action: CartAction): Plan[] => {
@@ -62,101 +103,17 @@ export const CartContext = createContext<{
 	addToCart: (item: Plan) => void;
 	removeFromCart: (item: Plan) => void;
 	clearCart: () => void;
-	clientSecret: string;
-	subscriptionId: string;
 }>({
 	cartState: [],
-	order: {
-		plan: {
-			id: 0,
-			name: "",
-			explanation: "",
-			price: "",
-			image: "",
-			stripe_price_id: "",
-		},
-		paidUser: {
-			id: 0,
-			name: "",
-			email: "",
-			family_id: 0,
-			phonetic: "",
-			postal_code: "",
-			state: "",
-			city: "",
-			line1: "",
-			line2: "",
-			apartment: "",
-			phone_number: "",
-			is_owner: true,
-		},
-		receivedUser: {
-			id: 0,
-			name: "",
-			email: "",
-			family_id: 0,
-			phonetic: "",
-			postal_code: "",
-			state: "",
-			city: "",
-			line1: "",
-			line2: "",
-			apartment: "",
-			phone_number: "",
-			is_owner: false,
-		},
-	},
+	order: initialOrder,
 	addToCart: () => {},
 	removeFromCart: () => {},
 	clearCart: () => {},
-	clientSecret: "",
-	subscriptionId: "",
 });
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 	const [cartState, dispatch] = useReducer(cartReducer, initialCart);
-	const [clientSecret, setClientSecret] = useState("");
-	const [subscriptionId, setSubscriptionId] = useState("");
-	const [order, setOrder] = useState({
-		plan: {
-			id: 0,
-			name: "",
-			explanation: "",
-			price: "",
-			image: "",
-			stripe_price_id: "",
-		},
-		paidUser: {
-			id: 0,
-			name: "",
-			email: "",
-			family_id: 0,
-			phonetic: "",
-			postal_code: "",
-			state: "",
-			city: "",
-			line1: "",
-			line2: "",
-			apartment: "",
-			phone_number: "",
-			is_owner: true,
-		},
-		receivedUser: {
-			id: 0,
-			name: "",
-			email: "",
-			family_id: 0,
-			phonetic: "",
-			postal_code: "",
-			state: "",
-			city: "",
-			line1: "",
-			line2: "",
-			apartment: "",
-			phone_number: "",
-			is_owner: false,
-		},
-	});
+	const [order, setOrder] = useState(initialOrder);
 
 	const addToCart = (item: Plan) => {
 		dispatch({ type: "ADD_TO_CART", payload: item });
@@ -169,13 +126,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 	const clearCart = () => {
 		dispatch({ type: "CLEAR_CART", payload: null });
 	};
-	const updateClientSecret = (newClientSecret: string) => {
-		setClientSecret(newClientSecret);
-	};
-
-	const updateSubscriptionId = (newSubscriptionId: string) => {
-		setSubscriptionId(newSubscriptionId);
-	};
 	const updateOrder = (newOrder: any) => {
 		setOrder(newOrder);
 	};
@@ -187,12 +137,10 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 				addToCart,
 				removeFromCart,
 				clearCart,
-				clientSecret,
-				subscriptionId,
 				order,
 			}}
 		>
-			<Component updateClientSecret={updateClientSecret} updateSubscriptionId={updateSubscriptionId} updateOrder={updateOrder} {...pageProps} />
+			<Component updateOrder={updateOrder} {...pageProps} />
 		</CartContext.Provider>
 	);
 };
