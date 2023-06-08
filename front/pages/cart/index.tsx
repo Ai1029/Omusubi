@@ -42,13 +42,10 @@ const CartPage: NextPage<Props> = ({ apiURL, siteURL, familyUserList, updateClie
 		};
 		updateOrder(order);
 		console.log(order);
+		console.log(apiURL);
+		console.log(siteURL);
 		try {
 			// POSTリクエストを作成
-			const response = await axios.post(`${apiURL}createsubscription`, order);
-			// レスポンスを処理
-			console.log(response.data); // レスポンスデータを表示
-			updateClientSecret(response.data.clientSecret);
-			updateSubscriptionId(response.data.subscriptionId);
 			router.push("/register");
 		} catch (error) {
 			// エラーハンドリング
