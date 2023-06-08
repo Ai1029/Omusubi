@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -34,17 +33,29 @@ func SetSessionID(w http.ResponseWriter, r *http.Request) {
 	// セッションIDをCookieに保存
 	http.SetCookie(w, cookie)
 	log.Println("Cookieを設定しました:", cookie.String())
+
+	// // クライアントからきたリクエストに埋め込まれているcookieの確認
+	// for _, c := range r.Cookies() {
+	// 	log.Print("Name:", c.Name, "Value:", c.Value)
+	// }
+
+	// if err := t.Execute(w, nil); err != nil {
+	// 	log.Printf("failed to execute template: %v", err)
+	// }
 }
 
-// cookieの取得を行い、htmlを返す
+// cookieの取得
 func ShowCookie(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("sessionID")
-
 	if err != nil {
 		log.Fatal("Cookie: ", err)
 	}
 
-	tmpl := template.Must(template.ParseFiles("./cookie"))
-	tmpl.Execute(w, cookie)
+	// クッキーの値をレスポンスとして返す
+	// w.Write([]byte(cookie.Value))
+	// ログにクッキーの値を出力する
+	// log.Println("Cookie Value:", cookie.Value)
 
+	w.Header().Set("X-Cookie-Value", cookie.Value)
+	w.WriteHeader(http.StatusOK)
 }

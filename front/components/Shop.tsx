@@ -1,6 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { CartContext } from "@/pages/_app";
+import { UserContext } from "@/pages/_app";
 import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 
 type Plan = {
   id: number;
@@ -73,6 +75,7 @@ export const ProductItem: React.FC<{
   removeFromCart: (item: Plan) => void;
 }> = ({ product, cart, addToCart, removeFromCart }) => {
   const router = useRouter();
+  const { isLoggedIn } = useContext(UserContext);
   const paidUser: User = {
     id: 1,
     name: "John Doe",
@@ -106,13 +109,8 @@ export const ProductItem: React.FC<{
   };
 
   const handleAddToCart = () => {
-    const sessionIDCookie = document.cookie
-      .split(";")
-      .map((cookie) => cookie.trim())
-      .find((cookie) => cookie.startsWith("sessionID="));
-
-    console.log(sessionIDCookie);
-    if (sessionIDCookie) {
+    console.log("isLoggedIn", isLoggedIn);
+    if (isLoggedIn === true) {
       addToCart(product);
     } else {
       addToCart(product);
