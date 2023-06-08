@@ -39,6 +39,12 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 		} else {
 			stripe.Key = SECRET_KEY_STAGING
 		}
+		stripeWebhookSecret := ""
+		if os.Getenv("DB_ENV") == "production" {
+			stripeWebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET")
+		} else {
+			stripeWebhookSecret = STRIPE_WEBHOOK_SECRET
+		}
 
 		if r.Method != "POST" {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
@@ -51,9 +57,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// endpointSecret := "whsec_e20dce021a0c0b8617fe2ba39f1134670b30d7d70fb34505383fca985ac5a1d9";
-
-		event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), STRIPE_WEBHOOK_SECRET)
+		event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), stripeWebhookSecret)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			log.Printf("webhook.ConstructEvent: %v", err)
