@@ -1,15 +1,9 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
+import React, { ReactNode, createContext, useReducer, useState, useEffect } from "react";
+import { RecoilRoot} from "recoil";
 import { parseCookies } from "nookies";
 import axios from "axios";
-import React, {
-  ReactNode,
-  createContext,
-  useReducer,
-  useState,
-  useEffect,
-} from "react";
-import { RecoilRoot } from "recoil";
 
 export const MyContext = React.createContext<any>(null);
 // ユーザーコンテキストの作成
