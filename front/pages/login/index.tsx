@@ -32,10 +32,10 @@ const LoginPage: NextPage = () => {
 
                  },
                 };
-            axios.post(ENDPOINT_URL, idToken, config).then((res) => {
-                if (res.data === false) {
+                axios.post(ENDPOINT_URL, idToken, config).then((res) => {
+                  if (res.data === false) {
                     setDbError(true);
-                } else {
+                  } else {
                     console.log(res.data);
                     const targetId = res.data.id;
                     setCookie(null, "id", targetId, {
