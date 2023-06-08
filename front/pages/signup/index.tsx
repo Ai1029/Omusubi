@@ -79,61 +79,45 @@ const handleClick = () => {
     };
 return (
     <Navbar>
-        <div className="text-center items-center">
-            <h2 className="font-medium py-10">ユーザー登録</h2>
-            <form onSubmit={onSignUp}>
-                <div className="pb-10">
-                    <label htmlFor="name">ニックネーム</label><br></br>
-                    <input
-                        type="text"
-                        name="name"
-                        onChange={(e) =>
-                            setInputs((prev) => ({
-                                ...prev,
-                                name: e.target.value,
-                            }))
-                        }
-                        className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
-                    />
-                </div>
-                <div className="pb-10">
-                    <label htmlFor="email">メールアドレス</label><br></br>
-                    <input
-                        type="text"
-                        name="email"
-                        onChange={(e) =>
-                            setInputs((prev) => ({
-                                ...prev,
-                                email: e.target.value,
-                            }))
-                        }
-                        className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
-                    />
-                </div>
-                <div className="pb-10">
-                    <label htmlFor="password">パスワード</label><br></br>
-                    <input
-                        type="password"
-                        name="password"
-                        onChange={(e) =>
-                            setInputs((prev) => ({
-                                ...prev,
-                                password: e.target.value,
-                            }))
-                        }
-                        className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
-                    />
-                </div>
-                <div className="button-container inline-block pt-10">
-                <Link href="/complete">
-                    <div>
-                            <Button onClick={handleClick} type="submit" text="ユーザー登録をする"/>
-                    </div>
-                </Link>
-                </div>
-            </form>
-        </div>
-
+        <h2>ユーザー登録</h2>
+        <form onSubmit={onSignUp}>
+            
+            <label htmlFor="name">ニックネーム</label>
+            <input
+                type="text"
+                name="name"
+                onChange={(e) =>
+                    setInputs((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                    }))
+                }
+            />
+        
+            <label htmlFor="email">メールアドレス</label>
+            <input
+                type="text"
+                name="email"
+                onChange={(e) =>
+                    setInputs((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                    }))
+                }
+            />
+            <label htmlFor="password">パスワード</label>
+            <input
+                type="password"
+                name="password"
+                onChange={(e) =>
+                    setInputs((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                    }))
+                }
+            />
+            <input type="submit" value="ユーザー登録をする"　/>
+        </form>
     </Navbar>
     );
 };
