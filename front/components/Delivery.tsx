@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { CartContext } from "@/pages/_app";
+import React from "react";
 
 // Subscripttionsの仮データ
 const data = [
