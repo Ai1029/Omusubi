@@ -1,76 +1,55 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { ReactNode, createContext, useReducer } from "react";
+import { parseCookies } from "nookies";
+import axios from "axios";
+import React, {
+  ReactNode,
+  createContext,
+  useReducer,
+  useState,
+  useEffect,
+} from "react";
+import { RecoilRoot } from "recoil";
 
-type Plan = {
-  id: number;
-  name: string;
-  explanation: string;
-  price: string;
-  image: string;
-};
-
-type CartState = {
-  id: number;
-  name: string;
-  explanation: string;
-  price: string;
-  image: string;
-};
-
-type Action = {
-  type: string;
-  payload: any;
-};
-
-// カートの状態を他のコンポーネントと共有
-export const CartContext = createContext<{
-  length: number;
-  cart: CartState[];
-  addToCart: (product: Plan) => void;
-  removeFromCart: (product: Plan) => void;
+export const MyContext = React.createContext<any>(null);
+// ユーザーコンテキストの作成
+export const UserContext = createContext<{
+  isLoggedIn: boolean;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
 }>({
-  length: 0,
-  cart: [],
-  addToCart: () => {},
-  removeFromCart: () => {},
+  isLoggedIn: false,
+  setIsLoggedIn: () => {},
 });
 
-// カートの初期状態
-const initialCart: CartState[] = [];
-
-const cartReducer = (state: CartState[], action: Action) => {
-  switch (action.type) {
-    case "ADD_TO_CART":
-      const { id, name, explanation, price, image } = action.payload;
-      const newItem = { id, name, explanation, price, image };
-      return [...state, newItem];
-    case "REMOVE_FROM_CART":
-      return state.filter((item) => item.id !== action.payload);
-    default:
-      return state;
-  }
-};
-
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
-  const [cart, dispatch] = useReducer(cartReducer, initialCart);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ユーザーのログイン状態を管理
 
-  // カートに商品を追加
-  const addToCart = (plan: Plan) => {
-    dispatch({ type: "ADD_TO_CART", payload: plan });
-  };
-
-  // カートから商品を削除
-  const removeFromCart = (plan: Plan) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: plan.id });
-  };
+  //　ユーザーがログインしているかサーバーで確認する
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/check-session",
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      }
+    };
+    checkSession();
+  }, []);
 
   return (
-    <CartContext.Provider
-      value={{ length: cart.length, cart, addToCart, removeFromCart }}
-    >
-      <Component {...pageProps} />
-    </CartContext.Provider>
+    <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      <RecoilRoot>
+        <Component {...pageProps} />
+      </RecoilRoot>
+    </UserContext.Provider>
   );
 };
 

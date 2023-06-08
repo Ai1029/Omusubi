@@ -5,32 +5,24 @@ import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
-import Navbar from "../../components/Layout";
+import Navbar from "@/components/Layout";
 import Link from "next/link";
 import Button from '@/components/Button';
 
 type Inputs = {
-    email: string;
-    password: string;
-}
+	email: string;
+	password: string;
+};
 
 const ENDPOINT_URL = "http://localhost:8080/login";
 
 const LoginPage: NextPage = () => {
-    const [authError, setAuthError] = useState(false);
-    const [dbError, setDbError] = useState(false);
-    const router = useRouter();
-    const [inputs, setInputs] = useState<Inputs>({ email: "", password: ""});
-    const onLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        signInWithEmailAndPassword(auth, inputs.email, inputs.password)
-         .then(({ user }: any ) => {
-            user.getIdToken().then((idToken: any) => {
-                const config = {
-                 headers: {
-                    Authorization: `Bearer ${idToken}`,
-
+	const [authError, setAuthError] = useState(false);
+	const [dbError, setDbError] = useState(false);
+	const router = useRouter();
+	const [inputs, setInputs] = useState<Inputs>({ email: "", password: "" });
+	const onLogin = async (e: React.FormEvent) => {
+		e.preventDefault();
                  },
                 };
                 axios.post(ENDPOINT_URL, idToken, config).then((res) => {
@@ -96,7 +88,7 @@ const LoginPage: NextPage = () => {
     <Link href="/signup">ユーザー登録</Link>
 </Navbar>
     );
+
 };
 
 export default LoginPage;
-

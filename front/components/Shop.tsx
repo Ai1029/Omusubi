@@ -1,5 +1,9 @@
+import { UserContext } from "@/pages/_app";
+import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 import React, { useContext } from "react";
-import { CartContext } from "@/pages/_app";
+import { useRecoilState } from "recoil";
+import { cartState } from "@/state/atom";
 
 type Plan = {
   id: number;
@@ -7,108 +11,70 @@ type Plan = {
   explanation: string;
   price: string;
   image: string;
+  stripe_price_id: string;
 };
 
 type PlanProps = {
   data: Plan[];
 };
 
-type CartState = {
-  id: number;
-  name: string;
-  price: string;
-};
-
 // 商品一覧ページ
 const Shop: React.FC<PlanProps> = ({ data }) => {
-  const { cart, addToCart, removeFromCart } = useContext(CartContext);
-
   return (
-    <div className="container mt-10 flex justify-between items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
-      <section>
-        <div className="flex items-center space-x-2 mb-5">
-          <p className="second-title">SHOP</p>
-          <p className="text-xs bg-red text-white px-2 py-1">定期便</p>
-          <p className="text-xs  text-gray-500">※写真はイメージです</p>
-        </div>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3  mb-10">
-          {data ? (
-            data.map((product) => (
-              <>
-                <ProductItem
-                  key={product.id}
-                  product={product}
-                  cart={cart}
-                  addToCart={addToCart}
-                  removeFromCart={removeFromCart}
-                />
-              </>
-            ))
-          ) : (
-            <p>準備中...</p>
-          )}
-        </div>
-      </section>
-    </div>
+    <section>
+      <h1>SHOP</h1>
+      <div>
+        {data ? (
+          data.map((product) => (
+            <ProductItem key={product.id} product={product} />
+          ))
+        ) : (
+          <p>準備中...</p>
+        )}
+      </div>
+    </section>
   );
 };
+
 export default Shop;
 
 // プラン一覧の各プランを表示するコンポーネント
 export const ProductItem: React.FC<{
   product: Plan;
-  cart: CartState[];
-  addToCart: (product: Plan) => void;
-  removeFromCart: (product: Plan) => void;
-}> = ({ product, cart, addToCart, removeFromCart }) => {
-  const handleAddToCart = () => {
-    addToCart(product);
+}> = ({ product }) => {
+  const [cart, setCart] = useRecoilState(cartState);
+  const router = useRouter();
+  const { isLoggedIn } = useContext(UserContext);
+
+  const addToCart = () => {
+    console.log("isLoggedIn", isLoggedIn);
+    if (isLoggedIn === true) {
+      setCart([...cart, product]);
+    } else {
+      setCart([...cart, product]);
+      alert("商品をカートに追加するにはログインが必要です。"); // アラートメッセージの表示
+      router.push("/login"); // ログインページへのリダイレクト
+    }
   };
 
-  const handleRemoveFromCart = () => {
-    removeFromCart(product);
+  const removeFromCart = (productId: any) => {
+    const updatedCart = cart.filter((item) => item.id !== productId);
+    setCart(updatedCart);
   };
-
   return (
-    <div>
-      <div
-        key={product.id}
-        className="mx-auto flex w-50 flex-col justify-center bg-white rounded-2xl shadow-xl shadow-gray-400/20"
-      >
-        <img
-          className="aspect-video w-50 rounded-t-2xl object-cover object-center"
-          src={product.image}
-          alt={product.name}
-        />
-        <div className="flex flex-col justify-between h-full p-6">
-          <h1 className="text-xl font-semibold leading-none tracking-tighter text-neutral-600 mb-4">
-            {product.name}
-          </h1>
-          <p className="text text-gray-500 leading-6">{product.explanation}</p>
-          <p className="text text-gray-500 leading-6">{product.price}円</p>
-        </div>
-        <div className="flex justify-center mt-4 mb-4">
-          <div className="rounded-lg">
-            {cart.find((item) => item.id === product.id) ? (
-              <div>
-                <p className="text-xs mb-3">カートに商品が入っています</p>
-                <button
-                  onClick={handleRemoveFromCart}
-                  className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-blue-500 rounded-md"
-                >
-                  取り消し
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={handleAddToCart}
-                className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-blue-500 rounded-md"
-              >
-                ＋カートに入れる
-              </button>
-            )}
-          </div>
-        </div>
+    <div key={product.id}>
+      <img src={product.image} alt={product.name} />
+      <h1>{product.name}</h1>
+      <p>{product.explanation}</p>
+      <p>{product.price}円</p>
+      <div>
+        {cart.find((item) => item.id === product.id) ? (
+          <button onClick={() => removeFromCart(product.id)}>
+            －カートから削除
+          </button>
+        ) : (
+          <button onClick={addToCart}>＋カートに追加</button>
+        )}
       </div>
     </div>
   );

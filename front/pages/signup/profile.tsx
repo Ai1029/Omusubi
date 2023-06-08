@@ -11,7 +11,7 @@ const handleClick = () => {
  };
 
  return (
- <div className='text-center items-center'>
+ <div className=' text-center items-center'>
     <img src="/images/logo.png" className='w-100 h-32 m-auto pt-10' alt='ロゴ'></img>
     <p className='pt-10'>認証に成功しました</p>
     <p className='pb-10'>以下からプロフィール登録をして下さい</p>
@@ -34,6 +34,7 @@ const handleClick = () => {
     label="電話番号"/>
     <Link href="/complete_profile"><Button onClick={handleClick} text="登録する" /></Link>
     </div>
+</div>
     );
 };
 

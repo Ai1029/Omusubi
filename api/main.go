@@ -9,8 +9,6 @@ import (
 	"api/config"
 	"api/handlers"
 	"api/stripeHandler"
-	
-
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -45,6 +43,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", SITE_URL)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Credentials", "true") // cookie用に追加
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return
@@ -53,16 +52,12 @@ func main() {
 		})
 	}
 
-
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
-	r.HandleFunc("/buy", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
-	// r.HandleFunc("/sidedishes", handlers.GetSidedishes(db)).Methods("GET")
-	// r.HandleFunc("/sidedishes", handlers.CreateSidedish(db)).Methods("POST")
-	// r.HandleFunc("/sidedish/{id}", handlers.GetSidedish(db)).Methods("GET")
-	// r.HandleFunc("/sidedish/{id}", handlers.PatchSidedish(db)).Methods("PATCH")
-	// r.HandleFunc("/sidedish/{id}", handlers.DeleteSidedish(db)).Methods("DELETE")
+	r.HandleFunc("/createsubscription", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
+	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("POST")
+	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("GET")
 	r.HandleFunc("/plans", handlers.GetPlans(db)).Methods("GET")
 	r.HandleFunc("/plans", handlers.CreatePlan(db)).Methods("POST")
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")
@@ -73,6 +68,14 @@ func main() {
 	r.HandleFunc("/orderdetails", handlers.CreateOrderdetail(db)).Methods("POST")
 	r.HandleFunc("/login", handlers.Login(db)).Methods("POST")
 	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
+	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
+	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
+	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
+	r.HandleFunc("/cartusers/{id}", handlers.GetCartUsers(db)).Methods("GET")
+	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
+	r.HandleFunc("/session", handlers.SetSessionID)
+	r.HandleFunc("/cookie", handlers.ShowCookie)
+	r.HandleFunc("/check-session", handlers.CheckSession)
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }

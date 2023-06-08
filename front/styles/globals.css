@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 .second-title {
-  @apply text-2xl font-bold font-medium relative pl-4;
+  @apply text-2xl font-medium relative pl-4;
 }
 .second-title::before {
   content: "";
