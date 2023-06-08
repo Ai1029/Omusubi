@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { CardElement, PaymentElement, LinkAuthenticationElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { CartContext } from "@/pages/_app";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 type Props = {
+	apiURL: string;
 	siteURL: string;
+	order: any;
 };
 
-const CheckoutForm: React.FC<Props> = ({ siteURL }) => {
+const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [isLoading, setIsLoading] = React.useState(false);
@@ -22,13 +23,29 @@ const CheckoutForm: React.FC<Props> = ({ siteURL }) => {
 			return;
 		}
 		setIsLoading(true);
-		const result = await stripe.confirmPayment({
-			elements,
-			confirmParams: {
-				return_url: returnUrl,
-			},
-		});
-		// ここでresultの処理を行う;
+		try {
+			// POSTリクエストを作成
+			const { error: submitError } = await elements.submit();
+			const response = await axios.post(`${apiURL}createsubscription`, order);
+			// レスポンスを処理
+			const clientSecret = response.data.clientSecret;
+			const result = await stripe.confirmPayment({
+				elements,
+				clientSecret,
+				confirmParams: {
+					payment_method_data: {
+						billing_details: {
+							email: order.paidUser.email,
+							name: order.paidUser.name,
+						},
+					},
+					return_url: returnUrl,
+				},
+			});
+		} catch (error) {
+			// エラーハンドリング
+			console.error(error);
+		}
 
 		setIsLoading(false);
 	};

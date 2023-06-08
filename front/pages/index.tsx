@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { createContext, useState, useEffect } from "react";
+import React from "react";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
 import Layout from "@/components/Layout";
@@ -7,18 +7,6 @@ import Topimage from "@/components/Topimage";
 import Shop from "@/components/Shop";
 import Delivery from "@/components/Delivery";
 import Orderhistory from "@/components/Orderhistory";
-
-// type TypeItem = {
-//   id: number;
-//   name: string;
-//   detail: string;
-//   quantity: number;
-// };
-
-// type Props = {
-//   posts: TypeItem[];
-//   user_id: number;
-// };
 
 type Plan = {
   id: number;
@@ -34,9 +22,6 @@ type PlanProps = {
 };
 
 const HOME: NextPage<PlanProps> = ({ data }) => {
-  // console.log(props.posts);
-  // const items = props.posts;
-
   return (
     <Layout>
       <main>
@@ -44,15 +29,6 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
         <Delivery />
         <Shop data={data} />
         <Orderhistory />
-
-        {/* <p>次回のお届け</p>
-
-      <p>同時配送</p>
-      <p>もっと見る</p>
-      <button>商品を追加・変更する</button>
-      <h3>SHOP</h3>
-      <p>定期便</p>
-      <p>おかず</p> */}
       </main>
     </Layout>
   );

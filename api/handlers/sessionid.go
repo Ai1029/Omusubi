@@ -59,3 +59,18 @@ func ShowCookie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Cookie-Value", cookie.Value)
 	w.WriteHeader(http.StatusOK)
 }
+
+// cookieのsessionIdでユーザーがログインしているのか確認
+func CheckSession(w http.ResponseWriter, r *http.Request) {
+	// クッキーからセッションIDを取得
+	_, err := r.Cookie("sessionID")
+	if err != nil {
+		// セッションIDが存在しない場合はログインしていないと判断
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
+		return
+	}
+	// レスポンスを返す
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}

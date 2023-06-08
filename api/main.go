@@ -70,6 +70,7 @@ func main() {
 	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
 	r.HandleFunc("/session", handlers.SetSessionID)
 	r.HandleFunc("/cookie", handlers.ShowCookie)
+	r.HandleFunc("/check-session", handlers.CheckSession)
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
