@@ -7,6 +7,7 @@ import { setCookie } from "nookies";
 import axios from "axios";
 import Navbar from "../../components/Layout";
 import Link from "next/link";
+import Button from '@/components/Button';
 
 type Inputs = {
     email: string;
