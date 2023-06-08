@@ -12,34 +12,34 @@ import (
 )
 
 type User struct {
-	ID           int     `json:"id"`
-	Name         string  `json:"name"`
-	Email        string  `json:"email"`
-	UID          string  `json:"uid"`
-	FamilyID     int     `json:"family_id"`
-	Phonetic     string  `json:"phonetic"`
-	Zipcode      string  `json:"zipcode"`
-	Prefecture   string  `json:"prefecture"`
-	City         string  `json:"city"`
-	Town         string  `json:"town"`
-	Apartment    string  `json:"apartment"`
-	PhoneNumber  string  `json:"phone_number"`
-	IsOwner      bool    `json:"is_owner"`
-	IsVirtualUser bool    `json:"is_virtual_user"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	UID           string `json:"uid"`
+	FamilyID      int    `json:"family_id"`
+	Phonetic      string `json:"phonetic"`
+	Zipcode       string `json:"zipcode"`
+	Prefecture    string `json:"prefecture"`
+	City          string `json:"city"`
+	Town          string `json:"town"`
+	Apartment     string `json:"apartment"`
+	PhoneNumber   string `json:"phone_number"`
+	IsOwner       bool   `json:"is_owner"`
+	IsVirtualUser bool   `json:"is_virtual_user"`
 }
 
 type CreateUser struct {
-	Name         string  `json:"name"`
-	Email        string  `json:"email"`
-	UID          string  `json:"uid"`
-	FamilyID     int     `json:"family_id"`
-	Phonetic     string  `json:"phonetic"`
-	Zipcode      string  `json:"zipcode"`
-	Prefecture   string  `json:"prefecture"`
-	City         string  `json:"city"`
-	Town         string  `json:"town"`
-	Apartment    string  `json:"apartment"`
-	PhoneNumber  string  `json:"phone_number"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	UID         string `json:"uid"`
+	FamilyID    int    `json:"family_id"`
+	Phonetic    string `json:"phonetic"`
+	Zipcode     string `json:"zipcode"`
+	Prefecture  string `json:"prefecture"`
+	City        string `json:"city"`
+	Town        string `json:"town"`
+	Apartment   string `json:"apartment"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 func GetUsers(db *sql.DB) http.HandlerFunc {
@@ -53,7 +53,7 @@ func GetUsers(db *sql.DB) http.HandlerFunc {
 		var users []User
 		for rows.Next() {
 			var user User
-			if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.UID, &user.FamilyID, &user.Phonetic, &user.Zipcode, &user.Prefecture, &user.City, &user.Town, &user.Apartment, &user.PhoneNumber, &user.IsOwner, &user.IsVirtualUser ); err != nil {
+			if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.UID, &user.FamilyID, &user.Phonetic, &user.Zipcode, &user.Prefecture, &user.City, &user.Town, &user.Apartment, &user.PhoneNumber, &user.IsOwner, &user.IsVirtualUser); err != nil {
 				log.Fatal(err)
 			}
 			users = append(users, user)
@@ -120,7 +120,7 @@ func CreateUsers(db *sql.DB) http.HandlerFunc {
 		}
 
 		lastID, err := res.LastInsertId()
-		if err != nil{
+		if err != nil {
 			// エラー処理
 			log.Fatal(err)
 		}
