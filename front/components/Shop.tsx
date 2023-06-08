@@ -1,53 +1,72 @@
 import React, { useContext, useState, useEffect } from "react";
+import { UserContext } from "@/pages/_app";
+import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
-// import { cartState } from "./Layout";
 
 type Plan = {
-	id: number;
-	name: string;
-	explanation: string;
-	price: string;
-	image: string;
-	stripe_price_id: string;
+  id: number;
+  name: string;
+  explanation: string;
+  price: string;
+  image: string;
+  stripe_price_id: string;
 };
 
 type PlanProps = {
-	data: Plan[];
+  data: Plan[];
 };
 
 // 商品一覧ページ
 const Shop: React.FC<PlanProps> = ({ data }) => {
-	return (
-		<section>
-			<h1>SHOP</h1>
-			<div>{data ? data.map((product) => <ProductItem key={product.id} product={product} />) : <p>準備中...</p>}</div>
-		</section>
-	);
+  return (
+    <section>
+      <h1>SHOP</h1>
+      <div>
+        {data ? (
+          data.map((product) => (
+            <ProductItem key={product.id} product={product} />
+          ))
+        ) : (
+          <p>準備中...</p>
+        )}
+      </div>
+    </section>
+  );
 };
 
 export default Shop;
 
 // プラン一覧の各プランを表示するコンポーネント
+
 export const ProductItem: React.FC<{ product: Plan }> = ({ product }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const [cart, setCart] = useRecoilState(cartState);
-
+  const router = useRouter();
+  const { isLoggedIn } = useContext(UserContext);
+      
 	useEffect(() => {
 		setIsMounted(true);
 	}, []);
 
 	const addToCart = () => {
 		setCart((prevCart: any) => {
-			if (!Array.isArray(prevCart)) {
-				prevCart = []; // 配列でない場合は空の配列を使用
-			}
-			if (prevCart.find((item: Plan) => item.id === product.id)) {
-				return prevCart; // カートに既に同じ商品がある場合は変更せずにそのまま返す
-			}
-			const updatedCart = [...prevCart, product];
-			localStorage.setItem("recoil-persist", JSON.stringify(updatedCart));
-			return updatedCart;
+      if (isLoggedIn === true) {
+			    if (!Array.isArray(prevCart)) {
+				    prevCart = []; // 配列でない場合は空の配列を使用
+			    }
+			    if (prevCart.find((item: Plan) => item.id === product.id)) {
+				    return prevCart; // カートに既に同じ商品がある場合は変更せずにそのまま返す
+			    }
+          const updatedCart = [...prevCart, product];
+			    localStorage.setItem("recoil-persist", JSON.stringify(updatedCart));
+			    return updatedCart;
+      } else {
+          alert("商品をカートに追加するにはログインが必要です。"); // アラートメッセージの表示
+          router.push("/login"); // ログインページへのリダイレクト
+      }
+			
 		});
 	};
 

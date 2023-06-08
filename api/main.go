@@ -43,6 +43,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", SITE_URL)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Credentials", "true") // cookie用に追加
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return
@@ -62,11 +63,19 @@ func main() {
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")
 	r.HandleFunc("/plan/{id}", handlers.PatchPlan(db)).Methods("PATCH")
 	r.HandleFunc("/plan/{id}", handlers.DeletePlan(db)).Methods("DELETE")
+	r.HandleFunc("/orderdetails", handlers.GetOrderdetails(db)).Methods("GET")
+	r.HandleFunc("/orderdetail/{id}", handlers.GetOrderdetail(db)).Methods("GET")
+	r.HandleFunc("/orderdetails", handlers.CreateOrderdetail(db)).Methods("POST")
+	r.HandleFunc("/login", handlers.Login(db)).Methods("POST")
+	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
 	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
 	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
 	r.HandleFunc("/cartusers/{id}", handlers.GetCartUsers(db)).Methods("GET")
 	r.HandleFunc("/order", handlers.CreateOrder(db)).Methods("POST")
+	r.HandleFunc("/session", handlers.SetSessionID)
+	r.HandleFunc("/cookie", handlers.ShowCookie)
+	r.HandleFunc("/check-session", handlers.CheckSession)
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }

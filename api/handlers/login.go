@@ -74,7 +74,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 
 		var resData LoginedUser
 
-		err = db.QueryRow("SELECT id, family_id, is_owner, is_virtual_user FROM users WHERE uid = ?", uid).Scan(&resData.ID, &resData.FamilyID, &resData.IsOwner, &resData.IsVirtualUser)
+		err = db.QueryRow("SELECT id, family_id FROM users WHERE uid = ?", uid).Scan(&resData.ID, &resData.FamilyID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -88,3 +88,4 @@ func Login(db *sql.DB) http.HandlerFunc {
 
 	}
 }
+
