@@ -8,6 +8,7 @@ import { setCookie } from "nookies";
 import axios from "axios";
 import Navbar from "../../components/Layout";
 import Link from "next/link";
+import Button from '@/components/Button';
 
 
 type Inputs = {
@@ -73,6 +74,9 @@ const [emailSent, setEmailSent] = useState(false);
     });
     
 };
+const handleClick = () => {
+    console.log('ボタンがクリックされました！');
+    };
 return (
     <Navbar>
         <h2>ユーザー登録</h2>
@@ -114,8 +118,6 @@ return (
             />
             <input type="submit" value="ユーザー登録をする"　/>
         </form>
-        
-
     </Navbar>
     );
 };

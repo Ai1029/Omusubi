@@ -44,7 +44,8 @@ type Plan = {
 	imageURL: string;
 };
 
-const PlanForm = ({ data }: any) => {
+const PlanForm = ({ data, apiURL }: any) => {
+	console.log(apiURL);
 	const [plan, setPlan] = useState<Plan>({
 		name: "",
 		explanation: "",
@@ -192,12 +193,14 @@ export default PlanForm;
 
 // プラン一覧をgetする
 export const getServerSideProps = async () => {
+	const apiURL = process.env.API_URL;
 	try {
-		const res = await axios.get("http://api:8080/plans");
+		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
 		console.log("res", res);
 		return {
 			props: {
 				data: res.data,
+				apiURL: apiURL,
 			},
 		};
 	} catch (error) {
@@ -205,6 +208,7 @@ export const getServerSideProps = async () => {
 		return {
 			props: {
 				data: null,
+				apiURL: apiURL,
 			},
 		};
 	}
