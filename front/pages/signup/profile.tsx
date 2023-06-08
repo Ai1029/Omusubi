@@ -34,7 +34,7 @@ const handleClick = () => {
     label="電話番号"/>
     <Link href="/complete_profile"><Button onClick={handleClick} text="登録する" /></Link>
     </div>
-</div>
+
     );
 };
 
