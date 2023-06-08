@@ -1,61 +1,42 @@
 import Head from "next/head";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
-import React, { useContext } from "react";
-import { CartContext } from "@/pages/_app";
+import React from "react";
+import { useRecoilValue } from "recoil";
+import { cartState } from "@/state/atom";
 
 interface Props {
 	children: ReactNode;
 }
 
 export const Navbar = () => {
-	const { cartState } = useContext(CartContext);
-	const cartItemCount = cartState.length; // カートに入っている商品の数
+	const cart = useRecoilValue(cartState);
 
-  return (
-    <div className="text-sm space-x-5 hidden md:flex items-center">
-      <Link
-        href="/"
-        className="hover:text-selected-text transition-all duration-300"
-      >
-        TOP
-      </Link>
-      <Link
-        href="/login"
-        className="hover:text-selected-text transition-all duration-300"
-      >
-        MyPage
-      </Link>
-      <Link
-        href="#"
-        className="hover:text-selected-text transition-all duration-300"
-      >
-        おすすめ登録
-      </Link>
-      <Link
-        href="/cart"
-        className="hover:text-selected-text transition-all duration-300"
-      >
-        カートを見る
-        <span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">
-          {cartItemCount}
-        </span>
-      </Link>
-      <Link
-        href="#"
-        className="hover:text-selected-text transition-all duration-300"
-      >
-        お問い合わせ
-      </Link>
-    </div>
-  );
+	return (
+		<div className="text-sm space-x-5 hidden md:flex items-center">
+			<Link href="/" className="hover:text-selected-text transition-all duration-300">
+				TOP
+			</Link>
+			<Link href="/login" className="hover:text-selected-text transition-all duration-300">
+				MyPage
+			</Link>
+			<Link href="#" className="hover:text-selected-text transition-all duration-300">
+				おすすめ登録
+			</Link>
+			<Link href="/cart" className="hover:text-selected-text transition-all duration-300">
+				カートを見る
+				<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cart.length}</span>
+			</Link>
+			<Link href="#" className="hover:text-selected-text transition-all duration-300">
+				お問い合わせ
+			</Link>
+		</div>
+	);
 };
 
 const Layout = ({ children }: Props) => {
 	const [isOpen, setIsOpen] = useState(false);
-	// console.log("isOpen", isOpen);
-	const { cartState } = useContext(CartContext);
-	const cartItemCount = cartState.length; // カートに入っている商品の数
+	const cart = useRecoilValue(cartState);
 
 	return (
 		<>
@@ -127,7 +108,7 @@ const Layout = ({ children }: Props) => {
 											className="hover:text-selected-text transition-all duration-300"
 										>
 											カートを見る
-											<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cartItemCount}</span>
+											<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cart.length}</span>
 										</Link>
 									</li>
 									<li className="py-3">

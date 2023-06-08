@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
+import React from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import Layout from "@/components/Layout";
-import { CartContext } from "@/pages/_app";
 import QuantityButton from "@/components/QuantityButton";
 import axios from "axios";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { cartState, orderState } from "@/state/atom";
 
 type User = {
 	id: number;
@@ -22,21 +23,21 @@ type User = {
 
 type Props = {
 	familyUserList: User[];
-	updateOrder: (newOrder: any) => void;
 };
 // カートを見るページ
-const CartPage: NextPage<Props> = ({ familyUserList, updateOrder }) => {
-	const { cartState } = useContext(CartContext);
+const CartPage: NextPage<Props> = ({ familyUserList }) => {
+	const cart = useRecoilValue(cartState);
 	const router = useRouter();
 	const paidUser = familyUserList.filter((item) => item.is_owner)[0];
+	const [order, setOrder] = useRecoilState(orderState);
 
 	const handlePurchase = async (index: number, user_index: number) => {
 		const order = {
 			paidUser: paidUser,
-			plan: cartState[index],
+			plan: cart[index],
 			receivedUser: familyUserList[user_index],
 		};
-		updateOrder(order);
+		setOrder(order);
 		try {
 			// POSTリクエストを作成
 			router.push("/register");
@@ -50,7 +51,7 @@ const CartPage: NextPage<Props> = ({ familyUserList, updateOrder }) => {
 		<Layout>
 			<div>
 				<h1>Cart</h1>
-				{cartState.map((item, index) => (
+				{cart.map((item, index) => (
 					<div key={index}>
 						{familyUserList.map((user, user_index) => (
 							<div key={user.id}>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { CartContext } from "@/pages/_app";
 
 type Props = {
 	apiURL: string;
