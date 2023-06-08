@@ -34,7 +34,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
             withCredentials: true,
           }
         );
-
         if (response.status === 200) {
           setIsLoggedIn(true);
         }
@@ -42,7 +41,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
         console.error("Error checking session:", error);
       }
     };
-
     checkSession();
   }, []);
 

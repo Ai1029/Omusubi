@@ -44,23 +44,17 @@ func SetSessionID(w http.ResponseWriter, r *http.Request) {
 	// }
 }
 
-// cookieの取得
+// セットしたcookieの確認
 func ShowCookie(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("sessionID")
 	if err != nil {
 		log.Fatal("Cookie: ", err)
 	}
-
-	// クッキーの値をレスポンスとして返す
-	// w.Write([]byte(cookie.Value))
-	// ログにクッキーの値を出力する
-	// log.Println("Cookie Value:", cookie.Value)
-
 	w.Header().Set("X-Cookie-Value", cookie.Value)
 	w.WriteHeader(http.StatusOK)
 }
 
-// cookieのsessionIdでユーザーがログインしているのか確認
+// cookieにsessionIdが付与されているかを確認してユーザーがログインしているのか判断
 func CheckSession(w http.ResponseWriter, r *http.Request) {
 	// クッキーからセッションIDを取得
 	_, err := r.Cookie("sessionID")
