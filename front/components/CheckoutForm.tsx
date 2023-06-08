@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { loadStripe } from "@stripe/stripe-js";
-import { CardElement, PaymentElement, LinkAuthenticationElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { CartContext } from "@/pages/_app";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 type Props = {
 	apiURL: string;
 	siteURL: string;
 	order: any;
 };
-
-const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
 const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
 	const stripe = useStripe();
@@ -33,7 +29,6 @@ const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
 			const response = await axios.post(`${apiURL}createsubscription`, order);
 			// レスポンスを処理
 			const clientSecret = response.data.clientSecret;
-			console.log(clientSecret); // レスポンスデータを表示
 			const result = await stripe.confirmPayment({
 				elements,
 				clientSecret,
