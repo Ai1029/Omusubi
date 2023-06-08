@@ -1,7 +1,7 @@
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "@/pages/_app";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
-import React, { useContext } from "react";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
 
@@ -39,43 +39,61 @@ const Shop: React.FC<PlanProps> = ({ data }) => {
 export default Shop;
 
 // プラン一覧の各プランを表示するコンポーネント
-export const ProductItem: React.FC<{
-  product: Plan;
-}> = ({ product }) => {
-  const [cart, setCart] = useRecoilState(cartState);
+
+export const ProductItem: React.FC<{ product: Plan }> = ({ product }) => {
+	const [isMounted, setIsMounted] = useState(false);
+	const [cart, setCart] = useRecoilState(cartState);
   const router = useRouter();
   const { isLoggedIn } = useContext(UserContext);
+      
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
-  const addToCart = () => {
-    console.log("isLoggedIn", isLoggedIn);
-    if (isLoggedIn === true) {
-      setCart([...cart, product]);
-    } else {
-      setCart([...cart, product]);
-      alert("商品をカートに追加するにはログインが必要です。"); // アラートメッセージの表示
-      router.push("/login"); // ログインページへのリダイレクト
-    }
-  };
+	const addToCart = () => {
+		setCart((prevCart: any) => {
+      if (isLoggedIn === true) {
+			    if (!Array.isArray(prevCart)) {
+				    prevCart = []; // 配列でない場合は空の配列を使用
+			    }
+			    if (prevCart.find((item: Plan) => item.id === product.id)) {
+				    return prevCart; // カートに既に同じ商品がある場合は変更せずにそのまま返す
+			    }
+          const updatedCart = [...prevCart, product];
+			    localStorage.setItem("recoil-persist", JSON.stringify(updatedCart));
+			    return updatedCart;
+      } else {
+          alert("商品をカートに追加するにはログインが必要です。"); // アラートメッセージの表示
+          router.push("/login"); // ログインページへのリダイレクト
+      }
+			
+		});
+	};
 
-  const removeFromCart = (productId: any) => {
-    const updatedCart = cart.filter((item) => item.id !== productId);
-    setCart(updatedCart);
-  };
-  return (
-    <div key={product.id}>
-      <img src={product.image} alt={product.name} />
-      <h1>{product.name}</h1>
-      <p>{product.explanation}</p>
-      <p>{product.price}円</p>
-      <div>
-        {cart.find((item) => item.id === product.id) ? (
-          <button onClick={() => removeFromCart(product.id)}>
-            －カートから削除
-          </button>
-        ) : (
-          <button onClick={addToCart}>＋カートに追加</button>
-        )}
-      </div>
-    </div>
-  );
+	const removeFromCart = (productId: number) => {
+		setCart((prevCart: any) => {
+			if (!Array.isArray(prevCart)) {
+				prevCart = []; // 配列でない場合は空の配列を使用
+			}
+			const updatedCart = prevCart.filter((item: Plan) => item.id !== productId);
+			localStorage.setItem("recoil-persist", JSON.stringify(updatedCart));
+			return updatedCart;
+		});
+	};
+
+	if (!isMounted) {
+		return null; // マウント前は何も表示せずにロード中とする
+	}
+
+	const isInCart = Array.isArray(cart) && cart.find((item: Plan) => item.id === product.id);
+
+	return (
+		<div key={product.id}>
+			<img src={product.image} alt={product.name} />
+			<h1>{product.name}</h1>
+			<p>{product.explanation}</p>
+			<p>{product.price}円</p>
+			<div>{isInCart ? <button onClick={() => removeFromCart(product.id)}>－カートから削除</button> : <button onClick={addToCart}>＋カートに追加</button>}</div>
+		</div>
+	);
 };

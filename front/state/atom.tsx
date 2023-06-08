@@ -1,5 +1,12 @@
-import { atom } from "recoil";
+import React, { useEffect, useState } from "react";
+import { atom, useRecoilState } from "recoil";
+import { recoilPersist } from "recoil-persist";
 
+// const { persistAtom } = recoilPersist({
+// //追加
+// key: "recoil-persist",
+// storage: typeof window === "undefined" ? undefined : sessionStorage,
+// });
 type Plan = {
 	id: number;
 	name: string;
@@ -11,10 +18,15 @@ type Plan = {
 
 const initialCart: Plan[] = [];
 
+const { persistAtom } = recoilPersist();
+
 export const cartState = atom({
-	key: "cartState",
-	default: initialCart,
+  key: 'cartState',
+  default: initialCart,
+  effects_UNSTABLE: [persistAtom],
 });
+
+
 export const orderState = atom({
 	key: "orderState",
 	default: {
