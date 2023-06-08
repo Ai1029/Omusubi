@@ -23,14 +23,15 @@ type PlanProps = {
 
 const HOME: NextPage<PlanProps> = ({ data }) => {
 	return (
-		<Layout>
-			<main>
-				<Topimage />
-				<Delivery />
-				<Shop data={data} />
-				<Orderhistory />
+		<>
+			<Layout>
+				<main>
+					<Topimage />
+					<Delivery />
+					<Shop data={data} />
+					<Orderhistory />
 
-				{/* <p>次回のお届け</p>
+					{/* <p>次回のお届け</p>
 
       <p>同時配送</p>
       <p>もっと見る</p>
@@ -38,8 +39,9 @@ const HOME: NextPage<PlanProps> = ({ data }) => {
       <h3>SHOP</h3>
       <p>定期便</p>
       <p>おかず</p> */}
-			</main>
-		</Layout>
+				</main>
+			</Layout>
+		</>
 	);
 };
 

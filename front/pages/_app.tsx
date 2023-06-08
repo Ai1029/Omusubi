@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import React, { ReactNode, createContext, useReducer, useState } from "react";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot} from "recoil";
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
 	return (
