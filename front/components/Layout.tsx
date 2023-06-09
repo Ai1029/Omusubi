@@ -3,8 +3,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { ReactNode, useState, useEffect } from "react";
 import React from "react";
-import { atom, useRecoilValue, useRecoilState } from "recoil";
-import { recoilPersist } from "recoil-persist";
+import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
 
 interface Props {
@@ -20,11 +19,9 @@ const Layout = ({ children }: Props) => {
 		if (storedValue) {
 			const parsedCart = JSON.parse(storedValue);
 			setCart(parsedCart);
-		} else {
-			setCart(0);
 		}
 		setIsMounted(true);
-	}, [setCart]);
+	}, []);
 
 	if (!isMounted) {
 		return null; // マウント前は何も表示せずにロード中とする

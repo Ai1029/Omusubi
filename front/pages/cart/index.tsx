@@ -33,25 +33,19 @@ const CartPage: NextPage<Props> = ({ familyUserList }) => {
 
 	const handlePurchase = async (index: number, user_index: number) => {
 		const order = {
-			paidUser: paidUser,
 			plan: cart[index],
+			paidUser: paidUser,
 			receivedUser: familyUserList[user_index],
 		};
 		setOrder(order);
-		try {
-			// POSTリクエストを作成
-			router.push("/register");
-		} catch (error) {
-			// エラーハンドリング
-			console.error(error);
-		}
+		router.push("/register");
 	};
 
 	return (
 		<Layout>
 			<div>
 				<h1>Cart</h1>
-				{cart.map((item:any, index:any) => (
+				{cart.map((item: any, index: any) => (
 					<div key={index}>
 						{familyUserList.map((user, user_index) => (
 							<div key={user.id}>

@@ -9,49 +9,49 @@ import Delivery from "@/components/Delivery";
 import Orderhistory from "@/components/Orderhistory";
 
 type Plan = {
-  id: number;
-  name: string;
-  explanation: string;
-  price: string;
-  image: string;
-  stripe_price_id: string;
+	id: number;
+	name: string;
+	explanation: string;
+	price: string;
+	image: string;
+	stripe_price_id: string;
 };
 
 type PlanProps = {
-  data: Plan[];
+	data: Plan[];
 };
 
 const HOME: NextPage<PlanProps> = ({ data }) => {
-  return (
-    <Layout>
-      <main>
-        <Topimage />
-        <Delivery />
-        <Shop data={data} />
-        <Orderhistory />
-      </main>
-    </Layout>
-  );
+	return (
+		<Layout>
+			<main>
+				<Topimage />
+				<Delivery />
+				<Shop data={data} />
+				<Orderhistory />
+			</main>
+		</Layout>
+	);
 };
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async () => {
-  try {
-    const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
-    console.log(res.data);
-    return {
-      props: {
-        data: res.data,
-      },
-    };
-  } catch (error) {
-    console.error("データが取得できません", error);
-    return {
-      props: {
-        data: null,
-      },
-    };
-  }
+	try {
+		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
+		console.log(res.data);
+		return {
+			props: {
+				data: res.data,
+			},
+		};
+	} catch (error) {
+		console.error("データが取得できません", error);
+		return {
+			props: {
+				data: null,
+			},
+		};
+	}
 };
 
 export default HOME;
