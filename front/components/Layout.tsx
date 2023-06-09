@@ -15,7 +15,7 @@ const Layout = ({ children }: Props) => {
 	const [cart, setCart] = useRecoilState(cartState);
 	const [isMounted, setIsMounted] = useState(false);
 	useEffect(() => {
-		const storedValue = localStorage.getItem("recoil-persist");
+		const storedValue = localStorage.getItem("cart-items");
 		if (storedValue) {
 			const parsedCart = JSON.parse(storedValue);
 			setCart(parsedCart);

@@ -18,6 +18,7 @@ const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2Bol
 
 const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 	const order = useRecoilValue(orderState);
+	console.log(order)
 
 	const appearance = {
 		theme: "stripe",
