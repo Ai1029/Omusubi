@@ -5,7 +5,7 @@ import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
-import Navbar from "@/components/Layout";
+import Navbar from "../../components/Layout";
 import Link from "next/link";
 import Button from "@/components/Button";
 
@@ -24,26 +24,33 @@ const LoginPage: NextPage = () => {
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    axios
-      .post(ENDPOINT_URL, idToken, config)
-      .then((res) => {
-        if (res.data === false) {
-          setDbError(true);
-        } else {
-          console.log(res.data);
-          const targetId = res.data.id;
-          setCookie(null, "id", targetId, {
-            maxAge: 1 * 1 * 60 * 60,
-            path: "/",
+    signInWithEmailAndPassword(auth, inputs.email, inputs.password)
+      .then(({ user }: any) => {
+        user.getIdToken().then((idToken: any) => {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          };
+          axios.post(ENDPOINT_URL, idToken, config).then((res) => {
+            if (res.data === false) {
+              setDbError(true);
+            } else {
+              console.log(res.data);
+              const targetId = res.data.id;
+              setCookie(null, "id", targetId, {
+                maxAge: 1 * 1 * 60 * 60,
+                path: "/",
+              });
+              setCookie(null, "signedIn", "true", {
+                maxAge: 1 * 1 * 60 * 60,
+                path: "/",
+              });
+              router.push("/");
+            }
           });
-          setCookie(null, "signedIn", "true", {
-            maxAge: 1 * 1 * 60 * 60,
-            path: "/",
-          });
-          router.push("/");
-        }
+        });
       })
-
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;

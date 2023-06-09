@@ -51,7 +51,7 @@ const CartPage: NextPage<Props> = ({ familyUserList }) => {
 		<Layout>
 			<div>
 				<h1>Cart</h1>
-				{cart.map((item, index) => (
+				{cart.map((item:any, index:any) => (
 					<div key={index}>
 						{familyUserList.map((user, user_index) => (
 							<div key={user.id}>
