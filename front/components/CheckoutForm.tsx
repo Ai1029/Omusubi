@@ -23,6 +23,8 @@ const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
 			return;
 		}
 		setIsLoading(true);
+		localStorage.setItem("order-item", JSON.stringify(order));
+		console.log(order);
 		try {
 			// POSTリクエストを作成
 			const { error: submitError } = await elements.submit();
