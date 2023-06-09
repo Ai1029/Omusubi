@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // カートを見るページ
 const QuantityButton: React.FC<{
   userId: number;
-  price: string;
+  price: number;
   onSubtotalChange: (userId: number, newSubtotal: number) => void;
 }> = ({ userId, price, onSubtotalChange }) => {
   const [quantity, setQuantity] = useState(1);
@@ -11,7 +11,7 @@ const QuantityButton: React.FC<{
   const handleIncrease = () => {
     setQuantity((prevQuantity) => {
       const newQuantity = prevQuantity + 1;
-      const newSubtotal = Number(price) * newQuantity;
+      const newSubtotal = price * newQuantity;
       onSubtotalChange(userId, newSubtotal);
       return newQuantity;
     });
@@ -21,14 +21,14 @@ const QuantityButton: React.FC<{
     if (quantity > 1) {
       setQuantity((prevQuantity) => {
         const newQuantity = prevQuantity - 1;
-        const newSubtotal = Number(price) * newQuantity;
+        const newSubtotal = price * newQuantity;
         onSubtotalChange(userId, newSubtotal);
         return newQuantity;
       });
     }
   };
 
-  const newSubtotal = Number(price) * quantity;
+  const newSubtotal = price * quantity;
   onSubtotalChange(userId, newSubtotal); // 小計を計算
 
   return (
