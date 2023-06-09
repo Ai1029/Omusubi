@@ -22,7 +22,6 @@ const Layout = ({ children }: Props) => {
 		}
 		setIsMounted(true);
 	}, []);
-
 	if (!isMounted) {
 		return null; // マウント前は何も表示せずにロード中とする
 	}
@@ -77,7 +76,7 @@ const Layout = ({ children }: Props) => {
 									</li>
 									<li className="py-3">
 										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											お問い合わせ
+											サインイン
 										</Link>
 									</li>
 								</ul>
