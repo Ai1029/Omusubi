@@ -33,20 +33,28 @@ const LoginPage: NextPage = () => {
             },
           };
           axios.post(ENDPOINT_URL, idToken, config).then((res) => {
+            console.log("エンドポイント", ENDPOINT_URL);
             if (res.data === false) {
               setDbError(true);
             } else {
               console.log(res.data);
               const targetId = res.data.id;
-              setCookie(null, "id", targetId, {
-                maxAge: 1 * 1 * 60 * 60,
-                path: "/",
-              });
-              setCookie(null, "signedIn", "true", {
-                maxAge: 1 * 1 * 60 * 60,
-                path: "/",
-              });
-              router.push("/");
+              // setCookie(null, "id", targetId, {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              // setCookie(null, "signedIn", "true", {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              // router.push("/");
+              axios
+                .get("http://localhost:8080/check-session", {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  console.log("セットできた");
+                });
             }
           });
         });

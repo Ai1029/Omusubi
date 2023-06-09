@@ -21,10 +21,10 @@ func main() {
 		cfg.User = os.Getenv("MYSQL_USER")
 		cfg.Password = os.Getenv("MYSQL_PASSWORD")
 	}
-	SITE_URL := "http://localhost:3000"
-	if os.Getenv("DB_ENV") == "production" {
-		SITE_URL = os.Getenv("SITE_URL")
-	}
+	// SITE_URL := "http://localhost:3000"
+	// if os.Getenv("DB_ENV") == "production" {
+	// 	SITE_URL = os.Getenv("SITE_URL")
+	// }
 
 	if err != nil {
 		panic(err)
@@ -40,7 +40,8 @@ func main() {
 	// CORSを許可するためのミドルウェアの設定
 	corsMiddleware := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Access-Control-Allow-Origin", SITE_URL)
+			// w.Header().Set("Access-Control-Allow-Origin", SITE_URL)
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			w.Header().Set("Access-Control-Allow-Credentials", "true") // cookie用に追加
