@@ -24,7 +24,7 @@ type Plans struct {
 type CreatePlansData struct {
 	Name              string `json:"name"`
 	Explanation       string `json:"explanation"`
-	Price             string `json:"price"`
+	Price             int    `json:"price"`
 	Image             string `json:"image"`
 	StripePriceID     string `json:"stripe_price_id"`
 	Delivery_interval string `json:"delivery_interval"`
@@ -96,7 +96,7 @@ func CreatePlan(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image, stripe_price_id, delivery_interval) VALUES(?, ?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image, stripe_price_id, delivery_interval) VALUES(?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
