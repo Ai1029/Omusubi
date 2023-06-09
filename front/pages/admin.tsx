@@ -138,13 +138,13 @@ const PlanForm = ({ data, apiURL }: any) => {
             />
             <p>定期便プラン金額</p>
             <input
-              type="text"
+              type="number"
               name="price"
               value={plan.price}
               onChange={(event) =>
                 setPlan((prevPlan) => ({
                   ...prevPlan,
-                  price: event.target.value,
+                  price: Number(event.target.value),
                 }))
               }
               className="border border-gray-300 rounded-md p-2 w-full"
