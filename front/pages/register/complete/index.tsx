@@ -28,24 +28,21 @@ const CartRegister: NextPage = () => {
 					}
 					switch (paymentIntent.status) {
 						case "succeeded":
-						const orderItem = localStorage.getItem("order-item");
-						const cartItems = localStorage.getItem("cart-items");
-						if (orderItem && cartItems) {
-							const orderItemObj = JSON.parse(orderItem);
-							const cartItemsObj = JSON.parse(cartItems);
-							const orderPlanId = orderItemObj.plan.id;
-							const orderReceivedUserId = orderItemObj.receivedUser.id;
-							const updateCartItems = cartItemsObj.filter((item: any) => item.plan.id !== orderPlanId || item.receivedUser.id !== orderReceivedUserId);
-							localStorage.setItem("cart-items", JSON.stringify(updateCartItems));
-						}
-							//setCart((prevCart: any) => {
-							//if (!Array.isArray(prevCart)) {
-							//prevCart = []; // 配列でない場合は空の配列を使用
-							//}
-							//const updatedCart = prevCart.filter((item: any) => item.id !== planId);
-							//localStorage.setItem("cart-items", JSON.stringify(updatedCart));
-							//return updatedCart;
-							//});
+							const orderItem = localStorage.getItem("order-item");
+							const cartItems = localStorage.getItem("cart-items");
+							if (orderItem && cartItems) {
+								const orderItemObj = JSON.parse(orderItem);
+								const cartItemsObj = JSON.parse(cartItems);
+								const orderPlanId = orderItemObj.plan.id;
+								const orderReceivedUserId = orderItemObj.receivedUser.id;
+								const updateCartItems = cartItemsObj.filter((item: any) => item.plan.id !== orderPlanId || item.receivedUser.id !== orderReceivedUserId);
+								localStorage.setItem("cart-items", JSON.stringify(updateCartItems));
+								setCart(updateCartItems);
+								if (updateCartItems.length > 0) {
+									console.log(updateCartItems);
+									console.log(updateCartItems.length);
+								}
+							}
 							break;
 
 						case "processing":

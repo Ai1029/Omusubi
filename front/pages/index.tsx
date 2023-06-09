@@ -1,14 +1,13 @@
 import Image from "next/image";
-import React from "react";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
-import Shop from "@/components/Shop";
+import Plan from "@/components/Plan";
 import Delivery from "@/components/Delivery";
 import Orderhistory from "@/components/Orderhistory";
 
-type Plan = {
+type TypePlan = {
 	id: number;
 	name: string;
 	explanation: string;
@@ -16,7 +15,7 @@ type Plan = {
 	image: string;
 	stripe_price_id: string;
 };
-type User = {
+type TypeUser = {
 	id: number;
 	name: string;
 	email: string;
@@ -29,23 +28,24 @@ type User = {
 	is_owner: boolean;
 	is_virtual_user: boolean;
 };
-type PlanProps = {
-	data: Plan[];
-	family: User[];
+type Props = {
+	planList: TypePlan[];
+	family: TypeUser[];
 };
-
-const HOME: NextPage<PlanProps> = ({ data, family }) => {
+const HOME: NextPage<Props> = ({planList, family}) => {
 	return (
 		<Layout>
 			<main>
 				<Topimage />
 				<Delivery />
-				<Shop data={data} family={family} />
+				<Plan planList={planList} family={family}/>
 				<Orderhistory />
 			</main>
 		</Layout>
 	);
 };
+
+export default HOME;
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -55,18 +55,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		const family = _family.data;
 		return {
 			props: {
-				data: res.data,
+				planList: res.data,
 				family: family,
 			},
 		};
 	} catch (error) {
-		console.error("データが取得できません", error);
+		console.error("データが取得できません",error);
 		return {
 			props: {
-				data: null,
+				planList: null,
+				family: null,
 			},
 		};
 	}
 };
-
-export default HOME;
