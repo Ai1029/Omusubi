@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import { auth } from "../../firebase/firebase";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import axios from "axios";
