@@ -12,26 +12,28 @@ import (
 )
 
 type Plans struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	Explanation   string `json:"explanation"`
-	Price         string `json:"price"`
-	Image         string `json:"image"`
-	StripePriceID string `json:"stripe_price_id"`
+	ID                int    `json:"id"`
+	Name              string `json:"name"`
+	Explanation       string `json:"explanation"`
+	Price             int    `json:"price"`
+	Image             string `json:"image"`
+	StripePriceID     string `json:"stripe_price_id"`
+	Delivery_interval string `json:"delivery_interval"`
 }
 
 type CreatePlansData struct {
-	Name          string `json:"name"`
-	Explanation   string `json:"explanation"`
-	Price         string `json:"price"`
-	Image         string `json:"image"`
-	StripePriceID string `json:"stripe_price_id"`
+	Name              string `json:"name"`
+	Explanation       string `json:"explanation"`
+	Price             string `json:"price"`
+	Image             string `json:"image"`
+	StripePriceID     string `json:"stripe_price_id"`
+	Delivery_interval string `json:"delivery_interval"`
 }
 
 func GetPlans(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT id, name, explanation, price, image, stripe_price_id FROM plans")
+		rows, err := db.Query("SELECT id, name, explanation, price, image, stripe_price_id, delivery_interval FROM plans")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -39,7 +41,7 @@ func GetPlans(db *sql.DB) http.HandlerFunc {
 		var plans []Plans
 		for rows.Next() {
 			var plan Plans
-			if err := rows.Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID); err != nil {
+			if err := rows.Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID, &plan.Delivery_interval); err != nil {
 				log.Fatal(err)
 			}
 			plans = append(plans, plan)
@@ -64,7 +66,7 @@ func GetPlan(db *sql.DB) http.HandlerFunc {
 
 		// アイテムIDに紐づくデータ取得
 		var plan Plans
-		err := db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
+		err := db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id, delivery_interval FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID, &plan.Delivery_interval)
 		if err != nil {
 			// エラーが発生した場合はエラーレスポンスを返す
 			w.WriteHeader(http.StatusInternalServerError)
@@ -94,13 +96,13 @@ func CreatePlan(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image, stripe_price_id) VALUES(?, ?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO plans(name, explanation, price, image, stripe_price_id, delivery_interval) VALUES(?, ?, ?, ?, ?)")
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
 		}
 
-		res, err := stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID)
+		res, err := stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID, data.Delivery_interval)
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
@@ -114,7 +116,7 @@ func CreatePlan(db *sql.DB) http.HandlerFunc {
 
 		var plan Plans
 
-		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", lastID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
+		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id, delivery_interval FROM plans WHERE id = ?", lastID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID, &plan.Delivery_interval)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -141,18 +143,18 @@ func PatchPlan(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("UPDATE plans SET name=?, explanation=?, price=?, image=?, stripe_price_id=? WHERE id=?")
+		stmt, err := db.Prepare("UPDATE plans SET name=?, explanation=?, price=?, image=?, stripe_price_id=?, delivery_interval=? WHERE id=?")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		_, err = stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID, id)
+		_, err = stmt.Exec(data.Name, data.Explanation, data.Price, data.Image, data.StripePriceID, data.Delivery_interval, id)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		var plan Plans
-		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID)
+		err = db.QueryRow("SELECT id, name, explanation, price, image, stripe_price_id, delivery_interval FROM plans WHERE id = ?", id).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price, &plan.Image, &plan.StripePriceID, &plan.Delivery_interval)
 		if err != nil {
 			log.Fatal(err)
 		}
