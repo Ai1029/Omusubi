@@ -45,7 +45,6 @@ type Plan = {
 };
 
 const PlanForm = ({ data, apiURL }: any) => {
-  console.log(apiURL);
   const [plan, setPlan] = useState<Plan>({
     name: "",
     explanation: "",
@@ -78,7 +77,7 @@ const PlanForm = ({ data, apiURL }: any) => {
     };
 
     try {
-      await axios.post("http://localhost:8080/plans", planData);
+      await axios.post(apiURL + "plans", planData);
       console.log("正しく保存されました");
       window.location.reload();
     } catch (error) {
@@ -97,7 +96,7 @@ const PlanForm = ({ data, apiURL }: any) => {
   const handleDelete = async (id: number) => {
     try {
       // データベースからデータを削除するリクエストを送信
-      await axios.delete(`http://localhost:8080/plan/${id}`);
+      await axios.delete(`${apiURL}plan/${id}`);
       console.log("データベースから削除されました");
       window.location.reload();
     } catch (error) {
