@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
-import { UserContext } from "@/pages/_app";
+// import { UserContext } from "@/pages/_app";
 
 type TypePlan = {
 	id: number;
@@ -37,7 +37,7 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const [cart, setCart] = useRecoilState(cartState);
 	const router = useRouter();
-	const { isLoggedIn } = useContext(UserContext);
+	// const { isLoggedIn } = useContext(UserContext);
 
 	useEffect(() => {
 		setIsMounted(true);
