@@ -50,7 +50,7 @@ func ShowCookie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-type ResultSession struct {
+type ResultUserID struct {
 	UserID int `json:"user_id"`
 }
 
@@ -58,19 +58,16 @@ type ResultSession struct {
 func CheckSession(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// クッキーからsessionIdを取得
-		fmt.Println("クッキーからsessionIdを取得")
 		cookie, err := r.Cookie("sessionId")
-		fmt.Println(cookie.Value)
 		if err != nil {
 			// セッションIDが存在しない場合はログインしていないと判断
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Unauthorized"))
 			return
 		}
-		fmt.Println("セッションレコードをデータベースから取得")
 
 		// セッションレコードをデータベースから取得
-		var data ResultSession
+		var data ResultUserID
 		err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", cookie.Value).Scan(&data.UserID)
 		if err != nil {
 			// セッションが見つからない場合はログインしていないと判断
@@ -78,8 +75,34 @@ func CheckSession(db *sql.DB) http.HandlerFunc {
 			w.Write([]byte("Unauthorized"))
 			return
 		}
-		fmt.Println("ユーザーがログインしていることを示すレスポンスを返す")
-		jsonData, err := json.Marshal(data)
+
+		// 同じfamily_idを持つユーザーを取得
+		rows, err := db.Query("SELECT * FROM users WHERE family_id IN (SELECT family_id FROM users WHERE id = ?)", data.UserID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		var users []User
+		for rows.Next() {
+			var user User
+			if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.UID, &user.FamilyID, &user.Phonetic, &user.Zipcode, &user.Prefecture, &user.City, &user.Town, &user.Apartment, &user.PhoneNumber, &user.IsOwner, &user.IsVirtualUser); err != nil {
+				log.Fatal(err)
+			}
+			users = append(users, user)
+		}
+
+		// レスポンスデータの作成
+		response := struct {
+			UserID int    `json:"user_id"`
+			Family []User `json:"family"`
+		}{
+			UserID: data.UserID,
+			Family: users,
+		}
+
+		// レスポンスをJSON形式で返す
+		jsonData, err := json.Marshal(response)
 		if err != nil {
 			// エラーハンドリング
 			fmt.Println(err)
@@ -87,10 +110,8 @@ func CheckSession(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// ユーザーがログインしていることを示すレスポンスを返す
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(jsonData)
-
 	}
 }
