@@ -22,7 +22,7 @@ type User struct {
 	Prefecture    string `json:"prefecture"`
 	City          string `json:"city"`
 	Town          string `json:"town"`
-	Apartment     string `json:"apartment"`
+	Apartment     *string `json:"apartment"`
 	PhoneNumber   string `json:"phone_number"`
 	IsOwner       bool   `json:"is_owner"`
 	IsVirtualUser bool   `json:"is_virtual_user"`
@@ -38,7 +38,7 @@ type CreateUser struct {
 	Prefecture  string `json:"prefecture"`
 	City        string `json:"city"`
 	Town        string `json:"town"`
-	Apartment   string `json:"apartment"`
+	Apartment   *string `json:"apartment"`
 	PhoneNumber string `json:"phone_number"`
 }
 
