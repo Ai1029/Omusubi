@@ -4,53 +4,53 @@ import { cartState, isLoggedInState, userIDState, familyState } from "@/state/at
 import axios from "axios";
 
 interface Props {
-	children: ReactNode;
+  children: ReactNode;
 }
 
 const AppBody = ({ children }: Props) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	const ENDPINST_URL = apiUrl + "check-session";
-	const [isOpen, setIsOpen] = useState(false);
-	const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
-	const [userID, setUserID] = useRecoilState(userIDState);
-	const [family, setFamily] = useRecoilState(familyState);
-	const [cart, setCart] = useRecoilState(cartState);
-	const [isMounted, setIsMounted] = useState(false);
-	//　ユーザーがログインしているかサーバーで確認する
-	useEffect(() => {
-		const checkSession = async () => {
-			try {
-				const response = await axios.get(ENDPINST_URL, {
-					withCredentials: true,
-				});
-				if (response.status === 200) {
-					setIsLoggedIn(true);
-				}
-				console.log(response.data);
-				const userID = response.data.user_id;
-				setUserID(userID);
-			} catch (error) {
-				console.error("Error checking session:", error);
-			}
-		};
-		checkSession();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const ENDPINST_URL = apiUrl + "check-session";
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
+  const [userID, setUserID] = useRecoilState(userIDState);
+  const [family, setFamily] = useRecoilState(familyState);
+  const [cart, setCart] = useRecoilState(cartState);
+  const [isMounted, setIsMounted] = useState(false);
+  //　ユーザーがログインしているかサーバーで確認する
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(ENDPINST_URL, {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setIsLoggedIn(true);
+        }
+        console.log(response.data);
+        const userID = response.data.user_id;
+        setUserID(userID);
+      } catch (error) {
+        console.error("Error checking session:", error);
+      }
+    };
+    checkSession();
 
-		const storedValue = localStorage.getItem("cart-items");
-		if (storedValue) {
-			const parsedCart = JSON.parse(storedValue);
-			setCart(parsedCart);
-		}
-		setIsMounted(true);
-	}, []);
-	if (!isMounted) {
-		return null; // マウント前は何も表示せずにロード中とする
-	}
+    const storedValue = localStorage.getItem("cart-items");
+    if (storedValue) {
+      const parsedCart = JSON.parse(storedValue);
+      setCart(parsedCart);
+    }
+    setIsMounted(true);
+  }, []);
+  if (!isMounted) {
+    return null; // マウント前は何も表示せずにロード中とする
+  }
 
-	return (
-		<>
-			<div>{children}</div>
-		</>
-	);
+  return (
+    <>
+      <div>{children}</div>
+    </>
+  );
 };
 
 export default AppBody;
