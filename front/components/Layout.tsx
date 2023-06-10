@@ -59,15 +59,17 @@ const Layout = ({ children }: Props) => {
 										</Link>
 									</li>
 									<li className="py-3 border-b">
-										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+										<Link href="/mypage" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											MyPage
 										</Link>
 									</li>
+									{/*
 									<li className="py-3 border-b">
 										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											おすすめ登録
 										</Link>
 									</li>
+									*/}
 									<li className="py-3 border-b">
 										<Link href="/cart" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											カートを見る
@@ -99,12 +101,14 @@ export const Navbar: React.FC<NavProps> = ({ cartCount }) => {
 			<Link href="/" className="hover:text-selected-text transition-all duration-300">
 				TOP
 			</Link>
-			<Link href="/login" className="hover:text-selected-text transition-all duration-300">
+			<Link href="/mypage" className="hover:text-selected-text transition-all duration-300">
 				MyPage
 			</Link>
+			{/*
 			<Link href="#" className="hover:text-selected-text transition-all duration-300">
 				おすすめ登録
 			</Link>
+			*/}
 			<Link href="/cart" className="hover:text-selected-text transition-all duration-300">
 				カートを見る
 				<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cartCount}</span>
