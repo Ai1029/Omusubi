@@ -11,54 +11,54 @@ import Delivery from "@/components/Delivery";
 import Orderhistory from "@/components/Orderhistory";
 
 type TypePlan = {
-	id: number;
-	name: string;
-	explanation: string;
-	price: string;
-	image: string;
-	stripe_price_id: string;
+  id: number;
+  name: string;
+  explanation: string;
+  price: string;
+  image: string;
+  stripe_price_id: string;
 };
 
 type Props = {
-	planList: TypePlan[];
+  planList: TypePlan[];
 };
 
 const HOME: NextPage<Props> = ({ planList }) => {
-	const [isMounted, setIsMounted] = useState(false);
-	const family = useRecoilValue(familyState);
+  const [isMounted, setIsMounted] = useState(false);
+  const family = useRecoilValue(familyState);
 
-	useEffect(() => {
-		setIsMounted(true);
-	}, []);
-	if (!isMounted) {
-		return null; // マウント前は何も表示せずにロード中とする
-	}
-	console.log(family);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  if (!isMounted) {
+    return null; // マウント前は何も表示せずにロード中とする
+  }
+  console.log(family);
 
-	return (
-		<Layout>
-			<Topimage />
-			<Delivery />
-			<Plan planList={planList} />
-			<Orderhistory />
-		</Layout>
-	);
+  return (
+    <Layout>
+      <Topimage />
+      <Delivery />
+      <Plan planList={planList} />
+      <Orderhistory />
+    </Layout>
+  );
 };
 
 export default HOME;
 
 // プラン一覧をgetする
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	let plan: TypePlan[] = [];
-	try {
-		const _plan = await axios.get(`${process.env.API_URL_SSR}/plans`);
-		plan = _plan.data;
-	} catch (error) {
-		console.error("データが取得できません", error);
-	}
-	return {
-		props: {
-			planList: plan,
-		},
-	};
+  let plan: TypePlan[] = [];
+  try {
+    const _plan = await axios.get(`${process.env.API_URL_SSR}/plans`);
+    plan = _plan.data;
+  } catch (error) {
+    console.error("データが取得できません", error);
+  }
+  return {
+    props: {
+      planList: plan,
+    },
+  };
 };
