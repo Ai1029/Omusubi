@@ -21,7 +21,7 @@ func SetSessionID(w http.ResponseWriter, r *http.Request) {
 
 	// Cookieを作成
 	cookie := &http.Cookie{
-		Name:     "sessionID",
+		Name:     "sessionId",
 		Value:    sessionID,
 		Path:     "/",
 		Expires:  expiration,
@@ -38,7 +38,7 @@ func SetSessionID(w http.ResponseWriter, r *http.Request) {
 
 // セットしたcookieの確認
 func ShowCookie(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("sessionID")
+	cookie, err := r.Cookie("sessionId")
 	if err != nil {
 		log.Fatal("Cookie: ", err)
 	}
