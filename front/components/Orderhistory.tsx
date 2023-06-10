@@ -23,9 +23,9 @@ const data = [
 const Orderhistory = () => {
   return (
     <>
-      <div className="container mt-10 flex justify-between items-center mx-auto px-8 md:px-14 lg:px-24 w-full mb-10">
+      <div className="container mt-10 mx-auto px-8 md:px-14 lg:px-24 w-full mb-10">
         <section>
-          <p className="second-title mb-5">注文履歴</p>
+          <p className="second-title-ja mb-5">注文履歴</p>
 
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
@@ -71,7 +71,7 @@ const Orderhistory = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                           〇〇様に〇〇個、〇〇様に〇〇個お届け
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <a
                             className="text-blue-500 hover:text-blue-700"
                             href="#"
