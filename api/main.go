@@ -25,7 +25,6 @@ func main() {
 	if os.Getenv("DB_ENV") == "production" {
 		SITE_URL = os.Getenv("SITE_URL")
 	}
-
 	if err != nil {
 		panic(err)
 	}
@@ -55,6 +54,8 @@ func main() {
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
+	r.HandleFunc("/users", handlers.UpdateUser(db)).Methods("PATCH")
+	r.HandleFunc("/family/{id}", handlers.GetFamily(db)).Methods("GET")
 	r.HandleFunc("/createsubscription", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
 	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("POST")
 	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("GET")
@@ -63,10 +64,7 @@ func main() {
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")
 	r.HandleFunc("/plan/{id}", handlers.PatchPlan(db)).Methods("PATCH")
 	r.HandleFunc("/plan/{id}", handlers.DeletePlan(db)).Methods("DELETE")
-	r.HandleFunc("/orderdetails", handlers.GetOrderdetails(db)).Methods("GET")
-	r.HandleFunc("/orderdetail/{id}", handlers.GetOrderdetail(db)).Methods("GET")
-	r.HandleFunc("/orderdetails", handlers.CreateOrderdetail(db)).Methods("POST")
-	r.HandleFunc("/login", handlers.Login(db)).Methods("POST")
+	r.HandleFunc("/login", handlers.Login(db))
 	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
 	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
@@ -76,6 +74,7 @@ func main() {
 	r.HandleFunc("/session", handlers.SetSessionID)
 	r.HandleFunc("/cookie", handlers.ShowCookie)
 	r.HandleFunc("/check-session", handlers.CheckSession)
+
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }

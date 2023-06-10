@@ -3,8 +3,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { ReactNode, useState, useEffect } from "react";
 import React from "react";
-import { atom, useRecoilValue, useRecoilState } from "recoil";
-import { recoilPersist } from "recoil-persist";
+import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
 
 interface Props {
@@ -16,16 +15,13 @@ const Layout = ({ children }: Props) => {
 	const [cart, setCart] = useRecoilState(cartState);
 	const [isMounted, setIsMounted] = useState(false);
 	useEffect(() => {
-		const storedValue = localStorage.getItem("recoil-persist");
+		const storedValue = localStorage.getItem("cart-items");
 		if (storedValue) {
 			const parsedCart = JSON.parse(storedValue);
 			setCart(parsedCart);
-		} else {
-			setCart(0);
 		}
 		setIsMounted(true);
-	}, [setCart]);
-
+	}, []);
 	if (!isMounted) {
 		return null; // マウント前は何も表示せずにロード中とする
 	}
@@ -63,15 +59,17 @@ const Layout = ({ children }: Props) => {
 										</Link>
 									</li>
 									<li className="py-3 border-b">
-										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+										<Link href="/mypage" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											MyPage
 										</Link>
 									</li>
+									{/*
 									<li className="py-3 border-b">
 										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											おすすめ登録
 										</Link>
 									</li>
+									*/}
 									<li className="py-3 border-b">
 										<Link href="/cart" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											カートを見る
@@ -80,7 +78,7 @@ const Layout = ({ children }: Props) => {
 									</li>
 									<li className="py-3">
 										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											お問い合わせ
+											サインイン
 										</Link>
 									</li>
 								</ul>
@@ -103,12 +101,14 @@ export const Navbar: React.FC<NavProps> = ({ cartCount }) => {
 			<Link href="/" className="hover:text-selected-text transition-all duration-300">
 				TOP
 			</Link>
-			<Link href="/login" className="hover:text-selected-text transition-all duration-300">
+			<Link href="/mypage" className="hover:text-selected-text transition-all duration-300">
 				MyPage
 			</Link>
+			{/*
 			<Link href="#" className="hover:text-selected-text transition-all duration-300">
 				おすすめ登録
 			</Link>
+			*/}
 			<Link href="/cart" className="hover:text-selected-text transition-all duration-300">
 				カートを見る
 				<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cartCount}</span>
