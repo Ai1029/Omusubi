@@ -11,17 +11,17 @@ import Link from "next/link";
 import Button from "@/components/Button";
 
 type Inputs = {
-	name: string;
-	email: string;
-	password: string;
+  name: string;
+  email: string;
+  password: string;
 };
 
 type Props = {
-	apiURL: string;
+  apiURL: string;
 };
 
 const SignUp: NextPage = () => {
-	const ENDPOINT_URL_USER = apiURL + "users";
+  const ENDPOINT_URL_USER = API_URL + "users";
   const [authError, setAuthError] = useState(false);
   const router = useRouter();
   const [inputs, setInputs] = useState<Inputs>({
@@ -120,10 +120,10 @@ const SignUp: NextPage = () => {
 export default SignUp;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-	const apiURL = process.env.API_URL;
-	return {
-		props: {
-			apiURL: apiURL,
-		},
-	};
+  const apiURL = process.env.API_URL;
+  return {
+    props: {
+      apiURL: apiURL,
+    },
+  };
 };
