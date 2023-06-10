@@ -4,8 +4,8 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { parseCookies } from "nookies";
-import { useRecoilState } from "recoil";
-import { cartState } from "@/state/atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { cartState, familyState } from "@/state/atom";
 import PlanCartBtn from "./PlanCartBtn";
 type TypePlan = {
   id: number;
@@ -19,23 +19,26 @@ type TypeUser = {
   id: number;
   name: string;
   email: string;
-  postal_code: string;
-  state: string;
+  uid: string;
+  family_id: number;
+  phonetic: string;
+  zipcode: string;
+  prefecture: string;
   city: string;
-  line1: string;
-  line2: string;
+  town: string;
+  apartment: string | null;
   phone_number: string;
   is_owner: boolean;
   is_virtual_user: boolean;
 };
 type Props = {
   plan: TypePlan;
-  family: TypeUser[];
 };
 
-export const PlanItem: NextPage<Props> = ({ plan, family }) => {
+export const PlanItem: NextPage<Props> = ({ plan }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCart] = useRecoilState(cartState);
+	const family = useRecoilValue(familyState);
   const router = useRouter();
 //   const { isLoggedIn } = useContext(UserContext);
 
