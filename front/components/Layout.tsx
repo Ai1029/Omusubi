@@ -1,9 +1,10 @@
 import Head from "next/head";
 import Link from "next/link";
 import React, { ReactNode, useState, useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { cartState, isLoggedInState, userIDState, familyState } from "@/state/atom";
 import axios from "axios";
+import AppBody from "./AppBody";
 
 interface Props {
 	children: ReactNode;
@@ -13,36 +14,12 @@ const Layout = ({ children }: Props) => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	const ENDPINST_URL = apiUrl + "check-session";
 	const [isOpen, setIsOpen] = useState(false);
-	const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
-	const [userID, setUserID] = useRecoilState(userIDState);
-	const [family, setFamily] = useRecoilState(familyState);
-	const [cart, setCart] = useRecoilState(cartState);
+	const userID = useRecoilValue(userIDState);
+	const family = useRecoilValue(familyState);
+	const cart = useRecoilValue(cartState);
 	const [isMounted, setIsMounted] = useState(false);
 	//　ユーザーがログインしているかサーバーで確認する
 	useEffect(() => {
-		const checkSession = async () => {
-			try {
-				const response = await axios.get(ENDPINST_URL, {
-					withCredentials: true,
-				});
-				if (response.status === 200) {
-					setIsLoggedIn(true);
-				}
-				console.log(response.data);
-				const userID = response.data.user_id;
-				setUserID(userID);
-			} catch (error) {
-				console.error("Error checking session:", error);
-			}
-		};
-
-		checkSession();
-
-		const storedValue = localStorage.getItem("cart-items");
-		if (storedValue) {
-			const parsedCart = JSON.parse(storedValue);
-			setCart(parsedCart);
-		}
 		setIsMounted(true);
 	}, []);
 	if (!isMounted) {
@@ -56,61 +33,63 @@ const Layout = ({ children }: Props) => {
 				<link rel="icon" href="/favicon.ico"></link>
 				<title>Omusubi</title>
 			</Head>
-			<header className="py-6 bg-body-yellow">
-				<div className="container mx-auto flex justify-between items-center px-8 md:px-14 lg:px-24 w-full">
-					<Link href="/" className="hover:opacity-50">
-						<img src="/images/logo.png" className="w-[150px] h-auto" alt="画像" />
-					</Link>
+			<AppBody>
+				<header className="py-6 bg-body-yellow">
+					<div className="container mx-auto flex justify-between items-center px-8 md:px-14 lg:px-24 w-full">
+						<Link href="/" className="hover:opacity-50">
+							<img src="/images/logo.png" className="w-[150px] h-auto" alt="画像" />
+						</Link>
 
-					<div className="hidden md:block">
-						<Navbar cartCount={cart.length > 0 ? cart.length : 0} />
-					</div>
-
-					<div className="md:hidden">
-						<div>
-							<button onClick={() => setIsOpen(!isOpen)} className="inline-block text-gray-600 hover:text-black focus:text-black focus:outline-none">
-								{isOpen ? <i className="fa-solid fa-xmark fa-2x"></i> : <i className="fa-solid fa-bars fa-2x"></i>}
-							</button>
+						<div className="hidden md:block">
+							<Navbar cartCount={cart.length > 0 ? cart.length : 0} />
 						</div>
 
-						<div>
-							<div className={`md:flex md:items-center md:w-auto ${isOpen ? "block" : "hidden"}`}>
-								<ul className="fixed left-0 px-8 mt-7 bg-body-yellow w-full text-center">
-									<li className="py-3 border-b">
-										<Link href="/" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											TOP
-										</Link>
-									</li>
-									<li className="py-3 border-b">
-										<Link href="/mypage" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											MyPage
-										</Link>
-									</li>
-									{/*
+						<div className="md:hidden">
+							<div>
+								<button onClick={() => setIsOpen(!isOpen)} className="inline-block text-gray-600 hover:text-black focus:text-black focus:outline-none">
+									{isOpen ? <i className="fa-solid fa-xmark fa-2x"></i> : <i className="fa-solid fa-bars fa-2x"></i>}
+								</button>
+							</div>
+
+							<div>
+								<div className={`md:flex md:items-center md:w-auto ${isOpen ? "block" : "hidden"}`}>
+									<ul className="fixed left-0 px-8 mt-7 bg-body-yellow w-full text-center">
+										<li className="py-3 border-b">
+											<Link href="/" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+												TOP
+											</Link>
+										</li>
+										<li className="py-3 border-b">
+											<Link href="/mypage" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+												MyPage
+											</Link>
+										</li>
+										{/*
 									<li className="py-3 border-b">
 										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
 											おすすめ登録
 										</Link>
 									</li>
 									*/}
-									<li className="py-3 border-b">
-										<Link href="/cart" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											カートを見る
-											<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cart.length > 0 ? cart.length : 0}</span>
-										</Link>
-									</li>
-									<li className="py-3">
-										<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-											ログイン
-										</Link>
-									</li>
-								</ul>
+										<li className="py-3 border-b">
+											<Link href="/cart" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+												カートを見る
+												<span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cart.length > 0 ? cart.length : 0}</span>
+											</Link>
+										</li>
+										<li className="py-3">
+											<Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+												ログイン
+											</Link>
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</header>
-			<main>{children}</main>
+				</header>
+				<main>{children}</main>
+			</AppBody>
 		</>
 	);
 };

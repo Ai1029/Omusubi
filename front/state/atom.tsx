@@ -10,17 +10,20 @@ type Plan = {
 };
 
 type User = {
-	id: number;
-	name: string;
-	email: string;
-	postal_code: string;
-	state: string;
-	city: string;
-	line1: string;
-	line2: string;
-	phone_number: string;
-	is_owner: boolean;
-	is_virtual_user: boolean;
+  id: number;
+  name: string;
+  email: string;
+  uid: string;
+  family_id: number;
+  phonetic: string;
+  zipcode: string;
+  prefecture: string;
+  city: string;
+  town: string;
+  apartment: string | null;
+  phone_number: string;
+  is_owner: boolean;
+  is_virtual_user: boolean;
 };
 type TypeUser = {
   id: number;

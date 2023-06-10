@@ -47,11 +47,11 @@ const CartPage: NextPage = () => {
             <div>
               <h3>配送先</h3>
               <p>{item.receivedUser.name}</p>
-              <p>{item.receivedUser.postal_code}</p>
-              <p>{item.receivedUser.state}</p>
+              <p>{item.receivedUser.zipcode}</p>
+              <p>{item.receivedUser.prefecture}</p>
               <p>{item.receivedUser.city}</p>
-              <p>{item.receivedUser.line1}</p>
-              <p>{item.receivedUser.line2}</p>
+              <p>{item.receivedUser.town}</p>
+              <p>{item.receivedUser.apartment}</p>
               <p>{item.receivedUser.phone_number}</p>
             </div>
             <button onClick={() => handlePurchase(item)}>購入する</button>
