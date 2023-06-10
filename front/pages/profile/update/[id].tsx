@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
-import { parseCookies } from "nookies";
 import axios from "axios";
 import Link from "next/link";
 import Layout from "@/components/Layout";
@@ -21,8 +20,7 @@ type Props = {
 	user: InputProfile;
 	isProfileExist: boolean;
 };
-const Profile: NextPage<Props> = ({ apiURL, user, isProfileExist }) => {
-	console.log(isProfileExist);
+const UpdateProfile: NextPage<Props> = ({ apiURL, user, isProfileExist }) => {
 	const ENDPOINT_URL = apiURL + "users";
 	const [successMessage, setSuccessMessage] = useState("");
 	const [inputProfile, setInputProfile] = useState<InputProfile>({
@@ -74,7 +72,9 @@ const Profile: NextPage<Props> = ({ apiURL, user, isProfileExist }) => {
 					<div className="text-center mb-10">
 						<p className="mb-10">{successMessage}</p>
 						<div className="flex justify-center">
-							<Link href="/" className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center">TOPページ</Link>
+							<Link href="/" className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center">
+								TOPページ
+							</Link>
 						</div>
 					</div>
 				)}
@@ -140,18 +140,28 @@ const Profile: NextPage<Props> = ({ apiURL, user, isProfileExist }) => {
 	);
 };
 
-export default Profile;
+export default UpdateProfile;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	const cookies = parseCookies(context);
-	const userID = cookies.id;
+	const { id } = context.query;
 	const apiURL = process.env.API_URL;
-	let user = null; // 初期化
+	let user = {
+		id: 0,
+		name: "",
+		family_id: 0,
+		phonetic: "",
+		zipcode: "",
+		prefecture: "",
+		city: "",
+		town: "",
+		apartment: "",
+		phone_number: "",
+	};
 	let isProfileExist = false; // 初期化
 
-	if (userID !== undefined) {
+	if (id !== undefined) {
 		try {
-			const response = await axios.get(`${process.env.API_URL_SSR}/users/${userID}`);
+			const response = await axios.get(`${process.env.API_URL_SSR}/users/${id}`);
 			const data = response.data;
 			user = data;
 			const keysToCheck = ["name", "phonetic", "zipcode", "prefecture", "city", "town", "phone_number"];
