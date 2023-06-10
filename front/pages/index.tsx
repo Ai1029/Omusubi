@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
+import { parseCookies } from "nookies";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Plan from "@/components/Plan";
@@ -31,16 +32,17 @@ type TypeUser = {
 type Props = {
 	planList: TypePlan[];
 	family: TypeUser[];
+	cookies: any;
 };
-const HOME: NextPage<Props> = ({planList, family}) => {
+const HOME: NextPage<Props> = ({ planList, family, cookies }) => {
+	console.log(planList);
+	console.log(cookies.id);
 	return (
 		<Layout>
-			<main>
-				<Topimage />
-				<Delivery />
-				<Plan planList={planList} family={family}/>
-				<Orderhistory />
-			</main>
+			<Topimage />
+			<Delivery />
+			<Plan planList={planList} family={family} />
+			<Orderhistory />
 		</Layout>
 	);
 };
@@ -48,23 +50,30 @@ const HOME: NextPage<Props> = ({planList, family}) => {
 export default HOME;
 
 // プラン一覧をgetする
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const cookies = parseCookies(context);
+	const userID = cookies.id;
+	let family: any[] = [];
 	try {
-		const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
-		const _family = await axios.get(`${process.env.API_URL_SSR}/cartusers/1`);
-		const family = _family.data;
+		const plan = await axios.get(`${process.env.API_URL_SSR}/plans`);
+		if (userID !== undefined) {
+			const _family = await axios.get(`${process.env.API_URL_SSR}/family/${userID}`);
+			family = _family.data;
+		}
 		return {
 			props: {
-				planList: res.data,
+				planList: plan.data,
 				family: family,
+				cookies: cookies,
 			},
 		};
 	} catch (error) {
-		console.error("データが取得できません",error);
+		console.error("データが取得できません");
 		return {
 			props: {
 				planList: null,
 				family: null,
+				cookies: null,
 			},
 		};
 	}
