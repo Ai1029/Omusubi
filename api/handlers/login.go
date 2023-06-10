@@ -9,33 +9,33 @@ import (
 
 	"net/http"
 
-	firebase"firebase.google.com/go"
+	firebase "firebase.google.com/go"
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/api/option"
 )
 
 type LoginUser struct {
-	ID           int     `json:"id"`
-	Name         string  `json:"name"`
-	Email        string  `json:"email"`
-	UID          string  `json:"uid"`
-	FamilyID     int     `json:"family_id"`
-	Phonetic     string  `json:"phonetic"`
-	Zipcode      string  `json:"zipcode"`
-	Prefecture   string  `json:"prefecture"`
-	City         string  `json:"city"`
-	Town         string  `json:"town"`
-	Apartment    string  `json:"apartment"`
-	PhoneNumber  string  `json:"phone_number"`
-	IsOwner      bool    `json:"is_owner"`
-	IsVirtualUser bool    `json:"is_virtual_user"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	UID           string `json:"uid"`
+	FamilyID      int    `json:"family_id"`
+	Phonetic      string `json:"phonetic"`
+	Zipcode       string `json:"zipcode"`
+	Prefecture    string `json:"prefecture"`
+	City          string `json:"city"`
+	Town          string `json:"town"`
+	Apartment     string `json:"apartment"`
+	PhoneNumber   string `json:"phone_number"`
+	IsOwner       bool   `json:"is_owner"`
+	IsVirtualUser bool   `json:"is_virtual_user"`
 }
 
 type LoginedUser struct {
-	ID           int     `json:"id"`
-	FamilyID     int     `json:"family_id"`
-	IsOwner      bool    `json:"is_owner"`
-	IsVirtualUser bool    `json:"is_virtual_user"`
+	ID            int  `json:"id"`
+	FamilyID      int  `json:"family_id"`
+	IsOwner       bool `json:"is_owner"`
+	IsVirtualUser bool `json:"is_virtual_user"`
 }
 
 func Login(db *sql.DB) http.HandlerFunc {
@@ -88,4 +88,3 @@ func Login(db *sql.DB) http.HandlerFunc {
 
 	}
 }
-
