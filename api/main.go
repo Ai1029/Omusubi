@@ -25,7 +25,6 @@ func main() {
 	if os.Getenv("DB_ENV") == "production" {
 		SITE_URL = os.Getenv("SITE_URL")
 	}
-
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +64,7 @@ func main() {
 	r.HandleFunc("/plan/{id}", handlers.GetPlan(db)).Methods("GET")
 	r.HandleFunc("/plan/{id}", handlers.PatchPlan(db)).Methods("PATCH")
 	r.HandleFunc("/plan/{id}", handlers.DeletePlan(db)).Methods("DELETE")
-	r.HandleFunc("/login", handlers.Login(db)).Methods("POST")
+	r.HandleFunc("/login", handlers.Login(db))
 	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
 	r.HandleFunc("/subscriptions", handlers.GetSubscriptions(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
@@ -75,6 +74,7 @@ func main() {
 	r.HandleFunc("/session", handlers.SetSessionID)
 	r.HandleFunc("/cookie", handlers.ShowCookie)
 	r.HandleFunc("/check-session", handlers.CheckSession)
+
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
 }
