@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { sendEmailVerification } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
@@ -11,20 +11,21 @@ import Link from "next/link";
 import Button from "@/components/Button";
 
 type Inputs = {
-  name: string;
-  family_id: number;
-  email: string;
-  password: string;
+	name: string;
+	email: string;
+	password: string;
 };
 
-const ENDPOINT_URL = "http://localhost:8080/users";
+type Props = {
+	apiURL: string;
+};
 
 const SignUp: NextPage = () => {
+	const ENDPOINT_URL_USER = apiURL + "users";
   const [authError, setAuthError] = useState(false);
   const router = useRouter();
   const [inputs, setInputs] = useState<Inputs>({
     name: "",
-    family_id: 0,
     email: "",
     password: "",
   });
@@ -39,7 +40,6 @@ const SignUp: NextPage = () => {
         const createUser = {
           name: inputs.name,
           email: inputs.email,
-          family_id: inputs.family_id,
           uid: user.uid,
         };
 
@@ -55,7 +55,7 @@ const SignUp: NextPage = () => {
         //   });
 
         try {
-          axios.post(ENDPOINT_URL, createUser).then((res) => {
+          axios.post(ENDPOINT_URL_USER, createUser).then((res) => {
             const targetId = res.data.id;
             // setCookie(null, "id", targetId, {
             //     maxAge: 1 * 1 * 60 * 60,
@@ -65,16 +65,13 @@ const SignUp: NextPage = () => {
             //     maxAge: 1 * 1 * 60 * 60,
             //     path: "/",
             // })
-            router.push("/");
+            router.push("/profile/update");
           });
         } catch (error) {
           console.log(error);
         }
       }
     );
-  };
-  const handleClick = () => {
-    console.log("ボタンがクリックされました！");
   };
   return (
     <Navbar>
@@ -121,3 +118,12 @@ const SignUp: NextPage = () => {
 };
 
 export default SignUp;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+	const apiURL = process.env.API_URL;
+	return {
+		props: {
+			apiURL: apiURL,
+		},
+	};
+};

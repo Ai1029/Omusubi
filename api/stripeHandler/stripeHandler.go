@@ -20,7 +20,7 @@ type Plan struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	Explanation   string `json:"explanation"`
-	Price         string `json:"price"`
+	Price         int    `json:"price"`
 	Image         string `json:"image"`
 	StripePriceID string `json:"stripe_price_id"`
 }
@@ -42,8 +42,8 @@ type User struct {
 }
 type OrderData struct {
 	Plan         Plan `json:"plan"`
-	PaidUser     User `json:"paiduser"`
-	ReceivedUser User `json:"receiveduser"`
+	PaidUser     User `json:"paidUser"`
+	ReceivedUser User `json:"receivedUser"`
 }
 type TypeStripePaymentIntent struct {
 	PaymentIntentID string `json:"paymentIntent"`
@@ -67,6 +67,7 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 
 		// リクエストボディの読み取り
 		err := json.NewDecoder(r.Body).Decode(&data)
+		fmt.Println(err)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -111,34 +112,34 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 
 		// 顧客がいなかったら新規作成する(未実装：今は決済ごとに顧客を新規作成している)
 		if !foundUser {
-		createUserParams := &stripe.CustomerParams{
-			Email: stripe.String(data.PaidUser.Email),
-			Name:  stripe.String(data.PaidUser.Name),
-			Address: &stripe.AddressParams{
-				Country:    stripe.String("JP"),
-				State:      stripe.String(data.PaidUser.State),
-				City:       stripe.String(data.PaidUser.City),
-				Line1:      stripe.String(data.PaidUser.Line1),
-				Line2:      stripe.String(data.PaidUser.Line2),
-				PostalCode: stripe.String(data.PaidUser.PostalCode),
-			},
-			// Shipping: &stripe.CustomerShippingParams{
-			// Name: stripe.String(data.ReceivedUser.Name),
-			// Address: &stripe.AddressParams{
-			// Country:    stripe.String("JP"),
-			// State:      stripe.String(data.ReceivedUser.State),
-			// City:       stripe.String(data.ReceivedUser.City),
-			// Line1:      stripe.String(data.ReceivedUser.Line1),
-			// Line2:      stripe.String(data.ReceivedUser.Line2),
-			// PostalCode: stripe.String(data.ReceivedUser.PostalCode),
-			// },
-			// },
-			Phone: stripe.String(data.PaidUser.PhoneNumber),
-		}
-		// createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
-		// createUserParams.AddMetadata("ReceivedUser", strconv.Itoa(data.ReceivedUser.ID))
-		c, _ := customer.New(createUserParams)
-		customerID = c.ID
+			createUserParams := &stripe.CustomerParams{
+				Email: stripe.String(data.PaidUser.Email),
+				Name:  stripe.String(data.PaidUser.Name),
+				Address: &stripe.AddressParams{
+					Country:    stripe.String("JP"),
+					State:      stripe.String(data.PaidUser.State),
+					City:       stripe.String(data.PaidUser.City),
+					Line1:      stripe.String(data.PaidUser.Line1),
+					Line2:      stripe.String(data.PaidUser.Line2),
+					PostalCode: stripe.String(data.PaidUser.PostalCode),
+				},
+				// Shipping: &stripe.CustomerShippingParams{
+				// Name: stripe.String(data.ReceivedUser.Name),
+				// Address: &stripe.AddressParams{
+				// Country:    stripe.String("JP"),
+				// State:      stripe.String(data.ReceivedUser.State),
+				// City:       stripe.String(data.ReceivedUser.City),
+				// Line1:      stripe.String(data.ReceivedUser.Line1),
+				// Line2:      stripe.String(data.ReceivedUser.Line2),
+				// PostalCode: stripe.String(data.ReceivedUser.PostalCode),
+				// },
+				// },
+				Phone: stripe.String(data.PaidUser.PhoneNumber),
+			}
+			// createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
+			// createUserParams.AddMetadata("ReceivedUser", strconv.Itoa(data.ReceivedUser.ID))
+			c, _ := customer.New(createUserParams)
+			customerID = c.ID
 		}
 
 		paymentSettings := &stripe.SubscriptionPaymentSettingsParams{

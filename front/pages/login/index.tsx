@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 import { useRouter } from "next/router";
@@ -10,20 +10,22 @@ import Link from "next/link";
 import Button from "@/components/Button";
 
 type Inputs = {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 };
 
-const ENDPOINT_URL = "http://localhost:8080/login";
+type Props = {
+	apiURL: string;
+};
 
-const LoginPage: NextPage = () => {
-  const [authError, setAuthError] = useState(false);
-  const [dbError, setDbError] = useState(false);
-  const router = useRouter();
-  const [inputs, setInputs] = useState<Inputs>({ email: "", password: "" });
-  const onLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+const LoginPage: NextPage<Props> = ({ apiURL }) => {
+	const ENDPOINT_URL = apiURL + "login";
+	const [authError, setAuthError] = useState(false);
+	const [dbError, setDbError] = useState(false);
+	const router = useRouter();
+	const [inputs, setInputs] = useState<Inputs>({ email: "", password: "" });
+	const onLogin = async (e: React.FormEvent) => {
+		e.preventDefault();
     signInWithEmailAndPassword(auth, inputs.email, inputs.password)
       .then(({ user }: any) => {
         user.getIdToken().then((idToken: any) => {
@@ -110,3 +112,12 @@ const LoginPage: NextPage = () => {
 };
 
 export default LoginPage;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+	const apiURL = process.env.API_URL;
+	return {
+		props: {
+			apiURL: apiURL,
+		},
+	};
+};

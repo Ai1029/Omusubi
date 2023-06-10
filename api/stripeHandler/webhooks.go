@@ -77,7 +77,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 		// 顧客がサブスクリプションを作成
 		case "customer.subscription.updated":
 			fmt.Println("==================customer.subscription.updated==================")
-			fmt.Println(string(eventJSON))
+			// fmt.Println(string(eventJSON))
 
 			var data map[string]interface{}
 			err := json.Unmarshal([]byte(eventJSON), &data)
@@ -115,7 +115,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 		case "invoice.payment_succeeded":
 			// 支払いが正常に完了した
 			fmt.Println("==================invoice.payment_succeeded==================")
-			fmt.Println(string(eventJSON))
+			// fmt.Println(string(eventJSON))
 
 			var data map[string]interface{}
 			err := json.Unmarshal([]byte(eventJSON), &data)
@@ -126,11 +126,11 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 
 			// 指定のキーの値にアクセス
 			stripeInvoiceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
-			// paymentCreted := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(string)
+			paymentCreted := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(string)
 			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
 			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["subscription"].(string)
 			fmt.Println("Stripe Invoice ID:", stripeInvoiceID)
-			// fmt.Println("Payment Created:", paymentCreted)
+			fmt.Println("Payment Created:", paymentCreted)
 			fmt.Println("Stripe Price ID:", stripePriceID)
 			fmt.Println("Stripe Subscription ID:", stripeSubscriptionID)
 
