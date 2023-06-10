@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -46,17 +50,47 @@ func ShowCookie(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+type ResultSession struct {
+	UserID int `json:"user_id"`
+}
+
 // cookieにsessionIdが付与されているかを確認してユーザーがログインしているのか判断
-func CheckSession(w http.ResponseWriter, r *http.Request) {
-	// クッキーからセッションIDを取得
-	_, err := r.Cookie("sessionId")
-	if err != nil {
-		// セッションIDが存在しない場合はログインしていないと判断
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unauthorized"))
-		return
+func CheckSession(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// クッキーからsessionIdを取得
+		fmt.Println("クッキーからsessionIdを取得")
+		cookie, err := r.Cookie("sessionId")
+		fmt.Println(cookie.Value)
+		if err != nil {
+			// セッションIDが存在しない場合はログインしていないと判断
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized"))
+			return
+		}
+		fmt.Println("セッションレコードをデータベースから取得")
+
+		// セッションレコードをデータベースから取得
+		var data ResultSession
+		err = db.QueryRow("SELECT user_id FROM sessions WHERE session_id = ?", cookie.Value).Scan(&data.UserID)
+		if err != nil {
+			// セッションが見つからない場合はログインしていないと判断
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized"))
+			return
+		}
+		fmt.Println("ユーザーがログインしていることを示すレスポンスを返す")
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			// エラーハンドリング
+			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// ユーザーがログインしていることを示すレスポンスを返す
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(jsonData)
+
 	}
-	// レスポンスを返す
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
 }
