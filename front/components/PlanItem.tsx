@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { parseCookies } from "nookies";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
@@ -115,10 +116,6 @@ export const PlanItem: NextPage<Props> = ({ plan, family }) => {
 
 	const paidUser = family.find((user) => user.is_owner === true);
 
-	if (!paidUser) {
-		return null;
-	}
-
 	return (
 		<div>
 			<div>
@@ -127,16 +124,22 @@ export const PlanItem: NextPage<Props> = ({ plan, family }) => {
 			<h3>{plan.name}</h3>
 			<p>{plan.explanation}</p>
 			<p>{plan.price}円</p>
-			<div>
-				<ul>
-					{family.map((user) => (
-						<li key={user.id}>
-							<PlanCartBtn user={user} plan={plan} paidUser={paidUser} />
-						</li>
-					))}
-				</ul>
-				{family.length > 1 && <div>{hasAllFamilyIds ? <button onClick={() => removeFromCart(plan.id)}>まとめてカートから削除</button> : <button onClick={() => addToCart(plan.id)}>まとめてカートに追加</button>}</div>}
-			</div>
+			{family.length == 0 ? (
+				<div>
+					<Link href="/login">ログインしてカートに追加</Link>
+				</div>
+			) : (
+				<div>
+					<ul>
+						{family.map((user) => (
+							<li key={user.id}>
+								<PlanCartBtn user={user} plan={plan} paidUser={paidUser!} />
+							</li>
+						))}
+					</ul>
+					{family.length > 1 && <div>{hasAllFamilyIds ? <button onClick={() => removeFromCart(plan.id)}>まとめてカートから削除</button> : <button onClick={() => addToCart(plan.id)}>まとめてカートに追加</button>}</div>}
+				</div>
+			)}
 		</div>
 	);
 };
