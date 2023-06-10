@@ -56,7 +56,6 @@ func main() {
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
 	r.HandleFunc("/users", handlers.CreateUsers(db)).Methods("POST")
 	r.HandleFunc("/family/{id}", handlers.GetFamily(db)).Methods("GET")
-	r.HandleFunc("/family", handlers.CreateFamily(db)).Methods("POST")
 	r.HandleFunc("/createsubscription", stripeHandler.CreateCheckoutSession(db)).Methods("POST")
 	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("POST")
 	r.HandleFunc("/stripe_webhooks", stripeHandler.StripeWebhook(db)).Methods("GET")
