@@ -12,6 +12,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Family struct {
+	ID          int `json:"id"`
+	OwnerUserID int `json:"owneruser_id"`
+}
+
 // 同じファミリーIDを持つユーザーを取得
 func GetFamily(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -50,44 +55,22 @@ func GetFamily(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-type Family struct {
-	ID          int `json:"id"`
-	OwnerUserID int `json:"owneruser_id"`
-}
-
-func CreateFamily(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var data Family
-
-		err := json.NewDecoder(r.Body).Decode(&data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		stmt, err := db.Prepare("INSERT INTO family(owneruser_id) VALUES(?)")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer stmt.Close()
-
-		result, err := stmt.Exec(data.OwnerUserID)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		lastID, err := result.LastInsertId()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		response := map[string]int64{"id": lastID}
-		jsonData, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonData)
+func SCreateFamily(db *sql.DB, ownerUserID int) (int, error) {
+	stmt, err := db.Prepare("INSERT INTO family(owneruser_id) VALUES(?)")
+	if err != nil {
+		return 0, err
 	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(ownerUserID)
+	if err != nil {
+		return 0, err
+	}
+
+	familyID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(familyID), nil
 }
