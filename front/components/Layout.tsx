@@ -1,8 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { ReactNode, useState, useEffect } from "react";
-import React from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
 
@@ -176,9 +174,3 @@ export const Navbar: React.FC<NavProps> = ({ cartCount }) => {
 };
 
 export default Layout;
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    props: {},
-  };
-};
