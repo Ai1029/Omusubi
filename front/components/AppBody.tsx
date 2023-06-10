@@ -26,9 +26,10 @@ const AppBody = ({ children }: Props) => {
         if (response.status === 200) {
           setIsLoggedIn(true);
         }
-        console.log(response.data);
         const userID = response.data.user_id;
+        const familyData = response.data.family;
         setUserID(userID);
+        setFamily(familyData);
       } catch (error) {
         console.error("Error checking session:", error);
       }
