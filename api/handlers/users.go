@@ -99,7 +99,7 @@ func GetUser(db *sql.DB) http.HandlerFunc {
 
 func CreateUsers(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var data CreateUser
+		var data User
 
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
@@ -107,13 +107,13 @@ func CreateUsers(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("INSERT INTO users(name, email, uid, family_id, phonetic, zipcode, prefecture, city, town, apartment, phone_number ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO users(name, email, uid, family_id, phonetic, zipcode, prefecture, city, town, apartment, phone_number,is_owner,is_virtual_user ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
 		}
 
-		res, err := stmt.Exec(data.Name, data.Email, data.UID, data.FamilyID, data.Phonetic, data.Zipcode, data.Prefecture, data.City, data.Town, data.Apartment, data.PhoneNumber)
+		res, err := stmt.Exec(data.Name, data.Email, data.UID, data.FamilyID, data.Phonetic, data.Zipcode, data.Prefecture, data.City, data.Town, data.Apartment, data.PhoneNumber, data.IsOwner, data.IsVirtualUser)
 		if err != nil {
 			// エラー処理
 			log.Fatal(err)
@@ -188,12 +188,12 @@ func UpdateUser(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		stmt, err := db.Prepare("UPDATE users SET name=?, email=?, uid=?, family_id=?, phonetic=?, zipcode=?, prefecture=?, city=?, town=?, apartment=?, phone_number=? WHERE id=?")
+		stmt, err := db.Prepare("UPDATE users SET name=?, phonetic=?, zipcode=?, prefecture=?, city=?, town=?, apartment=?, phone_number=? WHERE id=?")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		_, err = stmt.Exec(data.Name, data.Email, data.UID, data.FamilyID, data.Phonetic, data.Zipcode, data.Prefecture, data.City, data.Town, data.Apartment, data.PhoneNumber, data.ID)
+		_, err = stmt.Exec(data.Name, data.Phonetic, data.Zipcode, data.Prefecture, data.City, data.Town, data.Apartment, data.PhoneNumber, data.ID)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -20,7 +20,6 @@ type Props = {
 
 const LoginPage: NextPage<Props> = ({ apiURL }) => {
 	const ENDPOINT_URL = apiURL + "login";
-	console.log(ENDPOINT_URL);
 	const [authError, setAuthError] = useState(false);
 	const [dbError, setDbError] = useState(false);
 	const router = useRouter();

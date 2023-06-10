@@ -42,6 +42,7 @@ const SignUp: NextPage<Props> = ({ apiURL }) => {
 				email: inputs.email,
 				uid: user.uid,
 				is_owner: true,
+				is_virtual_user: false,
 			};
 
 			sendEmailVerification(user)
@@ -71,7 +72,7 @@ const SignUp: NextPage<Props> = ({ apiURL }) => {
 						return targetId;
 					})
 					.then(() => {
-						router.push("/");
+						router.push("/profile/update");
 					})
 					.catch((error) => {
 						// エラーハンドリング
@@ -82,14 +83,11 @@ const SignUp: NextPage<Props> = ({ apiURL }) => {
 			}
 		});
 	};
-	const handleClick = () => {
-		console.log("ボタンがクリックされました！");
-	};
 	return (
 		<Navbar>
 			<h2>ユーザー登録</h2>
 			<form onSubmit={onSignUp}>
-				<label htmlFor="name">ニックネーム</label>
+				<label htmlFor="name">名前</label>
 				<input
 					type="text"
 					name="name"

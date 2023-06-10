@@ -35,8 +35,6 @@ type Props = {
 	cookies: any;
 };
 const HOME: NextPage<Props> = ({ planList, family, cookies }) => {
-	console.log(planList);
-	console.log(cookies.id);
 	return (
 		<Layout>
 			<Topimage />
