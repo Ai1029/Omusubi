@@ -29,7 +29,16 @@ func GetFamily(db *sql.DB) http.HandlerFunc {
 		}
 		fmt.Println(id)
 
-		rows, err := db.Query("SELECT * FROM users WHERE family_id = ? ", id)
+		// 指定されたユーザーのfamily_idを取得
+		var familyID int
+		err = db.QueryRow("SELECT family_id FROM users WHERE id = ?", id).Scan(&familyID)
+		if err != nil {
+			http.Error(w, "User Not Found", http.StatusNotFound)
+			return
+		}
+
+		// 同じfamily_idを持つユーザーを取得
+		rows, err := db.Query("SELECT * FROM users WHERE family_id = ?", familyID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -53,24 +62,4 @@ func GetFamily(db *sql.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonData)
 	}
-}
-
-func SCreateFamily(db *sql.DB, ownerUserID int) (int, error) {
-	stmt, err := db.Prepare("INSERT INTO family(owneruser_id) VALUES(?)")
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(ownerUserID)
-	if err != nil {
-		return 0, err
-	}
-
-	familyID, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(familyID), nil
 }
