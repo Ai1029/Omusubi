@@ -6,7 +6,6 @@ import Link from "next/link";
 import { parseCookies } from "nookies";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
-import { UserContext } from "@/pages/_app";
 import PlanCartBtn from "./PlanCartBtn";
 type TypePlan = {
   id: number;
@@ -38,7 +37,7 @@ export const PlanItem: NextPage<Props> = ({ plan, family }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCart] = useRecoilState(cartState);
   const router = useRouter();
-  const { isLoggedIn } = useContext(UserContext);
+//   const { isLoggedIn } = useContext(UserContext);
 
   useEffect(() => {
     setIsMounted(true);

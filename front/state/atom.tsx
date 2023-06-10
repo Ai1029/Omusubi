@@ -22,6 +22,22 @@ type User = {
 	is_owner: boolean;
 	is_virtual_user: boolean;
 };
+type TypeUser = {
+  id: number;
+  name: string;
+  email: string;
+  uid: string;
+  family_id: number;
+  phonetic: string;
+  zipcode: string;
+  prefecture: string;
+  city: string;
+  town: string;
+  apartment: string | null;
+  phone_number: string;
+  is_owner: boolean;
+  is_virtual_user: boolean;
+}
 type CartItem = {
 	plan: Plan;
 	paidUser: User;
@@ -73,4 +89,19 @@ export const cartState = atom({
 export const orderState = atom({
 	key: "orderState",
 	default: initialOrder,
+});
+
+export const isLoggedInState = atom<boolean>({
+  key: 'isLoggedInState',
+  default: false,
+});
+
+export const userIDState = atom<number>({
+  key: 'userIDState',
+  default: 0,
+});
+
+export const familyState = atom<TypeUser[]>({
+  key: "familyState",
+  default: [],
 });
