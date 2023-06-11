@@ -12,8 +12,6 @@ require (
 	google.golang.org/api v0.125.0
 )
 
-require github.com/felixge/httpsnoop v1.0.1 // indirect
-
 require (
 	cloud.google.com/go v0.110.2 // indirect
 	cloud.google.com/go/compute v1.19.3 // indirect
@@ -29,8 +27,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.10.0 // indirect
-	github.com/gorilla/handlers v1.5.1
-	github.com/rs/cors v1.9.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.8.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
