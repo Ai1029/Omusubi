@@ -62,7 +62,7 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 
 		rows, err := db.Query(`
 	SELECT s.id, s.stripe_subscription_id, s.create_at, s.next_payment,
-		p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+		p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
 		pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
 		ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
 	FROM subscriptions s
