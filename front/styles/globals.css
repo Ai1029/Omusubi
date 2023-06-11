@@ -10,3 +10,11 @@
   content: "";
   @apply inline-block w-1.5 h-8 bg-font-yellow absolute rounded-full left-0;
 }
+
+.second-title-ja {
+  @apply text-xl font-bold relative pl-4;
+}
+.second-title-ja::before {
+  content: "";
+  @apply inline-block w-1.5 h-8 bg-font-yellow absolute rounded-full left-0;
+}
