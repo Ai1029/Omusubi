@@ -22,15 +22,25 @@ type Subscription struct {
 	NextPayment          *string `json:"next_payment"`
 }
 
-type SubscriptionAddPlan struct {
-	ID                   int     `json:"id"`
-	PaidUserID           int     `json:"paiduser_id"`
-	ReceivedUserID       int     `json:"receiveduser_id"`
-	IsActive             bool    `json:"is_active"`
-	StripeCustomerID     string  `json:"stripe_customer_id"`
-	StripeSubscriptionID string  `json:"stripe_subscription_id"`
-	NextPayment          *string `json:"next_payment"`
-	Plan                 Plans   `json:"plan"`
+type SubWidthUser struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Email       string  `json:"email"`
+	Zipcode     string  `json:"zipcode"`
+	Prefecture  string  `json:"prefecture"`
+	City        string  `json:"city"`
+	Town        string  `json:"town"`
+	Apartment   *string `json:"apartment"`
+	PhoneNumber string  `json:"phone_number"`
+}
+
+type SubscriptionDetail struct {
+	ID                   int          `json:"id"`
+	StripeSubscriptionID string       `json:"stripe_subscription_id"`
+	NextPayment          *string      `json:"next_payment"`
+	PaidUser             SubWidthUser `json:"paid_user"`
+	ReceivedUser         SubWidthUser `json:"received_user"`
+	Plan                 Plans        `json:"plan"`
 }
 
 type TypeCreateSubscription struct {
@@ -50,27 +60,26 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
-						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
-			FROM subscriptions s
-			INNER JOIN plans p ON s.plan_id = p.id
-			WHERE s.paiduser_id = ? AND s.is_active = true AND s.paiduser_id <> s.receiveduser_id`,
+	SELECT s.id, s.stripe_subscription_id, s.next_payment,
+		p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
+		pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
+		ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
+	FROM subscriptions s
+	INNER JOIN plans p ON s.plan_id = p.id
+	INNER JOIN users pu ON s.paiduser_id = pu.id
+	INNER JOIN users ru ON s.receiveduser_id = ru.id
+	WHERE s.paiduser_id = ? AND s.is_active = true AND s.paiduser_id <> s.receiveduser_id`,
 			id)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer rows.Close()
 
-		var subscriptions []SubscriptionAddPlan
+		var subscriptions []SubscriptionDetail
 		for rows.Next() {
-			var subscription SubscriptionAddPlan
+			var subscription SubscriptionDetail
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PaidUserID,
-				&subscription.ReceivedUserID,
-				&subscription.IsActive,
-				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
@@ -80,6 +89,24 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 				&subscription.Plan.Image,
 				&subscription.Plan.Delivery_interval,
 				&subscription.Plan.StripePriceID,
+				&subscription.PaidUser.ID,
+				&subscription.PaidUser.Name,
+				&subscription.PaidUser.Email,
+				&subscription.PaidUser.Zipcode,
+				&subscription.PaidUser.Prefecture,
+				&subscription.PaidUser.City,
+				&subscription.PaidUser.Town,
+				&subscription.PaidUser.Apartment,
+				&subscription.PaidUser.PhoneNumber,
+				&subscription.ReceivedUser.ID,
+				&subscription.ReceivedUser.Name,
+				&subscription.ReceivedUser.Email,
+				&subscription.ReceivedUser.Zipcode,
+				&subscription.ReceivedUser.Prefecture,
+				&subscription.ReceivedUser.City,
+				&subscription.ReceivedUser.Town,
+				&subscription.ReceivedUser.Apartment,
+				&subscription.ReceivedUser.PhoneNumber,
 			)
 			if err != nil {
 				log.Fatal(err)
@@ -107,11 +134,14 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
-						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+			SELECT s.id, s.stripe_subscription_id, s.next_payment,
+				p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
+				pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
+				ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
 			FROM subscriptions s
 			INNER JOIN plans p ON s.plan_id = p.id
+			INNER JOIN users pu ON s.paiduser_id = pu.id
+			INNER JOIN users ru ON s.receiveduser_id = ru.id
 			WHERE s.paiduser_id = ? AND s.is_active = true`,
 			id)
 		if err != nil {
@@ -119,15 +149,11 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 		}
 		defer rows.Close()
 
-		var subscriptions []SubscriptionAddPlan
+		var subscriptions []SubscriptionDetail
 		for rows.Next() {
-			var subscription SubscriptionAddPlan
+			var subscription SubscriptionDetail
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PaidUserID,
-				&subscription.ReceivedUserID,
-				&subscription.IsActive,
-				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
@@ -137,6 +163,24 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 				&subscription.Plan.Image,
 				&subscription.Plan.Delivery_interval,
 				&subscription.Plan.StripePriceID,
+				&subscription.PaidUser.ID,
+				&subscription.PaidUser.Name,
+				&subscription.PaidUser.Email,
+				&subscription.PaidUser.Zipcode,
+				&subscription.PaidUser.Prefecture,
+				&subscription.PaidUser.City,
+				&subscription.PaidUser.Town,
+				&subscription.PaidUser.Apartment,
+				&subscription.PaidUser.PhoneNumber,
+				&subscription.ReceivedUser.ID,
+				&subscription.ReceivedUser.Name,
+				&subscription.ReceivedUser.Email,
+				&subscription.ReceivedUser.Zipcode,
+				&subscription.ReceivedUser.Prefecture,
+				&subscription.ReceivedUser.City,
+				&subscription.ReceivedUser.Town,
+				&subscription.ReceivedUser.Apartment,
+				&subscription.ReceivedUser.PhoneNumber,
 			)
 			if err != nil {
 				log.Fatal(err)
@@ -167,11 +211,14 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
-						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+			SELECT s.id, s.stripe_subscription_id, s.next_payment,
+				p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
+				pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
+				ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
 			FROM subscriptions s
 			INNER JOIN plans p ON s.plan_id = p.id
+			INNER JOIN users pu ON s.paiduser_id = pu.id
+			INNER JOIN users ru ON s.receiveduser_id = ru.id
 			WHERE s.receiveduser_id = ? AND s.is_active = true`,
 			id)
 		if err != nil {
@@ -179,15 +226,11 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 		}
 		defer rows.Close()
 
-		var subscriptions []SubscriptionAddPlan
+		var subscriptions []SubscriptionDetail
 		for rows.Next() {
-			var subscription SubscriptionAddPlan
+			var subscription SubscriptionDetail
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PaidUserID,
-				&subscription.ReceivedUserID,
-				&subscription.IsActive,
-				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
@@ -197,6 +240,24 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 				&subscription.Plan.Image,
 				&subscription.Plan.Delivery_interval,
 				&subscription.Plan.StripePriceID,
+				&subscription.PaidUser.ID,
+				&subscription.PaidUser.Name,
+				&subscription.PaidUser.Email,
+				&subscription.PaidUser.Zipcode,
+				&subscription.PaidUser.Prefecture,
+				&subscription.PaidUser.City,
+				&subscription.PaidUser.Town,
+				&subscription.PaidUser.Apartment,
+				&subscription.PaidUser.PhoneNumber,
+				&subscription.ReceivedUser.ID,
+				&subscription.ReceivedUser.Name,
+				&subscription.ReceivedUser.Email,
+				&subscription.ReceivedUser.Zipcode,
+				&subscription.ReceivedUser.Prefecture,
+				&subscription.ReceivedUser.City,
+				&subscription.ReceivedUser.Town,
+				&subscription.ReceivedUser.Apartment,
+				&subscription.ReceivedUser.PhoneNumber,
 			)
 			if err != nil {
 				log.Fatal(err)
