@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { cartState, isLoggedInState, userIDState, familyState } from "@/state/atom";
+import { cartState, isLoggedInState, userIDState, familyIDState, familyState } from "@/state/atom";
 import axios from "axios";
 
 interface Props {
@@ -13,6 +13,7 @@ const AppBody = ({ children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [userID, setUserID] = useRecoilState(userIDState);
+  const [familyID, setFaimilyID] = useRecoilState(familyIDState);
   const [family, setFamily] = useRecoilState(familyState);
   const [cart, setCart] = useRecoilState(cartState);
   const [isMounted, setIsMounted] = useState(false);
@@ -27,8 +28,10 @@ const AppBody = ({ children }: Props) => {
           setIsLoggedIn(true);
         }
         const userID = response.data.user_id;
+        const familyID = response.data.family_id;
         const familyData = response.data.family;
         setUserID(userID);
+        setFaimilyID(familyID);
         setFamily(familyData);
       } catch (error) {
         console.error("Error checking session:", error);
