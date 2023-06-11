@@ -30,6 +30,38 @@ type TypeCreateSubscription struct {
 	StripeSubscriptionID string `json:"stripe_subscription_id"`
 }
 
+// 支払い先毎のサブスクリプション一覧
+func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := mux.Vars(r)
+		id := params["id"]
+
+		rows, err := db.Query("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE paiduser_id = ? AND is_active = true", id)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var subscriptions []Subscription
+		for rows.Next() {
+			var subscription Subscription
+			if err := rows.Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID); err != nil {
+				log.Fatal(err)
+			}
+			subscriptions = append(subscriptions, subscription)
+		}
+
+		// 構造体をJSON形式に変換する
+		jsonData, err := json.Marshal(subscriptions)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonData)
+	}
+}
+
 // お届け先毎のサブスクリプション一覧
 func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
