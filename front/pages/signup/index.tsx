@@ -21,7 +21,7 @@ type Props = {
 };
 
 const SignUp: NextPage = () => {
-  const ENDPOINT_URL_USER = API_URL + "users";
+  const ENDPOINT_URL_USER = process.env.API_URL + "users";
   const [authError, setAuthError] = useState(false);
   const router = useRouter();
   const [inputs, setInputs] = useState<Inputs>({
