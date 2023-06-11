@@ -69,6 +69,7 @@ func main() {
 	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
 	r.HandleFunc("/subscriptions-receiveduser/{id}", handlers.GetSubscriptionsReceivedUser(db)).Methods("GET")
 	r.HandleFunc("/subscriptions-paiduser/{id}", handlers.GetSubscriptionsPaidUser(db)).Methods("GET")
+	r.HandleFunc("/subscriptions-width-family/{id}", handlers.GetSubscriptionsWidthFamily(db)).Methods("GET")
 	r.HandleFunc("/subscription/{id}", handlers.GetSubscription(db)).Methods("GET")
 	r.HandleFunc("/subscription", handlers.CreateSubscription(db)).Methods("POST")
 	r.HandleFunc("/cartusers/{id}", handlers.GetCartUsers(db)).Methods("GET")

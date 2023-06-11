@@ -16,9 +16,20 @@ type Subscription struct {
 	PlanID               int    `json:"plan_id"`
 	PaiduserID           int    `json:"paiduser_id"`
 	ReceiveduserID       int    `json:"receiveduser_id"`
-	IsActive             string `json:"is_active"`
+	IsActive             bool   `json:"is_active"`
 	StripeCustomerID     string `json:"stripe_customer_id"`
 	StripeSubscriptionID string `json:"stripe_subscription_id"`
+}
+
+type SubscriptionAddPlan struct {
+	ID                   int    `json:"id"`
+	PlanID               int    `json:"plan_id"`
+	PaidUserID           int    `json:"paiduser_id"`
+	ReceivedUserID       int    `json:"receiveduser_id"`
+	IsActive             bool   `json:"is_active"`
+	StripeCustomerID     string `json:"stripe_customer_id"`
+	StripeSubscriptionID string `json:"stripe_subscription_id"`
+	Plan                 Plans  `json:"plan"`
 }
 
 type TypeCreateSubscription struct {
@@ -30,6 +41,62 @@ type TypeCreateSubscription struct {
 	StripeSubscriptionID string `json:"stripe_subscription_id"`
 }
 
+// オーナーユーザーに紐づく家族のサブスク一覧
+func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		params := mux.Vars(r)
+		id := params["id"]
+
+		rows, err := db.Query(`
+			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+						s.stripe_customer_id, s.stripe_subscription_id,
+						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+			FROM subscriptions s
+			INNER JOIN plans p ON s.plan_id = p.id
+			WHERE s.paiduser_id = ? AND s.is_active = true AND s.paiduser_id <> s.receiveduser_id`,
+			id)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		var subscriptions []SubscriptionAddPlan
+		for rows.Next() {
+			var subscription SubscriptionAddPlan
+			err := rows.Scan(
+				&subscription.ID,
+				&subscription.PlanID,
+				&subscription.PaidUserID,
+				&subscription.ReceivedUserID,
+				&subscription.IsActive,
+				&subscription.StripeCustomerID,
+				&subscription.StripeSubscriptionID,
+				&subscription.Plan.Name,
+				&subscription.Plan.Explanation,
+				&subscription.Plan.Price,
+				&subscription.Plan.Image,
+				&subscription.Plan.Delivery_interval,
+				&subscription.Plan.StripePriceID,
+			)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			subscriptions = append(subscriptions, subscription)
+		}
+
+		// 構造体をJSON形式に変換する
+		jsonData, err := json.Marshal(subscriptions)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonData)
+	}
+}
+
 // 支払い先毎のサブスクリプション一覧
 func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -37,18 +104,45 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 		params := mux.Vars(r)
 		id := params["id"]
 
-		rows, err := db.Query("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE paiduser_id = ? AND is_active = true", id)
+		rows, err := db.Query(`
+			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+						s.stripe_customer_id, s.stripe_subscription_id,
+						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+			FROM subscriptions s
+			INNER JOIN plans p ON s.plan_id = p.id
+			WHERE s.paiduser_id = ? AND s.is_active = true`,
+			id)
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer rows.Close()
 
-		var subscriptions []Subscription
+		var subscriptions []SubscriptionAddPlan
 		for rows.Next() {
-			var subscription Subscription
-			if err := rows.Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID); err != nil {
+			var subscription SubscriptionAddPlan
+			err := rows.Scan(
+				&subscription.ID,
+				&subscription.PlanID,
+				&subscription.PaidUserID,
+				&subscription.ReceivedUserID,
+				&subscription.IsActive,
+				&subscription.StripeCustomerID,
+				&subscription.StripeSubscriptionID,
+				&subscription.Plan.Name,
+				&subscription.Plan.Explanation,
+				&subscription.Plan.Price,
+				&subscription.Plan.Image,
+				&subscription.Plan.Delivery_interval,
+				&subscription.Plan.StripePriceID,
+			)
+			if err != nil {
 				log.Fatal(err)
 			}
+
 			subscriptions = append(subscriptions, subscription)
+		}
+		if err := rows.Err(); err != nil {
+			log.Fatal(err)
 		}
 
 		// 構造体をJSON形式に変換する
@@ -69,17 +163,41 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 		params := mux.Vars(r)
 		id := params["id"]
 
-		rows, err := db.Query("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE receiveduser_id = ? AND is_active = true", id)
+		rows, err := db.Query(`
+			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+						s.stripe_customer_id, s.stripe_subscription_id,
+						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+			FROM subscriptions s
+			INNER JOIN plans p ON s.plan_id = p.id
+			WHERE s.receiveduser_id = ? AND s.is_active = true`,
+			id)
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer rows.Close()
 
-		var subscriptions []Subscription
+		var subscriptions []SubscriptionAddPlan
 		for rows.Next() {
-			var subscription Subscription
-			if err := rows.Scan(&subscription.ID, &subscription.PlanID, &subscription.PaiduserID, &subscription.ReceiveduserID, &subscription.IsActive, &subscription.StripeCustomerID, &subscription.StripeSubscriptionID); err != nil {
+			var subscription SubscriptionAddPlan
+			err := rows.Scan(
+				&subscription.ID,
+				&subscription.PlanID,
+				&subscription.PaidUserID,
+				&subscription.ReceivedUserID,
+				&subscription.IsActive,
+				&subscription.StripeCustomerID,
+				&subscription.StripeSubscriptionID,
+				&subscription.Plan.Name,
+				&subscription.Plan.Explanation,
+				&subscription.Plan.Price,
+				&subscription.Plan.Image,
+				&subscription.Plan.Delivery_interval,
+				&subscription.Plan.StripePriceID,
+			)
+			if err != nil {
 				log.Fatal(err)
 			}
+
 			subscriptions = append(subscriptions, subscription)
 		}
 
