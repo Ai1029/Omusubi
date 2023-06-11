@@ -24,12 +24,43 @@ type Plan struct {
 	Image         string `json:"image"`
 	StripePriceID string `json:"stripe_price_id"`
 }
-
 type CreateOrder struct {
 	PlanID  int    `json:"plan_id"`
 	PriceID string `json:"stripe_price_id"`
 }
-type User struct {
+type PaidUser struct {
+	ID            int     `json:"id"`
+	Name          string  `json:"name"`
+	Email         string  `json:"email"`
+	UID           string  `json:"uid"`
+	FamilyID      int     `json:"family_id"`
+	Phonetic      string  `json:"phonetic"`
+	Zipcode       string  `json:"zipcode"`
+	Prefecture    string  `json:"prefecture"`
+	City          string  `json:"city"`
+	Town          string  `json:"town"`
+	Apartment     *string `json:"apartment"`
+	PhoneNumber   string  `json:"phone_number"`
+	IsOwner       bool    `json:"is_owner"`
+	IsVirtualUser bool    `json:"is_virtual_user"`
+}
+type ReceivedUser struct {
+	ID            int     `json:"id"`
+	Name          string  `json:"name"`
+	Email         *string `json:"email"`
+	UID           *string `json:"uid"`
+	FamilyID      int     `json:"family_id"`
+	Phonetic      string  `json:"phonetic"`
+	Zipcode       string  `json:"zipcode"`
+	Prefecture    string  `json:"prefecture"`
+	City          string  `json:"city"`
+	Town          string  `json:"town"`
+	Apartment     *string `json:"apartment"`
+	PhoneNumber   string  `json:"phone_number"`
+	IsOwner       bool    `json:"is_owner"`
+	IsVirtualUser bool    `json:"is_virtual_user"`
+}
+type StrypeUser struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
@@ -41,9 +72,9 @@ type User struct {
 	PhoneNumber string `json:"phone_number"`
 }
 type OrderData struct {
-	Plan         Plan `json:"plan"`
-	PaidUser     User `json:"paidUser"`
-	ReceivedUser User `json:"receivedUser"`
+	Plan         Plan         `json:"plan"`
+	PaidUser     PaidUser     `json:"paidUser"`
+	ReceivedUser ReceivedUser `json:"receivedUser"`
 }
 type TypeStripePaymentIntent struct {
 	PaymentIntentID string `json:"paymentIntent"`
@@ -117,23 +148,12 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 				Name:  stripe.String(data.PaidUser.Name),
 				Address: &stripe.AddressParams{
 					Country:    stripe.String("JP"),
-					State:      stripe.String(data.PaidUser.State),
+					State:      stripe.String(data.PaidUser.Prefecture),
 					City:       stripe.String(data.PaidUser.City),
-					Line1:      stripe.String(data.PaidUser.Line1),
-					Line2:      stripe.String(data.PaidUser.Line2),
-					PostalCode: stripe.String(data.PaidUser.PostalCode),
+					Line1:      stripe.String(data.PaidUser.Town),
+					Line2:      stripe.String(*data.PaidUser.Apartment),
+					PostalCode: stripe.String(data.PaidUser.Zipcode),
 				},
-				// Shipping: &stripe.CustomerShippingParams{
-				// Name: stripe.String(data.ReceivedUser.Name),
-				// Address: &stripe.AddressParams{
-				// Country:    stripe.String("JP"),
-				// State:      stripe.String(data.ReceivedUser.State),
-				// City:       stripe.String(data.ReceivedUser.City),
-				// Line1:      stripe.String(data.ReceivedUser.Line1),
-				// Line2:      stripe.String(data.ReceivedUser.Line2),
-				// PostalCode: stripe.String(data.ReceivedUser.PostalCode),
-				// },
-				// },
 				Phone: stripe.String(data.PaidUser.PhoneNumber),
 			}
 			// createUserParams.AddMetadata("PaidUserID", strconv.Itoa(data.PaidUser.ID))
@@ -176,62 +196,5 @@ func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 		// レスポンスをJSON形式で返す
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
-
-		// params := &stripe.CheckoutSessionParams{
-		// PaymentMethodTypes: stripe.StringSlice([]string{
-		// "card",
-		// }),
-		// LineItems: []*stripe.CheckoutSessionLineItemParams{
-		// {
-		// Price:    stripe.String(priceID), // サブスクリプションに関連付けられた価格ID
-		// Quantity: stripe.Int64(1),
-		// },
-		// },
-		// Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		// SuccessURL: stripe.String(SITE_URL + "/buy/success?session_id={CHECKOUT_SESSION_ID}"),
-		// CancelURL:  stripe.String(SITE_URL),
-		// }
-
-		// s, err := session.New(params)
-		// if err != nil {
-		// // エラーハンドリング
-		// fmt.Println(err)
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
-		// return
-		// }
-		// fmt.Println(s.URL)
-		// リダイレクトの実行
-		// http.Redirect(w, r, s.URL, http.StatusSeeOther)
-
-		// response := struct {
-		// SessionURL string `json:"sessionURL"`
-		// }{
-		// SessionURL: s.URL,
-		// }
-		// レスポンスをJSON形式で返す
-		// w.Header().Set("Content-Type", "application/json")
-		// json.NewEncoder(w).Encode(response)
-
-	}
-}
-
-func SetStripePaymentId(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if PRODUCTION_MODE {
-			stripe.Key = SECRET_KEY_PRODUCTION
-		} else {
-			stripe.Key = SECRET_KEY_STAGING
-		}
-		var data TypeStripePaymentIntent
-		// リクエストボディの読み取り
-		err := json.NewDecoder(r.Body).Decode(&data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		// dataをJSONとしてレスポンスする
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(data)
 	}
 }

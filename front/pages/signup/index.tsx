@@ -16,12 +16,9 @@ type Inputs = {
   password: string;
 };
 
-type Props = {
-  apiURL: string;
-};
-
 const SignUp: NextPage = () => {
-  const ENDPOINT_URL_USER = process.env.API_URL + "users";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const ENDPOINT_URL_USER = apiUrl + "users";
   const [authError, setAuthError] = useState(false);
   const router = useRouter();
   const [inputs, setInputs] = useState<Inputs>({
@@ -118,12 +115,3 @@ const SignUp: NextPage = () => {
 };
 
 export default SignUp;
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const apiURL = process.env.API_URL;
-  return {
-    props: {
-      apiURL: apiURL,
-    },
-  };
-};

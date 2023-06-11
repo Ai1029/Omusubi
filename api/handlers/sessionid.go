@@ -92,13 +92,16 @@ func CheckSession(db *sql.DB) http.HandlerFunc {
 			users = append(users, user)
 		}
 
-		// レスポンスデータの作成
-		response := struct {
-			UserID int    `json:"user_id"`
-			Family []User `json:"family"`
-		}{
-			UserID: data.UserID,
-			Family: users,
+		// family_idを含めたレスポンスデータの作成
+		type Response struct {
+			UserID  int    `json:"user_id"`
+			Family  []User `json:"family"`
+			FamilyID int   `json:"family_id"`
+		}
+		response := Response{
+			UserID:   data.UserID,
+			Family:   users,
+			FamilyID: users[0].FamilyID, // family_idは一意ではないため、例として最初のユーザーのfamily_idを使用しています
 		}
 
 		// レスポンスをJSON形式で返す
