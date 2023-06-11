@@ -30,10 +30,14 @@ type TypeCreateSubscription struct {
 	StripeSubscriptionID string `json:"stripe_subscription_id"`
 }
 
-func GetSubscriptions(db *sql.DB) http.HandlerFunc {
+// お届け先毎のサブスクリプション一覧
+func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		rows, err := db.Query("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_price_id FROM subscriptions")
+		params := mux.Vars(r)
+		id := params["id"]
+
+		rows, err := db.Query("SELECT id, plan_id, paiduser_id, receiveduser_id, is_active, stripe_customer_id, stripe_subscription_id FROM subscriptions WHERE receiveduser_id = ? AND is_active = true", id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,6 +62,7 @@ func GetSubscriptions(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// サブスクリプション詳細
 func GetSubscription(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
