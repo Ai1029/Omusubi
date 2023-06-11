@@ -21,7 +21,6 @@ const Layout = ({ children }: Props) => {
   if (!isMounted) {
     return null; // マウント前は何も表示せずにロード中とする
   }
-  console.log(isLogined);
 
   return (
     <>
