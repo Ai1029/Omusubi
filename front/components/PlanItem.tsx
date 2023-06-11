@@ -37,7 +37,13 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
       }
       const filteredFamilyIds = family
         .filter((familyItem) => {
-          return cart.some((cartItem) => cartItem.plan.id === planId && cartItem.receivedUser.id === familyItem.id) === false;
+          return (
+            cart.some(
+              (cartItem) =>
+                cartItem.plan.id === planId &&
+                cartItem.receivedUser.id === familyItem.id
+            ) === false
+          );
         })
         .map((familyItem) => familyItem.id);
 
@@ -68,7 +74,9 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
       if (!Array.isArray(prevCart)) {
         prevCart = []; // 配列でない場合は空の配列を使用
       }
-      const updatedCart = prevCart.filter((item: any) => item.plan.id !== planId);
+      const updatedCart = prevCart.filter(
+        (item: any) => item.plan.id !== planId
+      );
       localStorage.setItem("cart-items", JSON.stringify(updatedCart));
       return updatedCart;
     });
@@ -89,12 +97,23 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
 
   return (
     <>
-      <div key={plan.id} className="flex mx-auto w-50 flex-col justify-center bg-white rounded-2xl shadow-xl shadow-gray-400/20">
-        <img src={plan.image} alt={plan.name} className="aspect-video w-50 rounded-t-2xl object-cover object-center" />
+      <div
+        key={plan.id}
+        className="flex mx-auto w-50 flex-col justify-center bg-white rounded-2xl shadow-xl shadow-gray-400/20"
+      >
+        <img
+          src={plan.image}
+          alt={plan.name}
+          className="aspect-video w-50 rounded-t-2xl object-cover object-center"
+        />
         <div className="flex flex-col justify-between h-full p-6">
-          <h3 className="text-xl font-semibold text-gray-600 pb-2">{plan.name}</h3>
+          <h3 className="text-xl font-semibold text-gray-600 pb-2">
+            {plan.name}
+          </h3>
           <p className="text text-gray-500 leading-6">{plan.explanation}</p>
-          <p className="text text-gray-500 leading-6">{plan.price.toLocaleString()}円</p>
+          <p className="text text-gray-500 leading-6">
+            {plan.price.toLocaleString()}円
+          </p>
         </div>
 
         {!isLoggedIn ? (
@@ -113,11 +132,17 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
             {family.length > 1 && (
               <div>
                 {hasAllFamilyIds ? (
-                  <button onClick={() => removeFromCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                  <button
+                    onClick={() => removeFromCart(plan.id)}
+                    className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
+                  >
                     まとめてカートから削除
                   </button>
                 ) : (
-                  <button onClick={() => addToCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                  <button
+                    onClick={() => addToCart(plan.id)}
+                    className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 my-4 bg-blue-500 hover:bg-blue-700 text-white  transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
+                  >
                     まとめてカートに追加
                   </button>
                 )}
