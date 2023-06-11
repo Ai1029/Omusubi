@@ -8,7 +8,14 @@ type Plan = {
   image: string;
   stripe_price_id: string;
 };
-
+type Subscription = {
+  id: number;
+  stripe_subscription_id: string;
+  next_payment: string;
+  plan: Plan;
+  paid_user: User;
+  received_user: User;
+};
 type User = {
   id: number;
   name: string;
@@ -61,8 +68,13 @@ export const familyState = atom<User[]>({
   default: [],
 });
 
-// subscription state
-export const subState = atom<CartItem[]>({
-  key: "subState",
+// my subscription state
+export const mySubState = atom<Subscription[]>({
+  key: "mySubState",
+  default: [],
+});
+// family subscription state
+export const familySubState = atom<Subscription[]>({
+  key: "familySubState",
   default: [],
 });

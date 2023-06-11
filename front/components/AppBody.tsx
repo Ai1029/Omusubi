@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { cartState, isLoggedInState, userIDState, familyIDState, familyState } from "@/state/atom";
+import { cartState, isLoggedInState, userIDState, familyIDState, familyState, mySubState, familySubState} from "@/state/atom";
 import axios from "axios";
 
 interface Props {
@@ -9,19 +9,23 @@ interface Props {
 
 const AppBody = ({ children }: Props) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const ENDPINST_URL = apiUrl + "check-session";
+  const ENDPINST_URL_SESSION = apiUrl + "check-session";
+  const ENDPINST_URL_MY_SUB = apiUrl + "subscriptions-receiveduser";
+  const ENDPINST_URL_FAMILY_SUB = apiUrl + "subscriptions-width-family";
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [userID, setUserID] = useRecoilState(userIDState);
   const [familyID, setFaimilyID] = useRecoilState(familyIDState);
   const [family, setFamily] = useRecoilState(familyState);
   const [cart, setCart] = useRecoilState(cartState);
+  const [mySub, setMySub] = useRecoilState(mySubState);
+  const [familySub, setFamilySub] = useRecoilState(familySubState);
   const [isMounted, setIsMounted] = useState(false);
   //　ユーザーがログインしているかサーバーで確認する
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get(ENDPINST_URL, {
+        const response = await axios.get(ENDPINST_URL_SESSION, {
           withCredentials: true,
         });
         if (response.status === 200) {
@@ -33,6 +37,10 @@ const AppBody = ({ children }: Props) => {
         setUserID(userID);
         setFaimilyID(familyID);
         setFamily(familyData);
+        const resMySub = await axios.get(ENDPINST_URL_MY_SUB + "/" + userID);
+        const resFamilySub = await axios.get(ENDPINST_URL_FAMILY_SUB + "/" + userID);
+        setMySub(resMySub.data)
+        setFamilySub(resFamilySub.data)
       } catch (error) {
         console.error("Error checking session:", error);
       }
