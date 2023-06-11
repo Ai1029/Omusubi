@@ -55,57 +55,90 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
         <div>
           <section>
             <div>
-              <h3>自宅にお届け</h3>
-              <div>
-                <h4>請求先詳細</h4>
-                <dl>
-                  <dt>名前</dt>
-                  <dd>{paidUser.name}</dd>
-                  <dt>住所</dt>
-                  <dd>
-                    <span>〒{paidUser.zipcode} </span>
-                    {paidUser.prefecture}
-                    {paidUser.city}
-                    {paidUser.town}
-                    {paidUser.apartment}
-                  </dd>
-                  <dt>電話番号</dt>
-                  <dd>{paidUser.phone_number}</dd>
-                </dl>
+              <div className="bg-red p-2 mb-5">
+                <h3 className="text-white text-sm">自宅にお届け</h3>
               </div>
-              <div>
-                <h4>お届け先住所</h4>
-                <dl>
-                  <dt>名前</dt>
-                  <dd>{receivedUser.name}</dd>
-                  <dt>住所</dt>
-                  <dd>
-                    <span>〒{receivedUser.zipcode}</span>
-                    {receivedUser.prefecture}
-                    {receivedUser.city}
-                    {receivedUser.town}
-                    {receivedUser.apartment}
-                  </dd>
-                  <dt>電話番号</dt>
-                  <dd>{receivedUser.phone_number}</dd>
-                </dl>
-                <div>変更</div>
-              </div>
-              <div>
-                <div>
-                  <img src={plan.image} alt={plan.name} />
+              <div className="flex flex-col bg-white border shadow-sm rounded-xl">
+                <div className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
+                  <h4 className="text-sm font-bold mt-1 mb-1">請求先詳細</h4>
                 </div>
-                <h4>
-                  <span>定期便</span>
+                <div className="p-4 md:p-5">
+                  <dl>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">名前</dt>
+                      <dd className="w-60">{paidUser.name}</dd>
+                    </div>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">住所</dt>
+                      <dd className="w-60">
+                        <span>〒{paidUser.zipcode} </span>
+                        {paidUser.prefecture}
+                        {paidUser.city}
+                        {paidUser.town}
+                        {paidUser.apartment}
+                      </dd>
+                    </div>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">電話番号</dt>
+                      <dd>{paidUser.phone_number}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+
+              <div className="flex flex-col bg-white border shadow-sm rounded-xl mt-5">
+                <div className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
+                  <h4 className="text-sm font-bold mt-1 mb-1">お届け先住所</h4>
+                </div>
+                <div className="p-4 md:p-5">
+                  <dl>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">名前</dt>
+                      <dd className="w-60">{receivedUser.name}</dd>
+                    </div>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">住所</dt>
+                      <dd className="w-60">
+                        <span>〒{receivedUser.zipcode} </span>
+                        {receivedUser.prefecture}
+                        {receivedUser.city}
+                        {receivedUser.town}
+                        {receivedUser.apartment}
+                      </dd>
+                    </div>
+                    <div className="flex flex-wrap">
+                      <dt className="mb-2 w-40">電話番号</dt>
+                      <dd className="w-60">{receivedUser.phone_number}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+              <div>
+                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                  請求先詳細・お届け先の変更
+                </button>
+              </div>
+              <h4 className="text-sm font-bold mb-3 mt-5">注文プラン情報</h4>
+              <div className="flex flex-wrap item-center">
+                <div>
+                  <img
+                    src={plan.image}
+                    alt={plan.name}
+                    className="w-60 rounded-lg mr-4 overflow-hidden"
+                  />
+                </div>
+                <div>
+                  <span className="text-sm font-bold mb-3 mt-3">定期便</span>
+                  <p>{plan.name}</p>
                   <p>{plan.explanation}</p>
-                </h4>
-                <p></p>
-                <p>数量：1</p>
+                  <p>数量：1</p>
+                </div>
               </div>
             </div>
           </section>
         </div>
-        <div className="w-3/5 mt-10">
+        <div className="w-3/5 mt-10 mb-10">
+          <h4 className="text-sm font-bold mb-3 mt-10">支払いカード情報</h4>
           <Elements options={options} stripe={stripePromis}>
             <CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} />
           </Elements>
