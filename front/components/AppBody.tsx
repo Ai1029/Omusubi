@@ -9,10 +9,10 @@ interface Props {
 
 const AppBody = ({ children }: Props) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const ENDPINST_URL_SESSION = apiUrl + "check-session";
-  const ENDPINST_URL_MY_SUB = apiUrl + "subscriptions-receiveduser";
-  const ENDPINST_URL_FAMILY_SUB = apiUrl + "subscriptions-width-family";
-  const ENDPINST_URL_ORDERS = apiUrl + "orders";
+  const ENDPOINT_URL_SESSION = apiUrl + "check-session";
+  const ENDPOINT_URL_MY_SUB = apiUrl + "subscriptions-receiveduser";
+  const ENDPOINT_URL_FAMILY_SUB = apiUrl + "subscriptions-width-family";
+  const ENDPOINT_URL_ORDERS = apiUrl + "orders";
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [userID, setUserID] = useRecoilState(userIDState);
@@ -27,25 +27,24 @@ const AppBody = ({ children }: Props) => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get(ENDPINST_URL_SESSION, {
+        const response = await axios.get(ENDPOINT_URL_SESSION, {
           withCredentials: true,
         });
         if (response.status === 200) {
           setIsLoggedIn(true);
+          const userID = response.data.user_id;
+          const familyID = response.data.family_id;
+          const familyData = response.data.family;
+          setUserID(userID);
+          setFaimilyID(familyID);
+          setFamily(familyData);
+          const resMySub = await axios.get(ENDPOINT_URL_MY_SUB + "/" + userID);
+          const resFamilySub = await axios.get(ENDPOINT_URL_FAMILY_SUB + "/" + userID);
+          const resOrderHistory = await axios.get(ENDPOINT_URL_ORDERS + "/" + userID);
+          setMySub(resMySub.data);
+          setFamilySub(resFamilySub.data);
+          setOrderHistory(resOrderHistory.data);
         }
-        const userID = response.data.user_id;
-        const familyID = response.data.family_id;
-        const familyData = response.data.family;
-        setUserID(userID);
-        setFaimilyID(familyID);
-        setFamily(familyData);
-        const resMySub = await axios.get(ENDPINST_URL_MY_SUB + "/" + userID);
-        const resFamilySub = await axios.get(ENDPINST_URL_FAMILY_SUB + "/" + userID);
-        setMySub(resMySub.data);
-        setFamilySub(resFamilySub.data);
-        const resOrderHistory = await axios.get(ENDPINST_URL_ORDERS + "/" + userID);
-        setOrderHistory(resOrderHistory.data);
-        console.log(order);
       } catch (error) {
         console.error("Error checking session:", error);
       }
