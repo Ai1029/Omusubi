@@ -24,7 +24,6 @@ type Subscription struct {
 
 type SubscriptionAddPlan struct {
 	ID                   int     `json:"id"`
-	PlanID               int     `json:"plan_id"`
 	PaidUserID           int     `json:"paiduser_id"`
 	ReceivedUserID       int     `json:"receiveduser_id"`
 	IsActive             bool    `json:"is_active"`
@@ -51,9 +50,9 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
 						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
 			FROM subscriptions s
 			INNER JOIN plans p ON s.plan_id = p.id
 			WHERE s.paiduser_id = ? AND s.is_active = true AND s.paiduser_id <> s.receiveduser_id`,
@@ -68,13 +67,13 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 			var subscription SubscriptionAddPlan
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PlanID,
 				&subscription.PaidUserID,
 				&subscription.ReceivedUserID,
 				&subscription.IsActive,
 				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
+				&subscription.Plan.ID,
 				&subscription.Plan.Name,
 				&subscription.Plan.Explanation,
 				&subscription.Plan.Price,
@@ -108,9 +107,9 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
 						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
 			FROM subscriptions s
 			INNER JOIN plans p ON s.plan_id = p.id
 			WHERE s.paiduser_id = ? AND s.is_active = true`,
@@ -125,13 +124,13 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 			var subscription SubscriptionAddPlan
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PlanID,
 				&subscription.PaidUserID,
 				&subscription.ReceivedUserID,
 				&subscription.IsActive,
 				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
+				&subscription.Plan.ID,
 				&subscription.Plan.Name,
 				&subscription.Plan.Explanation,
 				&subscription.Plan.Price,
@@ -168,9 +167,9 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.plan_id, s.paiduser_id, s.receiveduser_id, s.is_active,
+			SELECT s.id, s.paiduser_id, s.receiveduser_id, s.is_active,
 						s.stripe_customer_id, s.stripe_subscription_id, s.next_payment,
-						p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
+						p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id
 			FROM subscriptions s
 			INNER JOIN plans p ON s.plan_id = p.id
 			WHERE s.receiveduser_id = ? AND s.is_active = true`,
@@ -185,13 +184,13 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 			var subscription SubscriptionAddPlan
 			err := rows.Scan(
 				&subscription.ID,
-				&subscription.PlanID,
 				&subscription.PaidUserID,
 				&subscription.ReceivedUserID,
 				&subscription.IsActive,
 				&subscription.StripeCustomerID,
 				&subscription.StripeSubscriptionID,
 				&subscription.NextPayment,
+				&subscription.Plan.ID,
 				&subscription.Plan.Name,
 				&subscription.Plan.Explanation,
 				&subscription.Plan.Price,
