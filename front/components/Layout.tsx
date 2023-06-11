@@ -73,13 +73,17 @@ const Layout = ({ children }: Props) => {
                         <span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cart.length > 0 ? cart.length : 0}</span>
                       </Link>
                     </li>
-                    {!isLogined && (
-                      <li className="py-3">
-                        <Link href="#" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+                    <li className="py-3">
+                      {isLogined ? (
+                        <Link href="/logout" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
+                          ログアウト
+                        </Link>
+                      ) : (
+                        <Link href="/login" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
                           ログイン
                         </Link>
-                      </li>
-                    )}
+                      )}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -114,8 +118,12 @@ export const Navbar: React.FC<NavProps> = ({ cartCount, isLogined }) => {
         カートを見る
         {cartCount > 0 && <span className="bg-red text-white text-xs rounded-full px-2 py-1 ml-1">{cartCount}</span>}
       </Link>
-      {!isLogined && (
-        <Link href="#" className="hover:text-selected-text transition-all duration-300">
+      {isLogined ? (
+        <Link href="/logout" className="hover:text-selected-text transition-all duration-300">
+          ログアウト
+        </Link>
+      ) : (
+        <Link href="/login" className="hover:text-selected-text transition-all duration-300">
           ログイン
         </Link>
       )}
