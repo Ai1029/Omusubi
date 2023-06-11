@@ -10,6 +10,7 @@ type Plan = {
 };
 type Subscription = {
   id: number;
+  create_at: string;
   stripe_subscription_id: string;
   next_payment: string;
   plan: Plan;
