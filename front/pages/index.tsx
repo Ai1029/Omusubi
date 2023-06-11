@@ -3,8 +3,6 @@ import { GetServerSideProps, NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "@/components/Layout";
-import { useRecoilValue } from "recoil";
-import { userIDState, familyState } from "@/state/atom";
 import Topimage from "@/components/Topimage";
 import Plan from "@/components/Plan";
 import Delivery from "@/components/Delivery";
@@ -25,7 +23,6 @@ type Props = {
 
 const HOME: NextPage<Props> = ({ planList }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const family = useRecoilValue(familyState);
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,8 +30,6 @@ const HOME: NextPage<Props> = ({ planList }) => {
   if (!isMounted) {
     return null; // マウント前は何も表示せずにロード中とする
   }
-  console.log(family);
-
   return (
     <Layout>
       <Topimage />
