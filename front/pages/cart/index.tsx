@@ -67,7 +67,7 @@ const CartPage: NextPage = () => {
                         詳細: {item.plan.explanation}
                       </p>
                       <div>
-                        <h3 className="text-lg font-semibold mb-3">配送先</h3>
+                        <h3 className="text-sm font-bold mt-1 mb-1">配送先</h3>
                         <p className="text-basic">{item.receivedUser.name}</p>
                         <p>{item.receivedUser.zipcode}</p>
                         <p>{item.receivedUser.prefecture}</p>
@@ -79,7 +79,7 @@ const CartPage: NextPage = () => {
                     </div>
                     <button
                       onClick={() => handlePurchase(item)}
-                      className="w-1/5 h-full px-3 py-3 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
+                      className="px-3 py-3 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
                     >
                       購入する
                     </button>
