@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
+import Link from "next/link";
 import axios from "axios";
 import { useRecoilValue, useRecoilSnapshot } from "recoil";
 import { familyIDState } from "@/state/atom";
@@ -23,7 +24,7 @@ const CreateFamily: NextPage = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiUrl + "family";
   const [isMounted, setIsMounted] = useState(false);
-  const familyID = useRecoilValue(familyIDState);
+  const [successMessage, setSuccessMessage] = useState("");
   const snapshot = useRecoilSnapshot();
   const [inputProfile, setInputProfile] = useState<TypeUser>({
     family_id: 0,
@@ -76,9 +77,16 @@ const CreateFamily: NextPage = () => {
     }
 
     axios.post(ENDPOINT_URL, inputProfile).then((res) => {
-      console.log(res.data)
-    })
-  }
+      console.log(res.data);
+      let resMessage = "";
+      if (res.status === 200) {
+        resMessage = "家族の登録が完了しました";
+      } else {
+        resMessage = "エラーが発生しました。お問い合わせください。";
+      }
+      setSuccessMessage(resMessage);
+    });
+  };
 
   if (!isMounted) {
     return null; // マウント前は何も表示せずにロード中とする
@@ -88,6 +96,16 @@ const CreateFamily: NextPage = () => {
     <Layout>
       <div className="text-center items-center">
         <h2 className="text-center mb-10 mt-10">家族を追加</h2>
+        {successMessage && (
+          <div className="text-center mb-10">
+            <p className="mb-10">{successMessage}</p>
+            <div className="flex justify-center">
+              <Link href="/" className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center">
+                TOPページ
+              </Link>
+            </div>
+          </div>
+        )}
         <div>
           <form>
             <div className="pb-5">
