@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/webhook"
@@ -77,7 +78,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 		// 顧客がサブスクリプションを作成
 		case "customer.subscription.updated":
 			fmt.Println("==================customer.subscription.updated==================")
-			// fmt.Println(string(eventJSON))
+			fmt.Println(string(eventJSON))
 
 			var data map[string]interface{}
 			err := json.Unmarshal([]byte(eventJSON), &data)
@@ -85,7 +86,6 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 				fmt.Println("Error decoding JSON:", err)
 				return
 			}
-
 			// 指定のキーの値にアクセス
 			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
 			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
@@ -115,8 +115,9 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 		case "invoice.payment_succeeded":
 			// 支払いが正常に完了した
 			fmt.Println("==================invoice.payment_succeeded==================")
-			// fmt.Println(string(eventJSON))
+			fmt.Println(string(eventJSON))
 
+			fmt.Println("========== ここからdata map ===========")
 			var data map[string]interface{}
 			err := json.Unmarshal([]byte(eventJSON), &data)
 			if err != nil {
@@ -124,14 +125,21 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
+			fmt.Println("========== eventJSONのデコードが完了 ===========")
+
 			// 指定のキーの値にアクセス
 			stripeInvoiceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
-			paymentCreted := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(string)
-			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
-			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["subscription"].(string)
 			fmt.Println("Stripe Invoice ID:", stripeInvoiceID)
-			fmt.Println("Payment Created:", paymentCreted)
+
+			paymentCreated := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(float64)
+			paymentCreatedTime := time.Unix(int64(paymentCreated), 0)
+			paymentDateString := paymentCreatedTime.Format("2006-01-02 15:04:05")
+
+			fmt.Println("Payment Created:", paymentDateString)
+
+			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
 			fmt.Println("Stripe Price ID:", stripePriceID)
+			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["subscription"].(string)
 			fmt.Println("Stripe Subscription ID:", stripeSubscriptionID)
 
 			// アイテムIDに紐づくデータ取得
@@ -143,12 +151,15 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 				fmt.Fprintf(w, "Error: %v", err)
 				return
 			}
-			_, err = db.Exec("INSERT INTO orders (plan_id, plan_name, plan_explanation, price, stripe_invoice_id, stripe_subscription_id ) VALUES (?, ?, ?, ?, ?, ?)", plan.ID, plan.Name, plan.Explanation, plan.Price, stripeInvoiceID, stripeSubscriptionID)
+			_, err = db.Exec("INSERT INTO orders (plan_id, plan_name, plan_explanation, price, stripe_invoice_id, stripe_subscription_id, payment_date ) VALUES (?, ?, ?, ?, ?, ?, ?)", plan.ID, plan.Name, plan.Explanation, plan.Price, stripeInvoiceID, stripeSubscriptionID, paymentDateString)
 			if err != nil {
 				fmt.Println("Error inserting data into orders table:", err)
 				return
 			}
 
+		case "invoice.upcoming":
+			fmt.Println("==================invoice.invoice.upcoming==================")
+			fmt.Println(string(eventJSON))
 		// ... handle other event types
 		default:
 			fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
