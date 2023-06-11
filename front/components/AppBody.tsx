@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { cartState, isLoggedInState, userIDState, familyIDState, familyState, mySubState, familySubState} from "@/state/atom";
+import { cartState, isLoggedInState, userIDState, familyIDState, familyState, mySubState, familySubState, orderHistory } from "@/state/atom";
 import axios from "axios";
 
 interface Props {
@@ -12,6 +12,7 @@ const AppBody = ({ children }: Props) => {
   const ENDPINST_URL_SESSION = apiUrl + "check-session";
   const ENDPINST_URL_MY_SUB = apiUrl + "subscriptions-receiveduser";
   const ENDPINST_URL_FAMILY_SUB = apiUrl + "subscriptions-width-family";
+  const ENDPINST_URL_ORDERS = apiUrl + "orders";
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [userID, setUserID] = useRecoilState(userIDState);
@@ -20,6 +21,7 @@ const AppBody = ({ children }: Props) => {
   const [cart, setCart] = useRecoilState(cartState);
   const [mySub, setMySub] = useRecoilState(mySubState);
   const [familySub, setFamilySub] = useRecoilState(familySubState);
+  const [order, setOrderHistory] = useRecoilState(orderHistory);
   const [isMounted, setIsMounted] = useState(false);
   //　ユーザーがログインしているかサーバーで確認する
   useEffect(() => {
@@ -39,8 +41,11 @@ const AppBody = ({ children }: Props) => {
         setFamily(familyData);
         const resMySub = await axios.get(ENDPINST_URL_MY_SUB + "/" + userID);
         const resFamilySub = await axios.get(ENDPINST_URL_FAMILY_SUB + "/" + userID);
-        setMySub(resMySub.data)
-        setFamilySub(resFamilySub.data)
+        setMySub(resMySub.data);
+        setFamilySub(resFamilySub.data);
+        const resOrderHistory = await axios.get(ENDPINST_URL_ORDERS + "/" + userID);
+        setOrderHistory(resOrderHistory.data);
+        console.log(order);
       } catch (error) {
         console.error("Error checking session:", error);
       }
