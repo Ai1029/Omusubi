@@ -88,6 +88,11 @@ export const userIDState = atom<number>({
   default: 0,
 });
 
+export const familyIDState = atom<number>({
+  key: "familyIDState",
+  default: 0,
+});
+
 export const familyState = atom<User[]>({
   key: "familyState",
   default: [],
