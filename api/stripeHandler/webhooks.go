@@ -87,6 +87,7 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 				return
 			}
 			// 指定のキーの値にアクセス
+
 			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
 			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
 			paidUserID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["items"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["metadata"].(map[string]interface{})["paid_user"].(string)
@@ -117,15 +118,12 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 			fmt.Println("==================invoice.payment_succeeded==================")
 			fmt.Println(string(eventJSON))
 
-			fmt.Println("========== ここからdata map ===========")
 			var data map[string]interface{}
 			err := json.Unmarshal([]byte(eventJSON), &data)
 			if err != nil {
 				fmt.Println("Error decoding JSON:", err)
 				return
 			}
-
-			fmt.Println("========== eventJSONのデコードが完了 ===========")
 
 			// 指定のキーの値にアクセス
 			stripeInvoiceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["id"].(string)
@@ -134,17 +132,17 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 			paymentCreated := data["data"].(map[string]interface{})["object"].(map[string]interface{})["created"].(float64)
 			paymentCreatedTime := time.Unix(int64(paymentCreated), 0)
 			paymentDateString := paymentCreatedTime.Format("2006-01-02 15:04:05")
-
 			fmt.Println("Payment Created:", paymentDateString)
 
 			stripePriceID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["plan"].(map[string]interface{})["id"].(string)
 			fmt.Println("Stripe Price ID:", stripePriceID)
+
 			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["lines"].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["subscription"].(string)
 			fmt.Println("Stripe Subscription ID:", stripeSubscriptionID)
 
 			// アイテムIDに紐づくデータ取得
 			var plan TypePlan
-			planData := db.QueryRow("SELECT id, name, explanation, price  FROM plans WHERE stripe_price_id = ?", stripePriceID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price)
+			planData := db.QueryRow("SELECT id, name, explanation, price FROM plans WHERE stripe_price_id = ?", stripePriceID).Scan(&plan.ID, &plan.Name, &plan.Explanation, &plan.Price)
 			if planData != nil {
 				// エラーが発生した場合はエラーレスポンスを返す
 				w.WriteHeader(http.StatusInternalServerError)
@@ -158,8 +156,29 @@ func StripeWebhook(db *sql.DB) http.HandlerFunc {
 			}
 
 		case "invoice.upcoming":
-			fmt.Println("==================invoice.invoice.upcoming==================")
+			fmt.Println("==================invoice.upcoming==================")
 			fmt.Println(string(eventJSON))
+			var data map[string]interface{}
+			err := json.Unmarshal([]byte(eventJSON), &data)
+			if err != nil {
+				fmt.Println("Error decoding JSON:", err)
+				return
+			}
+
+			stripeSubscriptionID := data["data"].(map[string]interface{})["object"].(map[string]interface{})["subscription"].(string)
+			fmt.Println("Subscription ID:", stripeSubscriptionID)
+
+			nextPaymentAttempt := data["data"].(map[string]interface{})["object"].(map[string]interface{})["next_payment_attempt"].(float64)
+			nextPaymentAttemptTime := time.Unix(int64(nextPaymentAttempt), 0)
+			nextPaymentAttemptDateString := nextPaymentAttemptTime.Format("2006-01-02 15:04:05")
+			fmt.Println("Next Payment Date:", nextPaymentAttemptDateString)
+
+			_, err = db.Exec("UPDATE subscriptions SET next_payment = ? WHERE stripe_subscription_id = ?", nextPaymentAttemptDateString, stripeSubscriptionID)
+			if err != nil {
+				fmt.Println("Error updating next_payment:", err)
+				return
+			}
+
 		// ... handle other event types
 		default:
 			fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
