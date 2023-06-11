@@ -8,7 +8,15 @@ type Plan = {
   image: string;
   stripe_price_id: string;
 };
-
+type Subscription = {
+  id: number;
+  create_at: string;
+  stripe_subscription_id: string;
+  next_payment: string;
+  plan: Plan;
+  paid_user: User;
+  received_user: User;
+};
 type User = {
   id: number;
   name: string;
@@ -30,52 +38,15 @@ type CartItem = {
   paidUser: User;
   receivedUser: User;
 };
-const initialOrder = {
-  plan: {
-    id: 0,
-    name: "",
-    explanation: "",
-    price: "",
-    image: "",
-    stripe_price_id: "",
-  },
-  paidUser: {
-    id: 0,
-    name: "",
-    email: "",
-    zipcode: "",
-    prefecture: "",
-    city: "",
-    town: "",
-    apartment: "",
-    phone_number: "",
-    is_owner: false,
-    is_virtual_user: false,
-  },
-  receivedUser: {
-    id: 0,
-    name: "",
-    email: "",
-    zipcode: "",
-    prefecture: "",
-    city: "",
-    town: "",
-    apartment: "",
-    phone_number: "",
-    is_owner: false,
-    is_virtual_user: false,
-  },
-};
-const initialCart: CartItem[] = [];
 
-export const cartState = atom({
+export const cartState = atom<CartItem[]>({
   key: "cartState",
-  default: initialCart,
+  default: [],
 });
 
-export const orderState = atom({
+export const orderState = atom<CartItem[]>({
   key: "orderState",
-  default: initialOrder,
+  default: [],
 });
 
 export const isLoggedInState = atom<boolean>({
@@ -95,5 +66,16 @@ export const familyIDState = atom<number>({
 
 export const familyState = atom<User[]>({
   key: "familyState",
+  default: [],
+});
+
+// my subscription state
+export const mySubState = atom<Subscription[]>({
+  key: "mySubState",
+  default: [],
+});
+// family subscription state
+export const familySubState = atom<Subscription[]>({
+  key: "familySubState",
   default: [],
 });
