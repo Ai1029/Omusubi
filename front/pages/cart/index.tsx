@@ -41,7 +41,7 @@ const CartPage: NextPage = () => {
                     key={i}
                     className="flex w-full border border-gray-100 overflow-hidden bg-white rounded-lg shadow-lg"
                   >
-                    <div className="bg-gray-100 rounded-tl-xl py-3 px-4 md:py-4 md:px-5 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="w-2/5 bg-gray-100 rounded-tl-xl py-3 px-4 md:py-4 md:px-5 dark:bg-gray-800 dark:border-gray-700">
                       {item.receivedUser.is_owner ? (
                         <h2 className="mt-1 text-sm text-gray-500 dark:text-gray-500">
                           自宅に配送
