@@ -59,7 +59,14 @@ const Orderhistory = () => {
                       {data.map((item, index) => (
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                            {item.payment_date}
+                            {new Date(item.payment_date).toLocaleDateString(
+                              "ja-JP",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                             {item.plan_name}

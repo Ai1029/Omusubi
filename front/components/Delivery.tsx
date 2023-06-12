@@ -30,9 +30,20 @@ const Delivery = () => {
                         />
                       </div>
                       <p className="text-sm text-gray-500 leading-6">
-                        {item.plan.name}
+                        {new Date(
+                          new Date(item.next_payment).getTime() +
+                            2 * 24 * 60 * 60 * 1000
+                        ).toLocaleDateString("ja-JP", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
+                        予定
                       </p>
                       <p className="text-sm text-gray-500 leading-6">
+                        {item.plan.name}
+                      </p>
+                      <p className="text-sm text-gray-500 leading-6 mb-5">
                         {item.plan.explanation}
                       </p>
                     </div>
@@ -54,6 +65,17 @@ const Delivery = () => {
                         </div>
                         <p className="text-lg font-semibold text-gray-600 pb-1">
                           {item.received_user.name}さんにお届け
+                        </p>
+                        <p className="text-sm text-gray-500 leading-6">
+                          {new Date(
+                            new Date(item.next_payment).getTime() +
+                              2 * 24 * 60 * 60 * 1000
+                          ).toLocaleDateString("ja-JP", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })}
+                          予定
                         </p>
                         <p className="text-sm text-gray-500 leading-6">
                           {item.plan.name}
