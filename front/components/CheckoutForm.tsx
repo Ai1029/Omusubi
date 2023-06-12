@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 type Props = {
-  apiURL: string;
-  siteURL: string;
   order: any;
 };
 
-const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
+const CheckoutForm: React.FC<Props> = ({ order }) => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
+  const siteURL = process.env.NEXT_PUBLIC_SITE_URL;
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState<string | null>(null);
-  const returnUrl = siteURL + "/register/complete";
+  const returnUrl = siteURL + "register/complete";
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -60,9 +56,7 @@ const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
       {/* Show any error or success messages */}
-      <button className="px-3 py-3 text-sm font-medium text-center my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
-        注文する
-      </button>
+      <button className="px-3 py-3 text-sm font-medium text-center my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">注文する</button>
       {message && <div id="payment-message">{message}</div>}
     </form>
   );

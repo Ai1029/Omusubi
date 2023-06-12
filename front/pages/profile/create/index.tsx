@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { GetServerSideProps, NextPage } from "next";
+import React, { useState, useEffect } from "react";
+import { NextPage } from "next";
+import { useRecoilValue } from "recoil";
+import { userIDState } from "@/state/atom";
 import axios from "axios";
 import Link from "next/link";
-import { useRecoilState } from "recoil";
-import { cartState } from "@/state/atom";
 import Layout from "@/components/Layout";
 
 type InputProfile = {
@@ -17,26 +17,38 @@ type InputProfile = {
   apartment: string;
   phone_number: string;
 };
-type Props = {
-  user: InputProfile;
-  isProfileExist: boolean;
-};
-const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
+const CreateProfile: NextPage = () => {
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiURL + "users";
-  const [cart, setCart] = useRecoilState(cartState);
+  const userID = useRecoilValue(userIDState);
+  const [isMounted, setIsMounted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [inputProfile, setInputProfile] = useState<InputProfile>({
-    id: user.id || 0,
-    name: user.name || "",
-    phonetic: user.phonetic || "",
-    zipcode: user.zipcode || "",
-    prefecture: user.prefecture || "",
-    city: user.city || "",
-    town: user.town || "",
-    apartment: user.apartment || "",
-    phone_number: user.phone_number || "",
+    id: 0,
+    name: "",
+    phonetic: "",
+    zipcode: "",
+    prefecture: "",
+    city: "",
+    town: "",
+    apartment: "",
+    phone_number: "",
   });
+  useEffect(() => {
+    console.log(userID);
+    if (userID !== 0) {
+      axios.get(ENDPOINT_URL + "/" + userID).then((res) => {
+        const name = res.data.name;
+        setInputProfile((prevProfile) => ({
+          ...prevProfile,
+          name: name,
+        }));
+      });
+    }
+  }, [userID]);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setInputProfile((prevProfile) => ({
@@ -57,38 +69,19 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
       return;
     }
     axios.patch(ENDPOINT_URL, inputProfile).then((res) => {
-      if (isProfileExist) {
-        setSuccessMessage("プロフィールの修正が完了しました");
-      } else {
-        setSuccessMessage("プロフィールの登録が完了しました");
-      }
-
-      const updatedCart = cart.map((item) => {
-        if (item.paidUser.id === user.id) {
-          // paidUserのidが一致する場合、データを修正
-          return {
-            ...item,
-            paidUser: { ...item.paidUser, ...res.data },
-          };
-        }
-        if (item.receivedUser.id === user.id) {
-          // receivedUserのidが一致する場合、データを修正
-          return {
-            ...item,
-            receivedUser: { ...item.receivedUser, ...res.data },
-          };
-        }
-        return item;
-      });
-      setCart(updatedCart);
-      localStorage.setItem("cart-items", JSON.stringify(updatedCart));
+      setSuccessMessage("プロフィールの登録が完了しました");
     });
   };
 
+  if (!isMounted) {
+    return null; // マウント前は何も表示せずにロード中とする
+  }
   return (
     <Layout>
       <div className="items-center">
-        <div>{isProfileExist ? <h2 className="text-center mb-10 mt-10">プロフィール修正</h2> : <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>}</div>
+        <div>
+          <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>
+        </div>
         {successMessage && (
           <div className="text-center mb-10">
             <p className="mb-10">{successMessage}</p>
@@ -161,39 +154,4 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
   );
 };
 
-export default UpdateProfile;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.query;
-  let user = {
-    id: 0,
-    name: "",
-    family_id: 0,
-    phonetic: "",
-    zipcode: "",
-    prefecture: "",
-    city: "",
-    town: "",
-    apartment: "",
-    phone_number: "",
-  };
-  let isProfileExist = false; // 初期化
-
-  if (id !== undefined) {
-    try {
-      const response = await axios.get(`${process.env.API_URL_SSR}/users/${id}`);
-      const data = response.data;
-      user = data;
-      const keysToCheck = ["name", "phonetic", "zipcode", "prefecture", "city", "town", "phone_number"];
-      isProfileExist = keysToCheck.every((key) => data[key] !== null && data[key] !== "");
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  }
-  return {
-    props: {
-      user: user,
-      isProfileExist: isProfileExist,
-    },
-  };
-};
+export default CreateProfile;
