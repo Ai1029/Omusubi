@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
+import { useRecoilValue } from "recoil";
+import { userIDState } from "@/state/atom";
 import axios from "axios";
 import Link from "next/link";
 import Layout from "@/components/Layout";
@@ -18,6 +20,8 @@ type InputProfile = {
 const CreateProfile: NextPage = () => {
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiURL + "users";
+  const userID = useRecoilValue(userIDState);
+  const [isMounted, setIsMounted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [inputProfile, setInputProfile] = useState<InputProfile>({
     id: 0,
@@ -30,6 +34,21 @@ const CreateProfile: NextPage = () => {
     apartment: "",
     phone_number: "",
   });
+  useEffect(() => {
+    console.log(userID);
+    if (userID !== 0) {
+      axios.get(ENDPOINT_URL + "/" + userID).then((res) => {
+        const name = res.data.name;
+        setInputProfile((prevProfile) => ({
+          ...prevProfile,
+          name: name,
+        }));
+      });
+    }
+  }, [userID]);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setInputProfile((prevProfile) => ({
@@ -50,14 +69,19 @@ const CreateProfile: NextPage = () => {
       return;
     }
     axios.patch(ENDPOINT_URL, inputProfile).then((res) => {
-        setSuccessMessage("プロフィールの登録が完了しました");
+      setSuccessMessage("プロフィールの登録が完了しました");
     });
   };
 
+  if (!isMounted) {
+    return null; // マウント前は何も表示せずにロード中とする
+  }
   return (
     <Layout>
       <div className="items-center">
-        <div><h2 className="text-center mb-10 mt-10">プロフィール登録</h2></div>
+        <div>
+          <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>
+        </div>
         {successMessage && (
           <div className="text-center mb-10">
             <p className="mb-10">{successMessage}</p>
