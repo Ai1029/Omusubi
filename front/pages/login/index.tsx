@@ -28,18 +28,15 @@ const LoginPage: NextPage<Props> = () => {
   const [inputs, setInputs] = useState<Inputs>({ email: "", password: "" });
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(ENDPOINT_URL)
     signInWithEmailAndPassword(auth, inputs.email, inputs.password)
       .then(({ user }: any) => {
         user.getIdToken().then((idToken: any) => {
-          console.log(user);
           const config = {
             headers: {
               Authorization: `Bearer ${idToken}`,
             },
           };
           axios.post(ENDPOINT_URL, idToken, { withCredentials: true, ...config }).then((res) => {
-            console.log("エンドポイント", ENDPOINT_URL);
             if (res.data === false) {
               setDbError(true);
             } else {
@@ -53,14 +50,13 @@ const LoginPage: NextPage<Props> = () => {
               //   maxAge: 1 * 1 * 60 * 60,
               //   path: "/",
               // });
-              router.push("/");
               axios
                 .get(ENDPOINT_URL_SESSION, {
                   withCredentials: true,
                 })
                 .then((res) => {
                   if (res.data) {
-                    console.log("セットできた");
+                    router.push("/");
                   }
                 });
             }
