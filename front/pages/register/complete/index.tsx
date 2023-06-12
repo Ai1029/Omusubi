@@ -6,7 +6,11 @@ import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
 import Layout from "@/components/Layout";
 
-const stripePromise = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
+let stripePromise : any;
+if (process.env.NEXT_PUBLIC_STRIPE_PROMIS) {
+  stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PROMIS);
+}
+
 const CartRegister: NextPage = () => {
 	const [isMounted, setIsMounted] = useState(false);
 
@@ -18,11 +22,11 @@ const CartRegister: NextPage = () => {
 			return;
 		}
 		stripePromise
-			.then((stripe) => {
+			.then((stripe:any) => {
 				if (!stripe) {
 					return;
 				}
-				stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+				stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }:any) => {
 					if (!paymentIntent) {
 						return;
 					}

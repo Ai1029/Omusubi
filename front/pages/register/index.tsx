@@ -9,9 +9,10 @@ import CheckoutForm from "@/components/CheckoutForm";
 import { useRecoilValue } from "recoil";
 import { orderState } from "@/state/atom";
 
-const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
-
-//const stripePromis = loadStripe(`${process.env.STRIPE_PROMIS}`);
+let stripePromis: any;
+if (process.env.NEXT_PUBLIC_STRIPE_PROMIS) {
+  stripePromis = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PROMIS);
+}
 
 const CartConfirm: NextPage = () => {
   const order = useRecoilValue(orderState);

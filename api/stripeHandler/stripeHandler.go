@@ -3,11 +3,14 @@ package stripeHandler
 import (
 	"database/sql"
 	"encoding/json"
+	"os"
 	"strconv"
 
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/customer"
@@ -82,22 +85,22 @@ type TypeStripePaymentIntent struct {
 
 func CreateCheckoutSession(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if PRODUCTION_MODE {
-			stripe.Key = SECRET_KEY_PRODUCTION
-		} else {
-			stripe.Key = SECRET_KEY_STAGING
-		}
+		// .envファイルの読み込み
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
 
-		// SITE_URL := "http://localhost:3000"
-		// if os.Getenv("DB_ENV") == "production" {
-		// SITE_URL = os.Getenv("SITE_URL")
-		// }
-		// fmt.Println(SITE_URL)
+		if os.Getenv("DB_ENV") == "production" {
+			stripe.Key = os.Getenv("SECRET_KEY_PRODUCTION")
+		} else {
+			stripe.Key = os.Getenv("SECRET_KEY_STAGING")
+		}
 
 		var data OrderData
 
 		// リクエストボディの読み取り
-		err := json.NewDecoder(r.Body).Decode(&data)
+		err = json.NewDecoder(r.Body).Decode(&data)
 		fmt.Println(err)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

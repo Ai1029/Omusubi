@@ -16,13 +16,11 @@ import (
 
 func main() {
 	cfg, err := config.LoadMySQLConfig()
+	SITE_URL := "http://localhost:3000"
 	if os.Getenv("DB_ENV") == "production" {
 		cfg.Host = os.Getenv("MYSQL_SERVER")
 		cfg.User = os.Getenv("MYSQL_USER")
 		cfg.Password = os.Getenv("MYSQL_PASSWORD")
-	}
-	SITE_URL := "http://localhost:3000"
-	if os.Getenv("DB_ENV") == "production" {
 		SITE_URL = os.Getenv("SITE_URL")
 	}
 	if err != nil {

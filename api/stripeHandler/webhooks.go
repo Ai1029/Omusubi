@@ -35,16 +35,13 @@ type TypePlan struct {
 
 func StripeWebhook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if PRODUCTION_MODE {
-			stripe.Key = SECRET_KEY_PRODUCTION
-		} else {
-			stripe.Key = SECRET_KEY_STAGING
-		}
 		stripeWebhookSecret := ""
 		if os.Getenv("DB_ENV") == "production" {
-			stripeWebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET")
+			stripe.Key = os.Getenv("SECRET_KEY_PRODUCTION")
+			stripeWebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET_PRODUCTION")
 		} else {
-			stripeWebhookSecret = STRIPE_WEBHOOK_SECRET
+			stripe.Key = os.Getenv("SECRET_KEY_STAGING")
+			stripeWebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET_STAGING")
 		}
 
 		if r.Method != "POST" {
