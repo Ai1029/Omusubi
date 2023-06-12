@@ -1,23 +1,28 @@
 import React from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import axios from "axios";
 import { auth } from "@/firebase/firebase";
 import { signOut } from "firebase/auth";
-import nookies from "nookies";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import Layout from "@/components/Layout";
 
-
 const Logout: NextPage = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const ENDPOINT_URL = apiUrl + "logout";
   const router = useRouter();
   const onSubmitLogout = async (e: React.FormEvent) => {
     e.preventDefault();
     signOut(auth)
       .then(() => {
-        // Signed out
-        nookies.destroy(null, "id");
-        nookies.destroy(null, "signedIn");
-        router.push("/login");
-        // ...
+        axios
+          .get(ENDPOINT_URL, { withCredentials: true })
+          .then(() => {
+            router.push("/login");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => {
         const errorCode = error.code;

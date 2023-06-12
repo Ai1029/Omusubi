@@ -66,6 +66,7 @@ func main() {
 	r.HandleFunc("/plan/{id}", handlers.PatchPlan(db)).Methods("PATCH")
 	r.HandleFunc("/plan/{id}", handlers.DeletePlan(db)).Methods("DELETE")
 	r.HandleFunc("/login", handlers.Login(db))
+	r.HandleFunc("/logout", handlers.Logout(db)).Methods("GET")
 	// r.HandleFunc("/login", handlers.Login(db)).Methods("GET")
 	r.HandleFunc("/subscriptions-receiveduser/{id}", handlers.GetSubscriptionsReceivedUser(db)).Methods("GET")
 	r.HandleFunc("/subscriptions-paiduser/{id}", handlers.GetSubscriptionsPaidUser(db)).Methods("GET")
