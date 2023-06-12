@@ -37,6 +37,7 @@ type SubWidthUser struct {
 type SubscriptionDetail struct {
 	ID                   int          `json:"id"`
 	StripeSubscriptionID string       `json:"stripe_subscription_id"`
+	CreateAt             *string      `json:"create_at"`
 	NextPayment          *string      `json:"next_payment"`
 	PaidUser             SubWidthUser `json:"paid_user"`
 	ReceivedUser         SubWidthUser `json:"received_user"`
@@ -60,7 +61,7 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-	SELECT s.id, s.stripe_subscription_id, s.next_payment,
+	SELECT s.id, s.stripe_subscription_id, s.create_at, s.next_payment,
 		p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
 		pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
 		ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
@@ -81,6 +82,7 @@ func GetSubscriptionsWidthFamily(db *sql.DB) http.HandlerFunc {
 			err := rows.Scan(
 				&subscription.ID,
 				&subscription.StripeSubscriptionID,
+				&subscription.CreateAt,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
 				&subscription.Plan.Name,
@@ -134,7 +136,7 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.stripe_subscription_id, s.next_payment,
+			SELECT s.id, s.stripe_subscription_id, s.create_at, s.next_payment,
 				p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
 				pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
 				ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
@@ -155,6 +157,7 @@ func GetSubscriptionsPaidUser(db *sql.DB) http.HandlerFunc {
 			err := rows.Scan(
 				&subscription.ID,
 				&subscription.StripeSubscriptionID,
+				&subscription.CreateAt,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
 				&subscription.Plan.Name,
@@ -211,7 +214,7 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 		id := params["id"]
 
 		rows, err := db.Query(`
-			SELECT s.id, s.stripe_subscription_id, s.next_payment,
+			SELECT s.id, s.stripe_subscription_id, s.create_at, s.next_payment,
 				p.id, p.name, p.explanation, p.price, p.image, p.delivery_interval, p.stripe_price_id,
 				pu.id, pu.name, pu.email, pu.zipcode, pu.prefecture, pu.city, pu.town, pu.apartment, pu.phone_number,
 				ru.id, ru.name, ru.email, ru.zipcode, ru.prefecture, ru.city, ru.town, ru.apartment, ru.phone_number
@@ -232,6 +235,7 @@ func GetSubscriptionsReceivedUser(db *sql.DB) http.HandlerFunc {
 			err := rows.Scan(
 				&subscription.ID,
 				&subscription.StripeSubscriptionID,
+				&subscription.CreateAt,
 				&subscription.NextPayment,
 				&subscription.Plan.ID,
 				&subscription.Plan.Name,

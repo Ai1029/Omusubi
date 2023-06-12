@@ -10,9 +10,21 @@ type Plan = {
 };
 type Subscription = {
   id: number;
+  create_at: string;
   stripe_subscription_id: string;
   next_payment: string;
   plan: Plan;
+  paid_user: User;
+  received_user: User;
+};
+type Order = {
+  id: number;
+  plan_id: number;
+  plan_name: string;
+  plan_explanation: string;
+  price: number;
+  payment_date: string;
+  stripe_subscription_id: string;
   paid_user: User;
   received_user: User;
 };
@@ -73,8 +85,15 @@ export const mySubState = atom<Subscription[]>({
   key: "mySubState",
   default: [],
 });
+
 // family subscription state
 export const familySubState = atom<Subscription[]>({
   key: "familySubState",
+  default: [],
+});
+
+// family subscription state
+export const orderHistory = atom<Order[]>({
+  key: "orderHistory",
   default: [],
 });
