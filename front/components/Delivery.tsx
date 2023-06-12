@@ -16,56 +16,20 @@ const Delivery = () => {
           <div className="lg:grid mx-auto mt-5 md:grid-cols-2 lg:grid-cols-2 lg:gap-10">
             <div className="col-span-2 lg:col-span-2 flex flex-col mb-3 overflow-hidden">
               <div className="lg:flex lg:space-x-4">
-                <div className="flex-shrink-0 lg:w-2/3">
-                  <p className="text-base font-bold text-white bg-font-yellow py-1 px-4 mb-5">
-                    自宅にお届け
-                  </p>
-                  {myData.map((item, index) => (
-                    <div key={index} className="lg:col-span-1">
-                      <div>
-                        <img
-                          className="object-cover w-full h-52 rounded-lg mb-3"
-                          src={item.plan.image}
-                          alt=""
-                        />
-                      </div>
-                      <p className="text-sm text-gray-500 leading-6">
-                        {new Date(
-                          new Date(item.next_payment).getTime() +
-                            2 * 24 * 60 * 60 * 1000
-                        ).toLocaleDateString("ja-JP", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })}
-                        予定
-                      </p>
-                      <p className="text-sm text-gray-500 leading-6">
-                        {item.plan.name}
-                      </p>
-                      <p className="text-sm text-gray-500 leading-6 mb-5">
-                        {item.plan.explanation}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex-shrink-0 lg:w-1/3">
-                  <p className="text-base font-bold text-white bg-font-yellow py-1 px-4 mb-5">
-                    家族にお届け
-                  </p>
-                  <div className="lg:grid lg:grid-cols-1 lg:gap-8">
-                    {familyData.map((item, index) => (
-                      <div key={index}>
+                {myData ? (
+                  <div className="flex-shrink-0 lg:w-2/3">
+                    <p className="text-base font-bold text-white bg-font-yellow py-1 px-4 mb-5">
+                      自宅にお届け
+                    </p>
+                    {myData.map((item, index) => (
+                      <div key={index} className="lg:col-span-1">
                         <div>
                           <img
-                            className="object-cover w-full h-32 rounded-lg mb-3"
+                            className="object-cover w-full h-52 rounded-lg mb-3"
                             src={item.plan.image}
                             alt=""
                           />
                         </div>
-                        <p className="text-lg font-semibold text-gray-600 pb-1">
-                          {item.received_user.name}さんにお届け
-                        </p>
                         <p className="text-sm text-gray-500 leading-6">
                           {new Date(
                             new Date(item.next_payment).getTime() +
@@ -80,13 +44,61 @@ const Delivery = () => {
                         <p className="text-sm text-gray-500 leading-6">
                           {item.plan.name}
                         </p>
-                        <p className="text-sm text-gray-500 leading-6">
+                        <p className="text-sm text-gray-500 leading-6 mb-5">
                           {item.plan.explanation}
                         </p>
                       </div>
                     ))}
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <p>自宅にお届けする商品はまだありません</p>
+                  </div>
+                )}
+                {familyData ? (
+                  <div className="flex-shrink-0 lg:w-1/3">
+                    <p className="text-base font-bold text-white bg-font-yellow py-1 px-4 mb-5">
+                      家族にお届け
+                    </p>
+                    <div className="lg:grid lg:grid-cols-1 lg:gap-8">
+                      {familyData.map((item, index) => (
+                        <div key={index}>
+                          <div>
+                            <img
+                              className="object-cover w-full h-32 rounded-lg mb-3"
+                              src={item.plan.image}
+                              alt=""
+                            />
+                          </div>
+                          <p className="text-lg font-semibold text-gray-600 pb-1">
+                            {item.received_user.name}さんにお届け
+                          </p>
+                          <p className="text-sm text-gray-500 leading-6">
+                            {new Date(
+                              new Date(item.next_payment).getTime() +
+                                2 * 24 * 60 * 60 * 1000
+                            ).toLocaleDateString("ja-JP", {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            })}
+                            予定
+                          </p>
+                          <p className="text-sm text-gray-500 leading-6">
+                            {item.plan.name}
+                          </p>
+                          <p className="text-sm text-gray-500 leading-6">
+                            {item.plan.explanation}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p>家族にお届けする商品はまだありません</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
