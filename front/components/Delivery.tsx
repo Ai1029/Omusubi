@@ -103,11 +103,15 @@ const Delivery = () => {
             </div>
           </div>
         </section>
-        <div className="flex justify-center items-center mb-20">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-            プランを変更する
-          </button>
-        </div>
+        {myData ? (
+          <div className="flex justify-center items-center mb-20">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+              プランを変更する
+            </button>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
     </>
   );
