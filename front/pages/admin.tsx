@@ -6,9 +6,9 @@ import Link from "next/link";
 
 // S3の設定
 const s3 = new S3({
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: process.env.REGION,
+  accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID,
+  secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY,
+  region: process.env.NEXT_PUBLIC_REGION,
 });
 
 // S3に画像をアップロードし、そのURLを取得する
@@ -17,7 +17,7 @@ const uploadImageToS3 = async (file: File) => {
   const fileName = `shop/${Date.now()}-${file.name}`;
   // S3へのアップロードに必要な情報をまとめるオブジェクト
   const params: AWS.S3.PutObjectRequest = {
-    Bucket: process.env.S3_BUCKET_NAME ? process.env.S3_BUCKET_NAME : "",
+    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME ? process.env.NEXT_PUBLIC_S3_BUCKET_NAME : "",
     Key: fileName,
     ContentType: file.type,
     Body: file,
@@ -44,7 +44,8 @@ type Plan = {
   imageURL: string;
 };
 
-const PlanForm = ({ data, apiURL }: any) => {
+const PlanForm = ({ data }: any) => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const [plan, setPlan] = useState<Plan>({
     name: "",
     explanation: "",
@@ -150,10 +151,7 @@ const PlanForm = ({ data, apiURL }: any) => {
             />
             <p>定期便プラン画像</p>
             <input type="file" onChange={handleImageUpload} />
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-            >
+            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
               新しい定期便プランを追加
             </button>
           </form>
@@ -163,37 +161,21 @@ const PlanForm = ({ data, apiURL }: any) => {
         <section className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4  mb-10">
           {data.map((item: any) => (
             <>
-              <div
-                key={item.id}
-                className="mx-auto flex w-50 flex-col justify-center bg-white rounded-2xl shadow-xl shadow-gray-400/20"
-              >
-                <img
-                  className="aspect-video w-50 rounded-t-2xl object-cover object-center"
-                  src={item.image}
-                  alt={item.name}
-                />
+              <div key={item.id} className="mx-auto flex w-50 flex-col justify-center bg-white rounded-2xl shadow-xl shadow-gray-400/20">
+                <img className="aspect-video w-50 rounded-t-2xl object-cover object-center" src={item.image} alt={item.name} />
                 <div className="flex flex-col justify-between h-full p-6">
-                  <h1 className="text-2xl font-medium text-gray-700 pb-2">
-                    {item.name}
-                  </h1>
-                  <p className="text text-gray-500 leading-6">
-                    {item.explanation}
-                  </p>
+                  <h1 className="text-2xl font-medium text-gray-700 pb-2">{item.name}</h1>
+                  <p className="text text-gray-500 leading-6">{item.explanation}</p>
                   <p className="text text-gray-500 leading-6">{item.price}円</p>
                 </div>
                 <div className="flex justify-center mt-4 mb-4">
                   <div className="rounded-lg">
                     <Link href={`/admin_edit/${item.id}`}>
-                      <button className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-blue-500 rounded-md">
-                        編集
-                      </button>
+                      <button className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-blue-500 rounded-md">編集</button>
                     </Link>
                   </div>
                   <div className="ml-4 rounded-lg">
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-white transition duration-500 ease-in-out transform bg-blue-500 rounded-md hover:bg-blue-700"
-                    >
+                    <button onClick={() => handleDelete(item.id)} className="items-center block w-full h-full px-4 py-2 text-sm font-medium text-center text-white transition duration-500 ease-in-out transform bg-blue-500 rounded-md hover:bg-blue-700">
                       削除
                     </button>
                   </div>
@@ -211,14 +193,12 @@ export default PlanForm;
 
 // プラン一覧をgetする
 export const getServerSideProps = async () => {
-  const apiURL = process.env.API_URL;
   try {
     const res = await axios.get(`${process.env.API_URL_SSR}/plans`);
     console.log("res", res);
     return {
       props: {
         data: res.data,
-        apiURL: apiURL,
       },
     };
   } catch (error) {
@@ -226,7 +206,6 @@ export const getServerSideProps = async () => {
     return {
       props: {
         data: null,
-        apiURL: apiURL,
       },
     };
   }
