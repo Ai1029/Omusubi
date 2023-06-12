@@ -2,25 +2,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { mySubState, familySubState } from "@/state/atom";
 
-// Subscripttionsの仮データ
-//const data = [
-//{
-//id: 1,
-//plan_id: 1,
-//paiduser_id: 1,
-//receiveduser_id: 2,
-//is_active: true,
-//plan: {
-//name: "ワクワクプラン",
-//price: "1000円",
-//explanation: "季節の野菜をふんだんに使ったプラン",
-//nextdelivery: "筑前煮:200g、ほうれん草のおひたし:100g", // ER図に入ってないけど〜〜
-//image: "https://s3.ap-northeast-1.amazonaws.com/omusubi.inc/shop/1685513575374-25670817_s.jpg",
-//},
-//},
-//];
-
-// 商品一覧ページ
+// 次回のお届けプランページ
 const Delivery = () => {
   const myData = useRecoilValue(mySubState);
   const familyData = useRecoilValue(familySubState);
