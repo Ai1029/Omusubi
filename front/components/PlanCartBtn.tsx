@@ -94,10 +94,10 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
   return (
     <div>
       <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">
-        {user.name}様にお届け
+        {user.name}さんにお届け
       </p>
       <div>
-        <div>
+        <div className="mb-4">
           {isInCart ? (
             <button
               onClick={() => removeFromCart(plan.id)}
