@@ -29,27 +29,43 @@ const Delivery = () => {
   return (
     <>
       <div className="container mt-10 flex justify-between items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
-        <p>自宅にお届け</p>
-        {myData.map((item, index) => (
-          <div key={index}>
-            <p>{item.plan.name}</p>
-            <div>
-              <img className="object-cover w-full h-48 rounded-lg mt-4" src={item.plan.image} alt="" />
-            </div>
-            <p>{item.plan.explanation}</p>
+        {myData ? (
+          <div>
+            <p>自宅にお届け</p>
+            {myData.map((item, index) => (
+              <div key={index}>
+                <p>{item.plan.name}</p>
+                <div>
+                  <img className="object-cover w-full h-48 rounded-lg mt-4" src={item.plan.image} alt="" />
+                </div>
+                <p>{item.plan.explanation}</p>
+              </div>
+            ))}
           </div>
-        ))}
-        <p>家族にお届け</p>
-        {familyData.map((item, index) => (
-          <div key={index}>
-            <p>{item.received_user.name}さんにお届け</p>
-            <p>{item.plan.name}</p>
-            <div>
-              <img className="object-cover w-full h-48 rounded-lg mt-4" src={item.plan.image} alt="" />
-            </div>
-            <p>{item.plan.explanation}</p>
+        ) : (
+          <div>
+            <p>自宅にお届けする商品はまだありません</p>
           </div>
-        ))}
+        )}
+        {familyData ? (
+          <div>
+            <p>家族にお届け</p>
+            {familyData.map((item, index) => (
+              <div key={index}>
+                <p>{item.received_user.name}さんにお届け</p>
+                <p>{item.plan.name}</p>
+                <div>
+                  <img className="object-cover w-full h-48 rounded-lg mt-4" src={item.plan.image} alt="" />
+                </div>
+                <p>{item.plan.explanation}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p>家族にお届けする商品はまだありません</p>
+          </div>
+        )}
         {/*
           <div key={index}>
             <section>
@@ -106,9 +122,11 @@ const Delivery = () => {
           </div>
                      */}
       </div>
+      {/*
       <div className="flex justify-center items-center mb-20">
         <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md">プランを変更する</button>
       </div>
+      */}
     </>
   );
 };
