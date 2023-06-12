@@ -28,14 +28,23 @@ const Orderhistory = () => {
       <div className="container mt-10 mx-auto px-8 md:px-14 lg:px-24 w-full mb-10">
         <section>
           <p className="second-title-ja mb-5">注文履歴</p>
-          {data.map((item, index) => (
-            <div key={index}>
-              <p>{item.payment_date}これは注文日なので計算して配送日を入れるかそのままにするか</p>
-              <p>{item.plan_name}</p>
-              <p>{item.received_user.name}さんにお届け</p>
+          {data ? (
+            <div>
+              {data.map((item, index) => (
+                <div key={index}>
+                  <p>{item.payment_date}これは注文日なので計算して配送日を入れるかそのままにするか</p>
+                  <p>{item.plan_name}</p>
+                  <p>{item.received_user.name}さんにお届け</p>
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div>
+              <p>注文履歴はありません</p>
+            </div>
+          )}
 
+{/*
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
               <div className="p-1.5 min-w-full inline-block align-middle">
@@ -74,6 +83,7 @@ const Orderhistory = () => {
               </div>
             </div>
           </div>
+*/}
         </section>
       </div>
     </>
