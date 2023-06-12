@@ -18,51 +18,53 @@ type Props = {
   apiURL: string;
 };
 
-const LoginPage: NextPage<Props> = ({ apiURL }) => {
-  const ENDPOINT_URL = apiURL + "login";
+const LoginPage: NextPage<Props> = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const ENDPOINT_URL = apiUrl + "login";
+  const ENDPOINT_URL_SESSION = apiUrl + "check-session";
   const [authError, setAuthError] = useState(false);
   const [dbError, setDbError] = useState(false);
   const router = useRouter();
   const [inputs, setInputs] = useState<Inputs>({ email: "", password: "" });
   const onLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(ENDPOINT_URL)
     signInWithEmailAndPassword(auth, inputs.email, inputs.password)
       .then(({ user }: any) => {
         user.getIdToken().then((idToken: any) => {
+          console.log(user);
           const config = {
             headers: {
               Authorization: `Bearer ${idToken}`,
             },
           };
-          axios
-            .post(ENDPOINT_URL, idToken, { withCredentials: true, ...config })
-            .then((res) => {
-              console.log("エンドポイント", ENDPOINT_URL);
-              if (res.data === false) {
-                setDbError(true);
-              } else {
-                console.log(res.data);
-                const targetId = res.data.id;
-                // setCookie(null, "id", targetId, {
-                //   maxAge: 1 * 1 * 60 * 60,
-                //   path: "/",
-                // });
-                // setCookie(null, "signedIn", "true", {
-                //   maxAge: 1 * 1 * 60 * 60,
-                //   path: "/",
-                // });
-                router.push("/");
-                axios
-                  .get("http://localhost:8080/check-session", {
-                    withCredentials: true,
-                  })
-                  .then((res) => {
-                    if (res.data) {
-                      console.log("セットできた");
-                    }
-                  });
-              }
-            });
+          axios.post(ENDPOINT_URL, idToken, { withCredentials: true, ...config }).then((res) => {
+            console.log("エンドポイント", ENDPOINT_URL);
+            if (res.data === false) {
+              setDbError(true);
+            } else {
+              console.log(res.data);
+              const targetId = res.data.id;
+              // setCookie(null, "id", targetId, {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              // setCookie(null, "signedIn", "true", {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              router.push("/");
+              axios
+                .get(ENDPOINT_URL_SESSION, {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  if (res.data) {
+                    console.log("セットできた");
+                  }
+                });
+            }
+          });
         });
       })
       .catch((error) => {
@@ -112,12 +114,3 @@ const LoginPage: NextPage<Props> = ({ apiURL }) => {
 };
 
 export default LoginPage;
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const apiURL = process.env.API_URL;
-  return {
-    props: {
-      apiURL: apiURL,
-    },
-  };
-};
