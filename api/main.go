@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -26,6 +28,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// ログファイルを作成またはオープン
+	logFile, err := os.OpenFile("app.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logFile.Close()
+
+	// ログの出力先をファイルに変更
+	log.SetOutput(logFile)
+
 	// MySQLに接続します
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName))
 	if err != nil {
@@ -48,6 +61,9 @@ func main() {
 			next.ServeHTTP(w, r)
 		})
 	}
+
+	// ログの設定
+	LoggingSettings("app.log")
 
 	r.HandleFunc("/users", handlers.GetUsers(db)).Methods("GET")
 	r.HandleFunc("/users/{id}", handlers.GetUser(db)).Methods("GET")
@@ -79,4 +95,15 @@ func main() {
 
 	http.ListenAndServe(":8080", corsMiddleware(r))
 
+}
+func LoggingSettings(logFile string) {
+	// ログファイルを作成またはオープン
+	file, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// ログの出力先をファイルに変更
+	log.SetOutput(io.MultiWriter(os.Stdout, file))
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 }
