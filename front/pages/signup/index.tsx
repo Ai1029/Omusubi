@@ -72,21 +72,25 @@ const SignUp: NextPage = () => {
   };
   return (
     <Navbar>
-      <h2>ユーザー登録</h2>
+      <div className="text-center items-center">
+      <h2 className="font-medium py-10 text-lg">ユーザー登録</h2>
       <form onSubmit={onSignUp}>
-        <label htmlFor="name">ニックネーム</label>
-        <input
-          type="text"
-          name="name"
-          onChange={(e) =>
-            setInputs((prev) => ({
-              ...prev,
-              name: e.target.value,
-            }))
-          }
-        />
-
-        <label htmlFor="email">メールアドレス</label>
+        <div className="pb-10">
+          <label htmlFor="name">ニックネーム</label><br></br>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) =>
+              setInputs((prev) => ({
+                ...prev,
+                name: e.target.value,
+              }))
+            }
+            className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
+          />
+      </div>
+      <div className="pb-10">
+        <label htmlFor="email">メールアドレス</label><br></br>
         <input
           type="text"
           name="email"
@@ -96,8 +100,11 @@ const SignUp: NextPage = () => {
               email: e.target.value,
             }))
           }
+          className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
         />
-        <label htmlFor="password">パスワード</label>
+        </div>
+        <div className="pb-10">
+        <label htmlFor="password">パスワード</label><br></br>
         <input
           type="password"
           name="password"
@@ -107,9 +114,14 @@ const SignUp: NextPage = () => {
               password: e.target.value,
             }))
           }
+          className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
         />
-        <input type="submit" value="ユーザー登録をする" />
+        </div>
+        <div className="button-container inline-block pt-10">
+        <Button type="submit" text="ユーザー登録をする" />
+        </div>
       </form>
+      </div>
     </Navbar>
   );
 };

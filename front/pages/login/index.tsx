@@ -77,36 +77,52 @@ const LoginPage: NextPage<Props> = ({ apiURL }) => {
   };
   return (
     <Navbar>
-      <h2>ログインページ</h2>
-      {authError && <p>メールアドレスとパスワードを確認してください</p>}
-      {dbError && <p>登録されていないユーザーです</p>}
-      <form onSubmit={onLogin}>
-        <label htmlFor="email">メールアドレス</label>
-        <input
-          type="text"
-          name="email"
-          onChange={(e) =>
-            setInputs((prev) => ({
-              ...prev,
-              email: e.target.value,
-            }))
-          }
-        />
-        <label htmlFor="password">パスワード</label>
-        <input
-          type="password"
-          name="password"
-          onChange={(e) =>
-            setInputs((prev) => ({
-              ...prev,
-              password: e.target.value,
-            }))
-          }
-        />
-        <input type="submit" value="ログイン" />
+      <div className="text-center items-center">
+        <h2 className="pt-10 font-medium text-lg">ログインページ</h2>
+        {authError && <p>メールアドレスとパスワードを確認してください</p>}
+        {dbError && <p>登録されていないユーザーです</p>}
+        <form onSubmit={onLogin}>
+        <div className="py-10">
+          <label htmlFor="email">メールアドレス</label><br></br>
+          <input
+            type="text"
+            name="email"
+            onChange={(e) =>
+              setInputs((prev) => ({
+                ...prev,
+                email: e.target.value,
+              }))
+            }
+            className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
+          />
+        </div>
+        <div>
+          <label htmlFor="password">パスワード</label><br></br>
+          <input
+            type="password"
+            name="password"
+            onChange={(e) =>
+              setInputs((prev) => ({
+                ...prev,
+                password: e.target.value,
+              }))
+            }
+            className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
+          />
+        </div>
+        <div className="pt-20 button-container inline-block ">
+          <Button type="submit" text="ログイン" />
+        </div>
       </form>
-      <h2>アカウント作成はこちら</h2>
-      <Link href="/signup">ユーザー登録</Link>
+      <h2 className="pt-20 pb-10">アカウント作成はこちら</h2>
+      <div className="button-container inline-block">
+      <Link href="/signup">
+        <div>
+          <Button type="submit" text="ユーザー登録をする"/>
+        </div>
+      </Link>
+      </div>
+      </div>
     </Navbar>
   );
 };

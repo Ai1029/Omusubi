@@ -13,7 +13,6 @@ type Props = {
   planList: TypePlan[];
 };
 
-// 商品一覧ページ
 const Plan: NextPage<Props> = ({ planList }) => {
   return (
     <>
