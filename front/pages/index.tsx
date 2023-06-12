@@ -2,6 +2,8 @@ import Image from "next/image";
 import { GetServerSideProps, NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { isLoggedInState } from "@/state/atom";
 import Layout from "@/components/Layout";
 import Topimage from "@/components/Topimage";
 import Plan from "@/components/Plan";
@@ -23,6 +25,7 @@ type Props = {
 
 const HOME: NextPage<Props> = ({ planList }) => {
   const [isMounted, setIsMounted] = useState(false);
+  const isLogined = useRecoilValue(isLoggedInState);
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,7 +36,7 @@ const HOME: NextPage<Props> = ({ planList }) => {
   return (
     <Layout>
       <Topimage />
-      <Delivery />
+      {isLogined && <Delivery />}
       <Plan planList={planList} />
       <Orderhistory />
     </Layout>
