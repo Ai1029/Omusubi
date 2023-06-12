@@ -7,12 +7,12 @@ import {
 } from "@stripe/react-stripe-js";
 
 type Props = {
-  apiURL: string;
-  siteURL: string;
   order: any;
 };
 
-const CheckoutForm: React.FC<Props> = ({ apiURL, siteURL, order }) => {
+const CheckoutForm: React.FC<Props> = ({ order }) => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
+  const siteURL = process.env.SITE_URL;
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = React.useState(false);

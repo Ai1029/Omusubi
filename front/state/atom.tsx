@@ -4,7 +4,7 @@ type Plan = {
   id: number;
   name: string;
   explanation: string;
-  price: string;
+  price: number;
   image: string;
   stripe_price_id: string;
 };
@@ -50,14 +50,57 @@ type CartItem = {
   receivedUser: User;
 };
 
+const initialOrder = {
+  plan: {
+    id: 0,
+    name: "",
+    explanation: "",
+    price: 0,
+    image: "",
+    stripe_price_id: "",
+  },
+  paidUser: {
+    id: 0,
+    name: "",
+    email: "",
+    uid: "",
+    family_id: "",
+    phonetic: "",
+    zipcode: "",
+    prefecture: "",
+    city: "",
+    town: "",
+    apartment: "",
+    phone_number: "",
+    is_owner: true,
+    is_virtual_user: false,
+  },
+  receivedUser: {
+    id: 0,
+    name: "",
+    email: "",
+    uid: "",
+    family_id: "",
+    phonetic: "",
+    zipcode: "",
+    prefecture: "",
+    city: "",
+    town: "",
+    apartment: "",
+    phone_number: "",
+    is_owner: true,
+    is_virtual_user: false,
+  },
+};
+
 export const cartState = atom<CartItem[]>({
   key: "cartState",
   default: [],
 });
 
-export const orderState = atom<CartItem[]>({
+export const orderState = atom({
   key: "orderState",
-  default: [],
+  default: initialOrder,
 });
 
 export const isLoggedInState = atom<boolean>({

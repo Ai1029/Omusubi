@@ -9,16 +9,13 @@ import CheckoutForm from "@/components/CheckoutForm";
 import { useRecoilValue } from "recoil";
 import { orderState } from "@/state/atom";
 
-type BuyProps = {
-  apiURL: string;
-  siteURL: string;
-};
+//const stripePromis = loadStripe("pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI");
 
-const stripePromis = loadStripe(
-  "pk_test_51NDJySI8t6lPUIZhP6TevYxPDeaLNxPRRv2BolNbnYJeZssBUXNTIJkUMRPIo5O5bAKqrgCsawixvTy1Aj53jgDN00y9IbQ6NI"
-);
+const stripePromis = loadStripe(`${process.env.STRIPE_PROMIS}`);
 
-const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
+const CartConfirm: NextPage = () => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
+  const siteURL = process.env.SITE_URL;
   const order = useRecoilValue(orderState);
   console.log(order);
 
@@ -114,18 +111,12 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
                 </div>
               </div>
               <div>
-                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
-                  請求先詳細・お届け先の変更
-                </button>
+                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">請求先詳細・お届け先の変更</button>
               </div>
               <h4 className="text-sm font-bold mb-3 mt-5">注文プラン情報</h4>
               <div className="flex flex-wrap item-center">
                 <div>
-                  <img
-                    src={plan.image}
-                    alt={plan.name}
-                    className="w-60 rounded-lg mr-4 overflow-hidden"
-                  />
+                  <img src={plan.image} alt={plan.name} className="w-60 rounded-lg mr-4 overflow-hidden" />
                 </div>
                 <div>
                   <span className="text-sm font-bold mb-3 mt-3">定期便</span>
@@ -140,7 +131,7 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
         <div className="w-3/5 mt-10 mb-10">
           <h4 className="text-sm font-bold mb-3 mt-10">支払いカード情報</h4>
           <Elements options={options} stripe={stripePromis}>
-            <CheckoutForm apiURL={apiURL} siteURL={siteURL} order={order} />
+            <CheckoutForm order={order} />
           </Elements>
         </div>
       </div>
@@ -149,14 +140,3 @@ const CartConfirm: NextPage<BuyProps> = ({ apiURL, siteURL }) => {
 };
 
 export default CartConfirm;
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const apiURL = process.env.API_URL;
-  const siteURL = process.env.SITE_URL;
-  return {
-    props: {
-      apiURL: apiURL,
-      siteURL: siteURL,
-    },
-  };
-};
