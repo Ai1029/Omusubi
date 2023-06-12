@@ -10,7 +10,7 @@ const Orderhistory = () => {
       <div className="container mt-10 mx-auto px-8 md:px-14 lg:px-24 w-full mb-10">
         <section>
           <p className="second-title-ja mb-5">注文履歴</p>
-          {data.map((item, index) => (
+          {/* {data.map((item, index) => (
             <div key={index}>
               <p>
                 {item.payment_date}
@@ -19,7 +19,7 @@ const Orderhistory = () => {
               <p>{item.plan_name}</p>
               <p>{item.received_user.name}さんにお届け</p>
             </div>
-          ))}
+          ))} */}
 
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
@@ -32,7 +32,7 @@ const Orderhistory = () => {
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase dark:text-gray-400"
                         >
-                          配送日
+                          注文日
                         </th>
                         <th
                           scope="col"
@@ -54,26 +54,29 @@ const Orderhistory = () => {
                         </th>
                       </tr>
                     </thead>
+
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                      <tr>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                          2023/5/25
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                          ワクワクプラン
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                          〇〇様に〇〇個、〇〇様に〇〇個お届け
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <a
-                            className="text-blue-500 hover:text-blue-700"
-                            href="#"
-                          >
-                            おすすめ度の評価
-                          </a>
-                        </td>
-                      </tr>
+                      {data.map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                            {item.payment_date}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                            {item.plan_name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                            {item.received_user.name}さんにお届け
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a
+                              className="text-blue-500 hover:text-blue-700"
+                              href="#"
+                            >
+                              おすすめ度の評価
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
