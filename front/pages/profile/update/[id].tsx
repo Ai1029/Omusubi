@@ -18,11 +18,11 @@ type InputProfile = {
   phone_number: string;
 };
 type Props = {
-  apiURL: string;
   user: InputProfile;
   isProfileExist: boolean;
 };
-const UpdateProfile: NextPage<Props> = ({ apiURL, user, isProfileExist }) => {
+const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiURL + "users";
   const [cart, setCart] = useRecoilState(cartState);
   const [successMessage, setSuccessMessage] = useState("");
@@ -165,7 +165,6 @@ export default UpdateProfile;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
-  const apiURL = process.env.API_URL;
   let user = {
     id: 0,
     name: "",
@@ -193,7 +192,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   return {
     props: {
-      apiURL: apiURL,
       user: user,
       isProfileExist: isProfileExist,
     },
