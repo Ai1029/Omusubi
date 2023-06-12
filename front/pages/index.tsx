@@ -38,7 +38,7 @@ const HOME: NextPage<Props> = ({ planList }) => {
       <Topimage />
       {isLogined && <Delivery />}
       <Plan planList={planList} />
-      <Orderhistory />
+      {isLogined && <Orderhistory />}
     </Layout>
   );
 };
