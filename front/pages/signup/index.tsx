@@ -40,6 +40,7 @@ const SignUp: NextPage = () => {
         name: inputs.name,
         email: inputs.email,
         uid: user.uid,
+        is_owner: true,
       };
       try {
         // ユーザー新規作成
