@@ -44,7 +44,7 @@ type Plan = {
   imageURL: string;
 };
 
-const PlanForm = ({ data }: any) => {
+const Admin = ({ data }: any) => {
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const [plan, setPlan] = useState<Plan>({
     name: "",
@@ -189,7 +189,7 @@ const PlanForm = ({ data }: any) => {
   );
 };
 
-export default PlanForm;
+export default Admin;
 
 // プラン一覧をgetする
 export const getServerSideProps = async () => {

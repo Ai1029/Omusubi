@@ -6,9 +6,9 @@ import { S3 } from "aws-sdk";
 
 // S3の設定
 const s3 = new S3({
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: process.env.REGION,
+  accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID,
+  secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY,
+  region: process.env.NEXT_PUBLIC_REGION,
 });
 
 // S3に画像をアップロードし、そのURLを取得する
@@ -17,7 +17,7 @@ const uploadImageToS3 = async (file: File) => {
   const fileName = `shop/${Date.now()}-${file.name}`;
   // S3へのアップロードに必要な情報をまとめるオブジェクト
   const params: AWS.S3.PutObjectRequest = {
-    Bucket: process.env.S3_BUCKET_NAME ? process.env.S3_BUCKET_NAME : "",
+    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME ? process.env.NEXT_PUBLIC_S3_BUCKET_NAME : "",
     Key: fileName,
     ContentType: file.type,
     Body: file,
@@ -44,7 +44,7 @@ const deleteImageFromS3 = async (imageURL: string) => {
 
   const fileName = imageURL.split("/").pop();
   const params = {
-    Bucket: process.env.S3_BUCKET_NAME ? process.env.S3_BUCKET_NAME : "",
+    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME ? process.env.NEXT_PUBLIC_S3_BUCKET_NAME : "",
     Key: `shop/${fileName}`,
   };
 
@@ -64,7 +64,8 @@ type Plan = {
   imageURL: string;
 };
 
-const PlanForm = ({ data }: any) => {
+const AdminEdit = ({ data }: any) => {
+  const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const [plan, setPlan] = useState<Plan>({
     name: "",
     explanation: "",
@@ -111,7 +112,7 @@ const PlanForm = ({ data }: any) => {
     };
 
     try {
-      await axios.patch(`http://localhost:8080/plan/${data.id}`, planData);
+      await axios.patch(apiURL + "plan/" + data.id, planData);
       console.log("修正内容が反映されました");
     } catch (error) {
       console.log(error);
@@ -141,48 +142,22 @@ const PlanForm = ({ data }: any) => {
         <div>
           <form onSubmit={handleEdit} className="space-y-4">
             <p>定期便プラン</p>
-            <input
-              type="text"
-              name="name"
-              value={plan.name}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md p-2 w-full"
-            />
+            <input type="text" name="name" value={plan.name} onChange={handleInputChange} className="border border-gray-300 rounded-md p-2 w-full" />
             <p>定期便プラン詳細</p>
-            <input
-              type="text"
-              name="explanation"
-              value={plan.explanation}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md p-2 w-full"
-            />
+            <input type="text" name="explanation" value={plan.explanation} onChange={handleInputChange} className="border border-gray-300 rounded-md p-2 w-full" />
             <p>定期便プラン金額（円）</p>
-            <input
-              type="text"
-              name="price"
-              value={plan.price}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-md p-2 w-full"
-            />
+            <input type="text" name="price" value={plan.price} onChange={handleInputChange} className="border border-gray-300 rounded-md p-2 w-full" />
             <p>定期便プラン画像</p>
-            <img
-              src={plan.imageURL}
-              className="w-full object-contain max-w-[300px]"
-            />
+            <img src={plan.imageURL} className="w-full object-contain max-w-[300px]" />
             <input type="file" onChange={handleImageUpload} />
             <div>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-              >
+              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
                 編集
               </button>
             </div>
             <div className="rounded-lg">
               <Link href={`/admin`}>
-                <button className="border-2 border-blue-500 text-blue-600 px-4 py-2 rounded-md">
-                  管理者トップページに戻る
-                </button>
+                <button className="border-2 border-blue-500 text-blue-600 px-4 py-2 rounded-md">管理者トップページに戻る</button>
               </Link>
             </div>
           </form>
@@ -192,13 +167,13 @@ const PlanForm = ({ data }: any) => {
   );
 };
 
-export default PlanForm;
+export default AdminEdit;
 
 // プラン一覧をgetする
 export const getServerSideProps = async (context: any) => {
   const id = Number(context.params.id);
   try {
-    const res = await axios.get(`http://api:8080/plan/${id}`);
+    const res = await axios.get(`${process.env.API_URL_SSR}/plan/${id}`);
     console.log("res", res);
     return {
       props: {
