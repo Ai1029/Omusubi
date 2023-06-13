@@ -43,19 +43,14 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+  }, [cart]);
 
   const addToCart = (planId: number) => {
     setCart((prevCart: any) => {
       if (!Array.isArray(prevCart)) {
         prevCart = []; // 配列でない場合は空の配列を使用
       }
-      if (
-        prevCart.find(
-          (item: any) =>
-            item.plan.id === plan.id && item.receivedUser.id === user.id
-        )
-      ) {
+      if (prevCart.find((item: any) => item.plan.id === plan.id && item.receivedUser.id === user.id)) {
         return prevCart; // カートに既に同じ商品がある場合は変更せずにそのまま返す
       }
       const cartItem = {
@@ -74,10 +69,7 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
       if (!Array.isArray(prevCart)) {
         prevCart = []; // 配列でない場合は空の配列を使用
       }
-      const updatedCart = prevCart.filter(
-        (item: any) =>
-          item.plan.id !== planId || item.receivedUser.id !== user.id
-      );
+      const updatedCart = prevCart.filter((item: any) => item.plan.id !== planId || item.receivedUser.id !== user.id);
       localStorage.setItem("cart-items", JSON.stringify(updatedCart));
       return updatedCart;
     });
@@ -87,29 +79,19 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
     return null; // マウント前は何も表示せずにロード中とする
   }
 
-  const isInCart = cart.find(
-    (item: any) => item.plan.id === plan.id && item.receivedUser.id === user.id
-  );
+  const isInCart = cart.find((item: any) => item.plan.id === plan.id && item.receivedUser.id === user.id);
 
   return (
     <div>
-      <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">
-        {user.name}さんにお届け
-      </p>
+      <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">{user.name}さんにお届け</p>
       <div>
         <div className="mb-4">
           {isInCart ? (
-            <button
-              onClick={() => removeFromCart(plan.id)}
-              className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
-            >
+            <button onClick={() => removeFromCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
               －カートから削除
             </button>
           ) : (
-            <button
-              onClick={() => addToCart(plan.id)}
-              className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"
-            >
+            <button onClick={() => addToCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
               ＋カートに追加
             </button>
           )}
