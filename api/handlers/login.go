@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -88,7 +89,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 		// 検証済みトークンからuidを取得
 		uid := tokenInfo.Claims["user_id"].(string)
 
-		fmt.Printf(uid)
+		fmt.Println(uid)
 
 		var resData LoginedUser
 
@@ -98,9 +99,13 @@ func Login(db *sql.DB) http.HandlerFunc {
 		}
 
 		// セッションIDとしてハッシュ化したユーザーIDを作成
-		hashedID := hashSHA256(strconv.Itoa(resData.ID))
+		hashedID, err := hashSHA256(strconv.Itoa(resData.ID))
+		if err != nil {
+			// エラーハンドリング
+			log.Fatal(err)
+		}
 
-		fmt.Printf(hashedID)
+		fmt.Println(hashedID)
 
 		// セッションIDとユーザー情報をMySQLに保存
 		_, err = db.Exec("INSERT INTO sessions (session_id, user_id) VALUES (?, ?)", hashedID, resData.ID)
@@ -122,12 +127,46 @@ func Login(db *sql.DB) http.HandlerFunc {
 }
 
 // ユーザーIDをSHA-256でハッシュ化する関数
-func hashSHA256(input string) string {
+// func hashSHA256(input string) string {
+// hasher := sha256.New()
+// hasher.Write([]byte(input))
+// hashedBytes := hasher.Sum(nil)
+// hashedString := hex.EncodeToString(hashedBytes)
+// return hashedString
+// }
+// ユーザーIDをSHA-256でハッシュ化する関数
+func hashSHA256(input string) (string, error) {
+	// 入力が空文字の場合はエラーを返す
+	if input == "" {
+		return "", errors.New("input is empty")
+	}
+
+	// 入力に空白が含まれている場合はエラーを返す
+	if strings.Contains(input, " ") {
+		return "", errors.New("input contains whitespace")
+	}
+
+	// 数値以外の形式の文字列だった場合はエラーを返す
+	// ここでは例として、入力がアルファベットのみで構成されているかをチェックしています
+	if !isAlphaNumeric(input) {
+		return "", errors.New("input is not alphanumeric")
+	}
+
 	hasher := sha256.New()
 	hasher.Write([]byte(input))
 	hashedBytes := hasher.Sum(nil)
 	hashedString := hex.EncodeToString(hashedBytes)
-	return hashedString
+	return hashedString, nil
+}
+
+// 入力がアルファベットのみで構成されているかをチェックするヘルパー関数
+func isAlphaNumeric(input string) bool {
+	for _, char := range input {
+		if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || (char >= '0' && char <= '9')) {
+			return false
+		}
+	}
+	return true
 }
 
 // セッションID情報をcookieにセットする
