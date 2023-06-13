@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { auth } from "@/firebase/firebase";
 import { signOut } from "firebase/auth";
-import { parseCookies, setCookie, destroyCookie } from "nookies";
 import Layout from "@/components/Layout";
 
 const Logout: NextPage = () => {
@@ -18,6 +17,7 @@ const Logout: NextPage = () => {
         axios
           .get(ENDPOINT_URL, { withCredentials: true })
           .then(() => {
+            localStorage.removeItem("cart-items");
             router.push("/login");
           })
           .catch((error) => {
