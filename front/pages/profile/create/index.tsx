@@ -37,6 +37,10 @@ const CreateProfile: NextPage = () => {
   useEffect(() => {
     console.log(userID);
     if (userID !== 0) {
+      setInputProfile((prevProfile) => ({
+        ...prevProfile,
+        id: userID,
+      }));
       axios.get(ENDPOINT_URL + "/" + userID).then((res) => {
         const name = res.data.name;
         setInputProfile((prevProfile) => ({
