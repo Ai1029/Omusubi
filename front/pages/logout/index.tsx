@@ -32,12 +32,18 @@ const Logout: NextPage = () => {
   return (
     <>
       <Layout>
+        <div className="container mt-10 items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
+          <div>
+            <h2 className="second-title-ja mr-4">ログアウト</h2>
+          </div>
+        </div>
         <div className="text-center items-center">
-          <h2 className="pt-10 font-medium text-lg">ログアウト</h2>
           <div className="pt-10">
-            <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md" onClick={onSubmitLogout}>
-              ログアウト
-            </button>
+            <div className="flex justify-center">
+              <button className="bg-blue-500 items-center hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center mb-10 mt-5" onClick={onSubmitLogout}>
+                ログアウト
+              </button>
+            </div>
           </div>
         </div>
       </Layout>
