@@ -52,9 +52,7 @@ const CartConfirm: NextPage = () => {
         <div>
           <section>
             <div>
-              <div className="bg-red p-2 mb-5">
-                <h3 className="text-white text-sm">自宅にお届け</h3>
-              </div>
+              <div className="bg-red p-2 mb-5">{paidUser.id == receivedUser.id ? <h3 className="text-white text-sm">自宅にお届け</h3> : <h3 className="text-white text-sm">{receivedUser.name} 様にお届け</h3>}</div>
               <div className="flex flex-col bg-white border shadow-sm rounded-xl">
                 <div className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
                   <h4 className="text-sm font-bold mt-1 mb-1">請求先詳細</h4>
@@ -83,7 +81,9 @@ const CartConfirm: NextPage = () => {
                 </div>
               </div>
               <div>
-                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"><Link href={`/profile/update/${paidUser.id}`}>請求先の変更</Link></button>
+                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                  <Link href={`/profile/update/${paidUser.id}`}>請求先の変更</Link>
+                </button>
               </div>
 
               <div className="flex flex-col bg-white border shadow-sm rounded-xl mt-5">
