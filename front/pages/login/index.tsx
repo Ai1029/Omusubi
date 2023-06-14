@@ -36,33 +36,31 @@ const LoginPage: NextPage<Props> = () => {
               Authorization: `Bearer ${idToken}`,
             },
           };
-          axios
-            .post(ENDPOINT_URL, idToken, { withCredentials: true, ...config })
-            .then((res) => {
-              if (res.data === false) {
-                setDbError(true);
-              } else {
-                console.log(res.data);
-                const targetId = res.data.id;
-                // setCookie(null, "id", targetId, {
-                //   maxAge: 1 * 1 * 60 * 60,
-                //   path: "/",
-                // });
-                // setCookie(null, "signedIn", "true", {
-                //   maxAge: 1 * 1 * 60 * 60,
-                //   path: "/",
-                // });
-                axios
-                  .get(ENDPOINT_URL_SESSION, {
-                    withCredentials: true,
-                  })
-                  .then((res) => {
-                    if (res.data) {
-                      router.push("/");
-                    }
-                  });
-              }
-            });
+          axios.post(ENDPOINT_URL, idToken, { withCredentials: true, ...config }).then((res) => {
+            if (res.data === false) {
+              setDbError(true);
+            } else {
+              console.log(res.data);
+              const targetId = res.data.id;
+              // setCookie(null, "id", targetId, {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              // setCookie(null, "signedIn", "true", {
+              //   maxAge: 1 * 1 * 60 * 60,
+              //   path: "/",
+              // });
+              axios
+                .get(ENDPOINT_URL_SESSION, {
+                  withCredentials: true,
+                })
+                .then((res) => {
+                  if (res.data) {
+                    router.push("/");
+                  }
+                });
+            }
+          });
         });
       })
       .catch((error) => {
@@ -117,12 +115,14 @@ const LoginPage: NextPage<Props> = () => {
           </div>
         </form>
         <h2 className="pt-20 pb-10">アカウント作成はこちら</h2>
-        <div className="button-container inline-block">
-          <Link href="/signup">
-            <div>
-              <Button type="submit" text="ユーザー登録をする" />
-            </div>
-          </Link>
+        <div className="pb-20">
+          <div className="button-container inline-block mb-50">
+            <Link href="/signup">
+              <div>
+                <Button type="submit" text="ユーザー登録をする" />
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
     </Navbar>
