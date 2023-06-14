@@ -36,31 +36,33 @@ const LoginPage: NextPage<Props> = () => {
               Authorization: `Bearer ${idToken}`,
             },
           };
-          axios.post(ENDPOINT_URL, idToken, { withCredentials: true, ...config }).then((res) => {
-            if (res.data === false) {
-              setDbError(true);
-            } else {
-              console.log(res.data);
-              const targetId = res.data.id;
-              // setCookie(null, "id", targetId, {
-              //   maxAge: 1 * 1 * 60 * 60,
-              //   path: "/",
-              // });
-              // setCookie(null, "signedIn", "true", {
-              //   maxAge: 1 * 1 * 60 * 60,
-              //   path: "/",
-              // });
-              axios
-                .get(ENDPOINT_URL_SESSION, {
-                  withCredentials: true,
-                })
-                .then((res) => {
-                  if (res.data) {
-                    router.push("/");
-                  }
-                });
-            }
-          });
+          axios
+            .post(ENDPOINT_URL, idToken, { withCredentials: true, ...config })
+            .then((res) => {
+              if (res.data === false) {
+                setDbError(true);
+              } else {
+                console.log(res.data);
+                const targetId = res.data.id;
+                // setCookie(null, "id", targetId, {
+                //   maxAge: 1 * 1 * 60 * 60,
+                //   path: "/",
+                // });
+                // setCookie(null, "signedIn", "true", {
+                //   maxAge: 1 * 1 * 60 * 60,
+                //   path: "/",
+                // });
+                axios
+                  .get(ENDPOINT_URL_SESSION, {
+                    withCredentials: true,
+                  })
+                  .then((res) => {
+                    if (res.data) {
+                      router.push("/");
+                    }
+                  });
+              }
+            });
         });
       })
       .catch((error) => {
@@ -80,46 +82,48 @@ const LoginPage: NextPage<Props> = () => {
         {authError && <p>メールアドレスとパスワードを確認してください</p>}
         {dbError && <p>登録されていないユーザーです</p>}
         <form onSubmit={onLogin}>
-        <div className="py-10">
-          <label htmlFor="email">メールアドレス</label><br></br>
-          <input
-            type="text"
-            name="email"
-            onChange={(e) =>
-              setInputs((prev) => ({
-                ...prev,
-                email: e.target.value,
-              }))
-            }
-            className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
-          />
+          <div className="py-10">
+            <label htmlFor="email">メールアドレス</label>
+            <br></br>
+            <input
+              type="text"
+              name="email"
+              onChange={(e) =>
+                setInputs((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
+              }
+              className="bg-slate-200 w-80 h-7 rounded-lg font-normal px-3"
+            />
+          </div>
+          <div>
+            <label htmlFor="password">パスワード</label>
+            <br></br>
+            <input
+              type="password"
+              name="password"
+              onChange={(e) =>
+                setInputs((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                }))
+              }
+              className="bg-slate-200 w-80 h-7 rounded-lg font-normal px-3"
+            />
+          </div>
+          <div className="pt-20 button-container inline-block ">
+            <Button type="submit" text="ログイン" />
+          </div>
+        </form>
+        <h2 className="pt-20 pb-10">アカウント作成はこちら</h2>
+        <div className="button-container inline-block">
+          <Link href="/signup">
+            <div>
+              <Button type="submit" text="ユーザー登録をする" />
+            </div>
+          </Link>
         </div>
-        <div>
-          <label htmlFor="password">パスワード</label><br></br>
-          <input
-            type="password"
-            name="password"
-            onChange={(e) =>
-              setInputs((prev) => ({
-                ...prev,
-                password: e.target.value,
-              }))
-            }
-            className='bg-slate-200 w-80 h-7 rounded-lg font-normal'
-          />
-        </div>
-        <div className="pt-20 button-container inline-block ">
-          <Button type="submit" text="ログイン" />
-        </div>
-      </form>
-      <h2 className="pt-20 pb-10">アカウント作成はこちら</h2>
-      <div className="button-container inline-block">
-      <Link href="/signup">
-        <div>
-          <Button type="submit" text="ユーザー登録をする"/>
-        </div>
-      </Link>
-      </div>
       </div>
     </Navbar>
   );
