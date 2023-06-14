@@ -34,58 +34,67 @@ const SignUp: NextPage = () => {
   const onSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    createUserWithEmailAndPassword(auth, inputs.email, inputs.password).then(({ user }: any) => {
-      // console.log("新規作成成功");
-      const createUser = {
-        name: inputs.name,
-        email: inputs.email,
-        uid: user.uid,
-        is_owner: true,
-      };
-      try {
-        // ユーザー新規作成
-        axios.post(ENDPOINT_URL_USER, createUser).then(() => {
-          // ============ 作成したユーザーの認証 ============
-          // トークンの発行
-          user.getIdToken().then((idToken: any) => {
-            // console.log("トークンの発行成功");
-            const config = {
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            };
-            // 発行したトークンを使って認証
-            try {
-              axios.post(ENDPOINT_URL_LOGIN, idToken, { withCredentials: true, ...config }).then(() => {
-                // console.log("ログイン成功");
-                try {
-                  axios.get(ENDPOINT_URL_SESSION, { withCredentials: true }).then(() => {
-                    // console.log("認証成功");
-                    router.push("/profile/create");
+    createUserWithEmailAndPassword(auth, inputs.email, inputs.password).then(
+      ({ user }: any) => {
+        // console.log("新規作成成功");
+        const createUser = {
+          name: inputs.name,
+          email: inputs.email,
+          uid: user.uid,
+          is_owner: true,
+        };
+        try {
+          // ユーザー新規作成
+          axios.post(ENDPOINT_URL_USER, createUser).then(() => {
+            // ============ 作成したユーザーの認証 ============
+            // トークンの発行
+            user.getIdToken().then((idToken: any) => {
+              // console.log("トークンの発行成功");
+              const config = {
+                headers: {
+                  Authorization: `Bearer ${idToken}`,
+                },
+              };
+              // 発行したトークンを使って認証
+              try {
+                axios
+                  .post(ENDPOINT_URL_LOGIN, idToken, {
+                    withCredentials: true,
+                    ...config,
+                  })
+                  .then(() => {
+                    // console.log("ログイン成功");
+                    try {
+                      axios
+                        .get(ENDPOINT_URL_SESSION, { withCredentials: true })
+                        .then(() => {
+                          // console.log("認証成功");
+                          router.push("/profile/create");
+                        });
+                    } catch (error) {
+                      console.log(error);
+                    }
                   });
-                } catch (error) {
-                  console.log(error);
-                }
-              });
-            } catch (error) {
-              console.log(error);
-            }
+              } catch (error) {
+                console.log(error);
+              }
+            });
           });
-        });
-      } catch (error) {
-        console.log(error);
+        } catch (error) {
+          console.log(error);
+        }
+        // sendEmailVerification(user)
+        //   .then(() => {
+        //     // メールの送信に成功した場合の処理
+        //     setEmailSent(true);
+        //     console.log("Email verification sent");
+        //   })
+        //   .catch((error) => {
+        //     // メールの送信に失敗した場合の処理
+        //     console.error("Failed to send email verification:", error);
+        //   });
       }
-      // sendEmailVerification(user)
-      //   .then(() => {
-      //     // メールの送信に成功した場合の処理
-      //     setEmailSent(true);
-      //     console.log("Email verification sent");
-      //   })
-      //   .catch((error) => {
-      //     // メールの送信に失敗した場合の処理
-      //     console.error("Failed to send email verification:", error);
-      //   });
-    });
+    );
   };
   return (
     <Navbar>
@@ -104,7 +113,7 @@ const SignUp: NextPage = () => {
                   name: e.target.value,
                 }))
               }
-              className="bg-slate-200 w-80 h-7 rounded-lg font-normal"
+              className="bg-slate-200 w-80 h-7 rounded-lg font-normal px-3"
             />
           </div>
           <div className="pb-10">
@@ -119,7 +128,7 @@ const SignUp: NextPage = () => {
                   email: e.target.value,
                 }))
               }
-              className="bg-slate-200 w-80 h-7 rounded-lg font-normal"
+              className="bg-slate-200 w-80 h-7 rounded-lg font-normal px-3"
             />
           </div>
           <div className="pb-10">
@@ -134,7 +143,7 @@ const SignUp: NextPage = () => {
                   password: e.target.value,
                 }))
               }
-              className="bg-slate-200 w-80 h-7 rounded-lg font-normal"
+              className="bg-slate-200 w-80 h-7 rounded-lg font-normal px-3"
             />
           </div>
           <div className="button-container inline-block pt-10">
