@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { Elements } from "@stripe/react-stripe-js";
@@ -81,6 +82,9 @@ const CartConfirm: NextPage = () => {
                   </dl>
                 </div>
               </div>
+              <div>
+                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md"><Link href={`/profile/update/${paidUser.id}`}>請求先の変更</Link></button>
+              </div>
 
               <div className="flex flex-col bg-white border shadow-sm rounded-xl mt-5">
                 <div className="bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-5">
@@ -108,9 +112,6 @@ const CartConfirm: NextPage = () => {
                     </div>
                   </dl>
                 </div>
-              </div>
-              <div>
-                <button className="px-6 py-3 text-sm font-medium text-center my-5 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">請求先詳細・お届け先の変更</button>
               </div>
               <h4 className="text-sm font-bold mb-3 mt-5">注文プラン情報</h4>
               <div className="flex flex-wrap item-center">
