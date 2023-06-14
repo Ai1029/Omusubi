@@ -29,7 +29,7 @@ const HOME: NextPage<Props> = ({ planList }) => {
 
   useEffect(() => {
     setIsMounted(true);
-  }, [isLogined]);
+  }, []);
   if (!isMounted) {
     return null; // マウント前は何も表示せずにロード中とする
   }

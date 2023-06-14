@@ -79,9 +79,12 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
   const familyIds = family.map((user) => user.id);
   const hasAllFamilyIds = familyIds.every((id) => receivedUserIds.includes(id));
 
-  const filteredAllSubData = allSubData.filter((item) => {
-    return item.plan.id === plan.id;
-  });
+  let filteredAllSubData: any[] = [];
+  if (allSubData !== null) {
+    filteredAllSubData = allSubData.filter((item) => {
+      return item.plan.id === plan.id;
+    });
+  }
   let hasAllFamilyRegisteredSubscription = false;
   if (filteredAllSubData.length > 0) {
     const allSubDataReceivedUserIds = filteredAllSubData.map((item) => item.received_user.id);
@@ -113,7 +116,7 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
             <ul>
               {family.map((user) => (
                 <li key={user.id}>
-                  <PlanCartBtn user={user} plan={plan} paidUser={paidUser!} registeredPlan={filteredAllSubData}/>
+                  <PlanCartBtn user={user} plan={plan} paidUser={paidUser!} registeredPlan={filteredAllSubData} />
                 </li>
               ))}
             </ul>
