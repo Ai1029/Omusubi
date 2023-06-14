@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
 import { useRecoilValue } from "recoil";
 import { userIDState } from "@/state/atom";
+import { useRouter } from "next/router";
 import axios from "axios";
-import Link from "next/link";
 import Layout from "@/components/Layout";
 
 type InputProfile = {
@@ -20,9 +20,9 @@ type InputProfile = {
 const CreateProfile: NextPage = () => {
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiURL + "users";
+  const router = useRouter();
   const userID = useRecoilValue(userIDState);
   const [isMounted, setIsMounted] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [inputProfile, setInputProfile] = useState<InputProfile>({
     id: 0,
     name: "",
@@ -73,7 +73,7 @@ const CreateProfile: NextPage = () => {
       return;
     }
     axios.patch(ENDPOINT_URL, inputProfile).then((res) => {
-      setSuccessMessage("プロフィールの登録が完了しました");
+      router.push("/");
     });
   };
 
@@ -86,116 +86,55 @@ const CreateProfile: NextPage = () => {
         <div>
           <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>
         </div>
-        {successMessage && (
-          <div className="text-center mb-10">
-            <p className="mb-10">{successMessage}</p>
-            <div className="flex justify-center">
-              <Link
-                href="/"
-                className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center"
-              >
-                TOPページ
-              </Link>
-            </div>
-          </div>
-        )}
         <div className="flex justify-center">
           <form>
             <div className="pb-5">
               <div>
                 <label>名前※</label>
               </div>
-              <input
-                name="name"
-                type="text"
-                value={inputProfile.name}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="name" type="text" value={inputProfile.name} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>フリガナ※</label>
               </div>
-              <input
-                name="phonetic"
-                type="text"
-                value={inputProfile.phonetic}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="phonetic" type="text" value={inputProfile.phonetic} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>郵便番号※</label>
               </div>
-              <input
-                name="zipcode"
-                type="text"
-                value={inputProfile.zipcode}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="zipcode" type="text" value={inputProfile.zipcode} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>都道府県※</label>
               </div>
-              <input
-                name="prefecture"
-                type="text"
-                value={inputProfile.prefecture}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="prefecture" type="text" value={inputProfile.prefecture} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>市区町村※</label>
               </div>
-              <input
-                name="city"
-                type="text"
-                value={inputProfile.city}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="city" type="text" value={inputProfile.city} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>町名番地※</label>
               </div>
-              <input
-                name="town"
-                type="text"
-                value={inputProfile.town}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="town" type="text" value={inputProfile.town} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>アパート・マンション名</label>
               </div>
-              <input
-                name="apartment"
-                type="text"
-                value={inputProfile.apartment}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="apartment" type="text" value={inputProfile.apartment} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>電話番号※</label>
               </div>
-              <input
-                name="phone_number"
-                type="text"
-                value={inputProfile.phone_number}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="phone_number" type="text" value={inputProfile.phone_number} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="flex justify-center">
               <div className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-60 h-14 rounded-full flex justify-center mt-5 mb-10">

@@ -75,8 +75,12 @@ const LoginPage: NextPage<Props> = () => {
   };
   return (
     <Navbar>
+      <div className="container mt-10 items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
+        <div>
+          <h2 className="second-title-ja mr-4">ログインページ</h2>
+        </div>
+      </div>
       <div className="text-center items-center">
-        <h2 className="pt-10 font-medium text-lg">ログインページ</h2>
         {authError && <p>メールアドレスとパスワードを確認してください</p>}
         {dbError && <p>登録されていないユーザーです</p>}
         <form onSubmit={onLogin}>

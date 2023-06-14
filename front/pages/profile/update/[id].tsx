@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import axios from "axios";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
@@ -19,11 +20,11 @@ type InputProfile = {
 };
 type Props = {
   user: InputProfile;
-  isProfileExist: boolean;
 };
-const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
+const UpdateProfile: NextPage<Props> = ({ user }) => {
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   const ENDPOINT_URL = apiURL + "users";
+  const router = useRouter();
   const [cart, setCart] = useRecoilState(cartState);
   const [successMessage, setSuccessMessage] = useState("");
   const [inputProfile, setInputProfile] = useState<InputProfile>({
@@ -57,12 +58,6 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
       return;
     }
     axios.patch(ENDPOINT_URL, inputProfile).then((res) => {
-      if (isProfileExist) {
-        setSuccessMessage("プロフィールの修正が完了しました");
-      } else {
-        setSuccessMessage("プロフィールの登録が完了しました");
-      }
-
       const updatedCart = cart.map((item) => {
         if (item.paidUser.id === user.id) {
           // paidUserのidが一致する場合、データを修正
@@ -82,129 +77,65 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
       });
       setCart(updatedCart);
       localStorage.setItem("cart-items", JSON.stringify(updatedCart));
+      router.push("/profile/update/complete");
     });
   };
 
   return (
     <Layout>
-      <div className="items-center">
+      <div className="container mt-10 items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
         <div>
-          {isProfileExist ? (
-            <h2 className="text-center mb-10 mt-10">プロフィール修正</h2>
-          ) : (
-            <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>
-          )}
+          <h2 className="second-title-ja mr-4 mb-5">プロフィール修正</h2>
         </div>
-        {successMessage && (
-          <div className="text-center mb-10">
-            <p className="mb-10">{successMessage}</p>
-            <div className="flex justify-center">
-              <Link
-                href="/"
-                className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center mb-10 mt-5"
-              >
-                TOPページ
-              </Link>
-            </div>
-          </div>
-        )}
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-10">
           <form>
             <div className="pb-5">
               <div>
                 <label>名前※</label>
               </div>
-              <input
-                name="name"
-                type="text"
-                value={inputProfile.name}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="name" type="text" value={inputProfile.name} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>フリガナ※</label>
               </div>
-              <input
-                name="phonetic"
-                type="text"
-                value={inputProfile.phonetic}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="phonetic" type="text" value={inputProfile.phonetic} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>郵便番号※</label>
               </div>
-              <input
-                name="zipcode"
-                type="text"
-                value={inputProfile.zipcode}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="zipcode" type="text" value={inputProfile.zipcode} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>都道府県※</label>
               </div>
-              <input
-                name="prefecture"
-                type="text"
-                value={inputProfile.prefecture}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="prefecture" type="text" value={inputProfile.prefecture} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>市区町村※</label>
               </div>
-              <input
-                name="city"
-                type="text"
-                value={inputProfile.city}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="city" type="text" value={inputProfile.city} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>町名番地※</label>
               </div>
-              <input
-                name="town"
-                type="text"
-                value={inputProfile.town}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="town" type="text" value={inputProfile.town} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>アパート・マンション名</label>
               </div>
-              <input
-                name="apartment"
-                type="text"
-                value={inputProfile.apartment}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="apartment" type="text" value={inputProfile.apartment} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="pb-5">
               <div>
                 <label>電話番号※</label>
               </div>
-              <input
-                name="phone_number"
-                type="text"
-                value={inputProfile.phone_number}
-                onChange={handleChange}
-                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
-              />
+              <input name="phone_number" type="text" value={inputProfile.phone_number} onChange={handleChange} className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3" />
             </div>
             <div className="flex justify-center">
               <div className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center mb-10 mt-5">
@@ -234,27 +165,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     apartment: "",
     phone_number: "",
   };
-  let isProfileExist = false; // 初期化
 
   if (id !== undefined) {
     try {
-      const response = await axios.get(
-        `${process.env.API_URL_SSR}/users/${id}`
-      );
+      const response = await axios.get(`${process.env.API_URL_SSR}/users/${id}`);
       const data = response.data;
       user = data;
-      const keysToCheck = [
-        "name",
-        "phonetic",
-        "zipcode",
-        "prefecture",
-        "city",
-        "town",
-        "phone_number",
-      ];
-      isProfileExist = keysToCheck.every(
-        (key) => data[key] !== null && data[key] !== ""
-      );
+      const keysToCheck = ["name", "phonetic", "zipcode", "prefecture", "city", "town", "phone_number"];
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -262,7 +179,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: user,
-      isProfileExist: isProfileExist,
     },
   };
 };

@@ -34,6 +34,11 @@ const CartPage: NextPage = () => {
               <h2 className="second-title mr-4">Cart</h2>
             </div>
 
+            {cart.length == 0 && (
+              <div>
+                <p>カートは空です。TOPページから商品を選択してください。</p>
+              </div>
+            )}
             <div className="mb-6 flex flex-col gap-4 sm:mb-8 md:gap-6">
               {cart.map((item, i) => (
                 <div key={i} className="flex w-full border border-gray-100 overflow-hidden bg-white rounded-lg shadow-lg">

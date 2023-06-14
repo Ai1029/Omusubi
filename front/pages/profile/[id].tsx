@@ -21,11 +21,11 @@ type Props = {
 const Profile: NextPage<Props> = ({ user }) => {
   return (
     <Layout>
-      <div className="items-center">
+      <div className="container mt-10 items-center mx-auto px-8 md:px-14 lg:px-24 w-full">
         <div>
-          <h2 className="text-center mb-10 mt-10">プロフィール</h2>
+          <h2 className="second-title-ja mr-4 mb-5">プロフィール</h2>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-10">
           <form>
             <div className="pb-5">
               <div>
@@ -75,11 +75,8 @@ const Profile: NextPage<Props> = ({ user }) => {
               </div>
               <p>{user.phone_number}</p>
             </div>
-            <div className="flex justify-center">
-              <Link
-                href={`/profile/update/${user.id}`}
-                className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center"
-              >
+            <div className="flex justify-center pb-10">
+              <Link href={`/profile/update/${user.id}`} className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center">
                 修正する
               </Link>
             </div>
@@ -109,9 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (id !== undefined) {
     try {
-      const response = await axios.get(
-        `${process.env.API_URL_SSR}/users/${id}`
-      );
+      const response = await axios.get(`${process.env.API_URL_SSR}/users/${id}`);
       const data = response.data;
       user = data;
     } catch (error) {
