@@ -1,10 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
 import { useRecoilState } from "recoil";
 import { cartState } from "@/state/atom";
-// import { UserContext } from "@/pages/_app";
 
 type TypePlan = {
   id: number;
@@ -30,16 +27,32 @@ type TypeUser = {
   is_owner: boolean;
   is_virtual_user: boolean;
 };
+type TypeOrder = {
+  plan: TypePlan;
+  paid_user: TypeUser;
+  receiverd_user: TypeUser;
+};
 type Props = {
   plan: TypePlan;
   user: TypeUser;
   paidUser: TypeUser;
+  registeredPlan: any;
 };
 
-const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
+interface Plan {
+  received_user: {
+    id: number;
+  };
+}
+
+const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser, registeredPlan }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCart] = useRecoilState(cartState);
-  const router = useRouter();
+  let isRegistered = false;
+  if (registeredPlan.length > 0) {
+    isRegistered = registeredPlan.some((item: any) => item.received_user.id === user.id);
+    console.log(isRegistered);
+  }
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,20 +96,26 @@ const PlanCartBtn: NextPage<Props> = ({ plan, user, paidUser }) => {
 
   return (
     <div>
-      <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">{user.name}さんにお届け</p>
+      {isRegistered ? (
+        <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">{user.name}さん は登録済みです</p>
+      ) : (
       <div>
-        <div className="mb-4">
-          {isInCart ? (
-            <button onClick={() => removeFromCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
-              －カートから削除
-            </button>
-          ) : (
-            <button onClick={() => addToCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
-              ＋カートに追加
-            </button>
-          )}
+        <p className="text-xs mt-2 mb-1 mx-4 text-gray-500">{user.name}さん にお届け</p>
+        <div>
+          <div className="mb-4">
+            {isInCart ? (
+              <button onClick={() => removeFromCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                －カートから削除
+              </button>
+            ) : (
+              <button onClick={() => addToCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
+                ＋カートに追加
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

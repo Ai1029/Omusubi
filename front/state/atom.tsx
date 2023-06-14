@@ -135,6 +135,12 @@ export const familySubState = atom<Subscription[]>({
   default: [],
 });
 
+// all subscription state
+export const allSubState = atom<Subscription[]>({
+  key: "allSubState",
+  default: [],
+});
+
 // family subscription state
 export const orderHistory = atom<Order[]>({
   key: "orderHistory",

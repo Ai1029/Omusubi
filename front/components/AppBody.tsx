@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { cartState, isLoggedInState, userIDState, familyIDState, familyState, mySubState, familySubState, orderHistory } from "@/state/atom";
+import { cartState, isLoggedInState, userIDState, familyIDState, familyState, mySubState, familySubState, allSubState, orderHistory } from "@/state/atom";
 import axios from "axios";
 
 interface Props {
@@ -21,6 +21,7 @@ const AppBody = ({ children }: Props) => {
   const [cart, setCart] = useRecoilState(cartState);
   const [mySub, setMySub] = useRecoilState(mySubState);
   const [familySub, setFamilySub] = useRecoilState(familySubState);
+  const [allSub, setAllSub] = useRecoilState(allSubState);
   const [order, setOrderHistory] = useRecoilState(orderHistory);
   const [isMounted, setIsMounted] = useState(false);
   //　ユーザーがログインしているかサーバーで確認する
@@ -44,6 +45,15 @@ const AppBody = ({ children }: Props) => {
           setMySub(resMySub.data);
           setFamilySub(resFamilySub.data);
           setOrderHistory(resOrderHistory.data);
+          let allRegisteredPlan = [];
+          if (resMySub.data !== null && resFamilySub.data !== null) {
+            allRegisteredPlan = [...resMySub.data, ...resFamilySub.data];
+          } else if (resMySub.data !== null) {
+            allRegisteredPlan = resMySub.data;
+          } else {
+            allRegisteredPlan = resFamilySub.data;
+          }
+          setAllSub(allRegisteredPlan);
         }
       } catch (error) {
         console.error("Error checking session:", error);
