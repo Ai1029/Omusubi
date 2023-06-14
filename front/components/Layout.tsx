@@ -59,7 +59,7 @@ const Layout = ({ children }: Props) => {
                       {isLogined && (
                         <li className="py-3 border-b">
                           <Link href="/mypage" onClick={() => setIsOpen(false)} className="hover:text-selected-text transition-all duration-300">
-                            MyPage
+                            マイページ
                           </Link>
                         </li>
                       )}
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavProps> = ({ cartCount, isLogined }) => {
       </Link>
       {isLogined && (
         <Link href="/mypage" className="hover:text-selected-text transition-all duration-300">
-          MyPage
+          マイページ
         </Link>
       )}
       {/*
