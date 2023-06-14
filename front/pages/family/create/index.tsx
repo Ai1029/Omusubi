@@ -102,7 +102,7 @@ const CreateFamily: NextPage = () => {
             <div className="flex justify-center">
               <Link
                 href="/"
-                className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center"
+                className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center"
               >
                 TOPページ
               </Link>
