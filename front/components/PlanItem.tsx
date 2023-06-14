@@ -1,11 +1,9 @@
 // プラン一覧の各プランを表示するコンポーネント
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 import Link from "next/link";
-import { parseCookies } from "nookies";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { cartState, familyState, isLoggedInState } from "@/state/atom";
+import { cartState, familyState, isLoggedInState, allSubState } from "@/state/atom";
 import PlanCartBtn from "./PlanCartBtn";
 type TypePlan = {
   id: number;
@@ -23,8 +21,8 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cart, setCart] = useRecoilState(cartState);
   const family = useRecoilValue(familyState);
+  const allSubData = useRecoilValue(allSubState);
   const isLoggedIn = useRecoilValue(isLoggedInState);
-  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -74,10 +72,6 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
     });
   };
 
-  if (!isMounted) {
-    return null; // マウント前は何も表示せずにロード中とする
-  }
-
   const filteredCart = cart.filter((item) => {
     return item.plan.id === plan.id;
   });
@@ -85,7 +79,20 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
   const familyIds = family.map((user) => user.id);
   const hasAllFamilyIds = familyIds.every((id) => receivedUserIds.includes(id));
 
+  const filteredAllSubData = allSubData.filter((item) => {
+    return item.plan.id === plan.id;
+  });
+  let hasAllFamilyRegisteredSubscription = false;
+  if (filteredAllSubData.length > 0) {
+    const allSubDataReceivedUserIds = filteredAllSubData.map((item) => item.received_user.id);
+    hasAllFamilyRegisteredSubscription = familyIds.every((id) => allSubDataReceivedUserIds.includes(id));
+    console.log(hasAllFamilyRegisteredSubscription);
+  }
   const paidUser = family.find((user) => user.is_owner === true);
+
+  if (!isMounted) {
+    return null; // マウント前は何も表示せずにロード中とする
+  }
 
   return (
     <>
@@ -106,11 +113,11 @@ export const PlanItem: NextPage<Props> = ({ plan }) => {
             <ul>
               {family.map((user) => (
                 <li key={user.id}>
-                  <PlanCartBtn user={user} plan={plan} paidUser={paidUser!} />
+                  <PlanCartBtn user={user} plan={plan} paidUser={paidUser!} registeredPlan={filteredAllSubData}/>
                 </li>
               ))}
             </ul>
-            {family.length > 1 && (
+            {family.length > 1 && filteredAllSubData.length == 0 && (
               <div>
                 {hasAllFamilyIds ? (
                   <button onClick={() => removeFromCart(plan.id)} className="items-center block h-full px-2 py-2 text-sm font-medium text-center mx-4 my-4 text-blue-500 hover:text-blue-700 transition duration-500 ease-in-out transform border-2 border-blue-500 hover:border-blue-700 rounded-md">
