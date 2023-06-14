@@ -88,12 +88,21 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
   return (
     <Layout>
       <div className="items-center">
-        <div>{isProfileExist ? <h2 className="text-center mb-10 mt-10">プロフィール修正</h2> : <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>}</div>
+        <div>
+          {isProfileExist ? (
+            <h2 className="text-center mb-10 mt-10">プロフィール修正</h2>
+          ) : (
+            <h2 className="text-center mb-10 mt-10">プロフィール登録</h2>
+          )}
+        </div>
         {successMessage && (
           <div className="text-center mb-10">
             <p className="mb-10">{successMessage}</p>
             <div className="flex justify-center">
-              <Link href="/" className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center">
+              <Link
+                href="/"
+                className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center items-center mb-10 mt-5"
+              >
                 TOPページ
               </Link>
             </div>
@@ -105,52 +114,100 @@ const UpdateProfile: NextPage<Props> = ({ user, isProfileExist }) => {
               <div>
                 <label>名前※</label>
               </div>
-              <input name="name" type="text" value={inputProfile.name} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="name"
+                type="text"
+                value={inputProfile.name}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>フリガナ※</label>
               </div>
-              <input name="phonetic" type="text" value={inputProfile.phonetic} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="phonetic"
+                type="text"
+                value={inputProfile.phonetic}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>郵便番号※</label>
               </div>
-              <input name="zipcode" type="text" value={inputProfile.zipcode} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="zipcode"
+                type="text"
+                value={inputProfile.zipcode}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>都道府県※</label>
               </div>
-              <input name="prefecture" type="text" value={inputProfile.prefecture} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="prefecture"
+                type="text"
+                value={inputProfile.prefecture}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>市区町村※</label>
               </div>
-              <input name="city" type="text" value={inputProfile.city} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="city"
+                type="text"
+                value={inputProfile.city}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>町名番地※</label>
               </div>
-              <input name="town" type="text" value={inputProfile.town} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="town"
+                type="text"
+                value={inputProfile.town}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>アパート・マンション名</label>
               </div>
-              <input name="apartment" type="text" value={inputProfile.apartment} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="apartment"
+                type="text"
+                value={inputProfile.apartment}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="pb-5">
               <div>
                 <label>電話番号※</label>
               </div>
-              <input name="phone_number" type="text" value={inputProfile.phone_number} onChange={handleChange} className="bg-slate-200 w-80 h-10 rounded-lg font-normal" />
+              <input
+                name="phone_number"
+                type="text"
+                value={inputProfile.phone_number}
+                onChange={handleChange}
+                className="bg-slate-200 w-80 h-8 rounded-lg font-normal px-3"
+              />
             </div>
             <div className="flex justify-center">
-              <div className="bg-sky-400 text-white text-lg w-64 h-14 rounded-full flex justify-center">
+              <div className="bg-blue-500 hover:bg-blue-700 text-white text-lg w-64 h-14 rounded-full flex justify-center mb-10 mt-5">
                 <button onClick={handleClick}>登録する</button>
               </div>
             </div>
@@ -181,11 +238,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (id !== undefined) {
     try {
-      const response = await axios.get(`${process.env.API_URL_SSR}/users/${id}`);
+      const response = await axios.get(
+        `${process.env.API_URL_SSR}/users/${id}`
+      );
       const data = response.data;
       user = data;
-      const keysToCheck = ["name", "phonetic", "zipcode", "prefecture", "city", "town", "phone_number"];
-      isProfileExist = keysToCheck.every((key) => data[key] !== null && data[key] !== "");
+      const keysToCheck = [
+        "name",
+        "phonetic",
+        "zipcode",
+        "prefecture",
+        "city",
+        "town",
+        "phone_number",
+      ];
+      isProfileExist = keysToCheck.every(
+        (key) => data[key] !== null && data[key] !== ""
+      );
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
