@@ -42,7 +42,7 @@
 ### ユーザに関する機能
 
 - ユーザーアカウントの作成と認証機能：ユーザーがアカウントを作成し、ログインしてアプリを利用できる。（登録していないユーザーはおかずの閲覧可能）
-- グループ機能：ユーザーが別のユーザーを招待してグループを作成することができる。
+- グループ機能：登録ユーザーが別のユーザー（家族）を登録することができる。
 - プロフィール管理機能：ユーザーが自分のプロフィール情報を編集・更新できる。
 
 ### おかず購入に関する機能
@@ -50,7 +50,8 @@
 - おかずを定期購入できる
 - 購入履歴機能：ユーザーが購入したおかずの履歴を見ることができる。
 
-![image](?raw=true)
+![image](https://github.com/Ai1029/Omusubi/blob/main/images/function.png?raw=true)
+![image](https://github.com/Ai1029/Omusubi/blob/main/images/page.png?raw=true)
 
 ### 工夫した点
 
@@ -96,7 +97,7 @@ Notion と Figma を活用し、チーム内でデータを共有。
 1. このリポジトリを git clone します。
 
 ```bash
-$ git clone https://github.com/Ai1029/MyPortfolio.git
+$ git clone https://github.com/Ai1029/Omusubi.git
 ```
 
 2. Omusubi に入ります
