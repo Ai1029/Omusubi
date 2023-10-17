@@ -43,7 +43,6 @@
 
 - ユーザーアカウントの作成と認証機能：ユーザーがアカウントを作成し、ログインしてアプリを利用できる。（登録していないユーザーはおかずの閲覧可能）
 - グループ機能：登録ユーザーが別のユーザー（家族）を登録することができる。
-- プロフィール管理機能：ユーザーが自分のプロフィール情報を編集・更新できる。
 
 ### おかず購入に関する機能
 
@@ -123,8 +122,8 @@ TZ=Asia/Tokyo
 6. 5 で作成した`.env`ファイルの Firebase の設定情報の下に以下の内容を追記します。
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:3001
-API_URL_SSR=http://server:3001
+NEXT_PUBLIC_API_URL=http://localhost:8080
+API_URL_SSR=http://api:8080
 NEXT_PUBLIC_APP_SITE_URL=http://localhost:3000
 ```
 
@@ -175,8 +174,7 @@ http://localhost:3000 をブラウザで開き、表示を確認します。
 - GO 1.20.4 ※バックエンド
 - ECS（Fargate）
 - ECR
-- RDS（MySQL 8.0.23
-  ）
+- RDS（MySQL 8.0.23）
 - S3 　※画像の保管
 
 ## 追加したい機能
